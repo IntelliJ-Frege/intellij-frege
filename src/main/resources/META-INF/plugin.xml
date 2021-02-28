@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>org.example.intellij-frege</id>
+    <id>com.plugin.frege</id>
     <name>Plugin display name here</name>
     <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
@@ -13,7 +13,8 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <fileType name="Frege File" implementationClass="com.plugin.frege.FregeFileType"
+                  fieldName="INSTANCE" language="Frege" extensions="fr"/>
     </extensions>
 
     <actions>
