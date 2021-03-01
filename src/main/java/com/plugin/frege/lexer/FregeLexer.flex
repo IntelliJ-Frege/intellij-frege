@@ -10,9 +10,12 @@ import com.intellij.psi.TokenType;
 %class FregeLexer
 %implements FlexLexer
 %unicode
+%function advance
 %type IElementType
 %eof{ return;
 %eof}
+
+%xstate LINE_COMMENT, BLOCK_COMMENT
 
 whitespace           = \s
 
@@ -43,8 +46,13 @@ octalEscape          = {backSlash}{octalChar} | {backSlash}{octalChar}{octalChar
 escapeSequence       = {backSlash}b | {backSlash}t | {backSlash}n | {backSlash}f {backSlash}r
                        | {backSlash}{doubleQuote} | {backSlash}{quote} | {backSlash}{backSlash}
                        | {octalEscape}
-// todo
+char                 = {quote}([^\'\\\n] | {escapeSequence}){quote}
 
+/* string literal */
+string               = {doubleQuote}([^\"]{backSlash} | {escapeSequence}){doubleQuote}
+
+/* regex literal */
+regex                = `(\\`|[^\`])*`
 
 /* comments */
 lineCommentStart     = {dash}{dash}{dash}{questionMark} // ---?
@@ -59,8 +67,9 @@ qualifier            = {conid}{dot}
 /* operators */
 precedence           = [123456789] | 1[0123456]
 symop                = \W+
-wordop               = \w+
+wordop               = {backQuote}\w+{backQuote}
 
+colon                = :
 doubleColon          = ::
 rightArrow           = ->
 leftArrow            = <-
@@ -70,7 +79,7 @@ equal                = =
 dash                 = -
 exlamationMark       = \!
 questionMark         = \?
-comma                = ,
+comma                = \,
 semicolon            = ;
 dot                  = \.
 backSlash            = \\
@@ -85,27 +94,28 @@ leftBrace            = \{
 rightBrace           = \}
 
 /* quotes */
-quote                = '
+quote                = \'
 doubleQuote          = \"
 hash                 = #
 backQuote            = ‘
 
 %%
-    // number
-      {integer}             { return FregeTypes.INTEGER; }
-      // TODO
 
-    // parentheses
-      {leftParen}            { return FregeTypes.LEFT_PAREN; }
-      {rightParen}           { return FregeTypes.RIGHT_PAREN; }
-      {leftBracket}          { return FregeTypes.LEFT_BRACKET; }
-      {rightBracket}         { return FregeTypes.RIGHT_BRACKET; }
-      {leftBrace}            { return FregeTypes.LEFT_BRACE; }
-      {rightBrace}           { return FregeTypes.RIGHT_BRACE; }
+{lineCommentStart}            { yybegin(LINE_COMMENT); }
 
-      {comma}                { return FregeTypes.COMMA; }
+<LINE_COMMENT> {
+      \n                      { yybegin(YYINITIAL); }
+      .                       {}
+}
 
-    // keywords
+{blockCommentStart}           { yybegin(BLOCK_COMMENT); }
+
+<BLOCK_COMMENT> {
+      {blockCommentEnd}       { yybegin(YYINITIAL); }
+      .                       {}
+}
+
+   /* keywords */
       "abstract"              { return FregeTypes.ABSTRACT; }
       "case"                  { return FregeTypes.CASE; }
       "class"                 { return FregeTypes.CLASS; }
@@ -139,5 +149,42 @@ backQuote            = ‘
       "type"                  { return FregeTypes.TYPE; }
       "where"                 { return FregeTypes.WHERE; }
 
+   /* literals */
+      {integer}               { return FregeTypes.INTEGER; }
+      {float}                 { return FregeTypes.FLOAT; }
+      {char}                  { return Frege.CHAR; }
+      {string}                { return Frege.STRING; }
+      {regex}                 { return Frege.REGEX; }
 
+   /* parentheses */
+      {leftParen}             { return FregeTypes.LEFT_PAREN; }
+      {rightParen}            { return FregeTypes.RIGHT_PAREN; }
+      {leftBracket}           { return FregeTypes.LEFT_BRACKET; }
+      {rightBracket}          { return FregeTypes.RIGHT_BRACKET; }
+      {leftBrace}             { return FregeTypes.LEFT_BRACE; }
+      {rightBrace}            { return FregeTypes.RIGHT_BRACE; }
 
+   /* symbols */
+      {doubleColon}           { return FregeTypes.DOUBLE_COLON; }
+      {colon}                 { return FregeTypes.COLON; }
+      {rightArrow}            { return FregeTypes.RIGHT_ARROW; }
+      {leftArrow}             { return FregeTypes.LEFT_ARROW; }
+      {doubleRightArrow}      { return FregeTypes.DOUBLE_RIHGT_ARROW; }
+      {vertBar}               { return FregeTypes.VERT_BAR; }
+      {equal}                 { return FregeTypes.EQUAL; }
+      {dash}                  { return FregeTypes.DASH; }
+      {exlamationMark}        { return FregeTypes.EXLAMATION_MARK; }
+      {questionMark}          { return FregeTypes.QUESTION_MARK; }
+      {comma}                 { return FregeTypes.COMMA; }
+      {semicolon}             { return FregeTypes.SEMICOLON; }
+      {backSlash}             { return FregeTypes.BACK_SLASH; }
+      {underscore}            { return FregeTypes.UNDERSCORE; }
+
+   /* operators */
+      {symop}                 { return FregeTypes.SYMBOL_OPERATOR; }
+      {wordop}                { return FregeTypes.WORD_OPERATOR; }
+
+   /* identifiers */
+      {qualifier}             { return FregeTypes.QUALIFIER; }
+      {conid}                 { return FregeTypes.CONID; }
+      {varid}                 { return FregeTypes.VARID; }
