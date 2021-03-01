@@ -29,9 +29,10 @@ hexChar              = [0-9A-Fa-f]
 hex                  = 0[xX]{hexChar}({underscore}{hexChar}{hexChar}{hexChar})*
 octalChar            = [0-7]
 octal                = 0{octalChar}({underscore}{octalChar}{octalChar}{octalChar})*
-integer              = {decimal} | {hex} | {octal}
-integerLong          = {integer}[lL]
-integerBig           = {digit}+({underscore}{digit}{digit}{digit})*[nN]
+int                  = {decimal} | {hex} | {octal}
+intLong              = {int}[lL]
+intBig               = {digit}+({underscore}{digit}{digit}{digit})*[nN]
+integer              = {int}{intLong}{intBig}
 
 exponentIndicator    = [eE]
 exponentPart         = {exponentIndicator}{signs}{digits}
@@ -55,9 +56,11 @@ string               = {doubleQuote}([^\"]{backSlash} | {escapeSequence}){double
 regex                = `(\\`|[^\`])*`
 
 /* comments */
-lineCommentStart     = {dash}{dash}{dash}{questionMark} // ---?
-blockCommentStart    = {leftBrace}{dash}{dash}          // {--
-blockCommentEnd      = {dash}{rightBrace}               // -}
+lineCommentStart     = {dash}{dash}{dash}{questionMark}
+lineComment          = {lineCommentStart}[^\n]*
+blockCommentStart    = {leftBrace}{dash}{dash}
+blockCommentEnd      = {dash}{rightBrace}
+blockComment         = {blockCommentStart}(!({dash}{rightBrace})){blockCommentEnd}
 
 /* identifiers */
 conid                = \p{Lu}(\d | {underscore} | \p{L})*
@@ -105,20 +108,6 @@ backQuote            = ‘
 
 %%
 
-{lineCommentStart}            { yybegin(LINE_COMMENT); }
-
-<LINE_COMMENT> {
-      \n                      { yybegin(YYINITIAL); }
-      .                       {}
-}
-
-{blockCommentStart}           { yybegin(BLOCK_COMMENT); }
-
-<BLOCK_COMMENT> {
-      {blockCommentEnd}       { yybegin(YYINITIAL); }
-      .                       {}
-}
-
    /* keywords */
       "abstract"              { return FregeTypes.ABSTRACT; }
       "case"                  { return FregeTypes.CASE; }
@@ -153,6 +142,8 @@ backQuote            = ‘
       "type"                  { return FregeTypes.TYPE; }
       "where"                 { return FregeTypes.WHERE; }
 
+      {lineComment}           { return FregeTypes.LINE_COMMENT; }
+      {blockComment}          { return FregeTypes.BLOCK_COMMENT; }
       {whitespace}            { return TokenType.WHITE_SPACE; }
 
    /* literals */
@@ -189,6 +180,7 @@ backQuote            = ‘
       {star}                  { return FregeTypes.STAR; }
       {at}                    { return FregeTypes.AT; }
       {tilda}                 { return FregeTypes.TILDA; }
+      {hash}                  { return FregeTypes.HASH; }
 
    /* operators */
       {symop}                 { return FregeTypes.SYMBOL_OPERATOR; }
