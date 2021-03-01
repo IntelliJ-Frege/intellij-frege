@@ -12,3 +12,195 @@
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
+
+fregeFile ::= unit*
+
+qVarId ::= QUALIFIER QUALIFIER VARID
+            | QUALIFIER VARID
+            | CONID
+qConId ::= QUALIFIER QUALIFIER CONID
+            | QUALIFIER CONID
+            | CONID
+
+/* Terms */
+term ::= qVarId
+         | qConId
+         | qConId LEFT_BRACE initFields RIGHT_BRACE
+         | literal
+         | UNDERSCORE
+         | LEFT_PAREN qLexOp RIGHT_BRACE
+         | LEFT_PAREN qUnOp RIGHT_BRACE
+         | section
+         | unit
+         | tuple
+         | list
+
+initFields ::= initField (COMMA initField)*
+
+initField ::= VARID (EQUAL expr)
+
+/* Sections */
+section ::= LEFT_PAREN binEx lexOp RIGHT_PAREN
+            | LEFT_PAREN lexOp expr RIGHT_PAREN
+
+/* Unit */
+unit ::= LEFT_PAREN RIGHT_PAREN
+
+/* Tuples */
+tuple ::= tupleConstructor | nTuple | strictNTuple
+tupleConstructor ::= LEFT_PAREN COMMA* RIGHT_PAREN
+nTuple ::= LEFT_PAREN expr COMMA expr (COMMA expr)* RIGHT_PAREN
+strictNTuple ::= LEFT_PAREN expr SEMICOLON expr (SEMICOLON expr)* RIGHT_PAREN
+
+/* Lists */
+list ::= emptyList
+            | LEFT_BRACKET expr (COMMA expr)* RIGHT_BRACKET
+            | LEFT_BRACKET (COMMA expr)? dotDot expr? RIGHT_BRACKET
+            | LEFT_BRACKET expr VERT_BAR dlcqual (COMMA dlcqual)? RIGHT_BRACKET
+
+dlcqual ::= pattern LEFTARROW expr
+            | expr
+            | LET LEFT_BRACE decl (SEMICOLON decl)* RIGHT_BRACE
+
+emptyList ::= LEFT_BRACKET RIGHT_BRACKET
+
+/* Primary Expression */
+primary ::= term
+            | primary DOT VARID
+            | primary DOT lexOp
+            | primary DOT unOp
+            | qualifier LEFT_BRACE VARID QUESTIONMARK RIGHT_BRACE
+            | qualifier LEFT_BRACE VARID EQUAL RIGHT_BRACE
+            | qualifier LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
+            | qualifier LEFT_BRACE field (COMMA field)* RIGHT_BRACE
+            | primary DOT LEFT_BRACE VARID QUESTION_MARK RIGHT_BRACE
+            | primary DOT LEFT_BRACE VARID EQUAL RIGHT_BRACE
+            | primary DOT LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
+            | primary DOT LEFT_BRACE field (COMMA field)* RIGHT_BRACE
+            | primary DOT LEFT_BRACKET expr RIGHT_BRACKET
+            | DO LEFT_BRACE dlcqual (SEMICOLON dlcqual)* RIGHT_BRACE
+
+field ::= VARID EQUAL expr
+            | VARID LEFTARROW expr
+            | VARID
+
+/* Unary operator */
+unary ::= primary
+            | qUnOp unary
+
+/* Function application */
+appex ::= unary
+            | appex unary
+
+/* Infix Expressions */
+// TODO
+
+/* Lambda Expression */
+lambda ::= BACK_SLASH pattern lambda
+            | BACK_SLASH pattern RIGHT_ARROW expr
+
+/* Conditional */
+cond ::= IF expr THEN expr ELSE expr
+
+/* Let Expressions */
+letEx ::= LET LEFT_BRACE decl (SEMICOLON decl)* RIGHT_BRACE IN expr
+
+/* Case Expression */
+// TODO
+
+/* Annotated Expression */
+expr ::= topEx DOUBLE_COLON sigma
+            | topEx
+topEx ::= casEx
+            | letEx
+            | cond
+            | lambda
+            | binEx
+
+/* Patterns */
+pattern ::= pattern DOUBLE_COLON sigma // TODO PAGE 43
+// TODO PAGE 43
+
+/* Declarations and Bindings */
+program ::= PACKAGE packageName inline? WHERE LEFT_BRACE body RIGHT_BRACE
+
+packageName ::= qConId
+                | qVarId DOT packageName
+                | qConId DOT packageName
+
+inline ::= LEFT_PAREN qname (COMMA qName)* RIGHT_PAREN // TODO keyword inline?
+
+body ::= topDecl
+            | topDecl SEMICOLON body
+
+topDecl ::= fixity
+            | importDcl
+            | typeDcl
+            | dataDcl
+            | classDcl
+            | instDcl
+            | deriveDcl
+            | decl
+
+decl ::= annotation
+            | binding
+            | nativeFun
+
+decls ::= decl (SEMICOLON decl)*
+
+/* Syntax of Types */
+sigma ::= FORALL tyVar (tyVar)* DOT crho
+            | chro
+chro ::= constraints DOUBLE_RIGHT_ARROW rho
+rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
+        | tyApp RIGHT_ARROW rho
+        | tyApp
+constraints ::= constraint
+                | LEFT_PAREN constraints (COMMA constraint)* RIGHT_PAREN
+constraint ::= className tyApp tyApp*
+type ::= tyApp RIGHT_ARROW type
+            | tyApp
+tyApp ::= tyApp simpleType
+            | simpleType
+simpleType ::= tyVar
+                | tyCon
+                | LEFT_PAREN type RIGHT_BRACE
+                | LEFT_PAREN type COMMA type (COMMA type)* RIGHT_PAREN
+                | LEFT_BRACKET type RIGHT_BRACKET
+                | LEFT_PAREN type VERT_BAR type (VERT_BAR type)* RIGHT_PAREN
+tyVar ::= VARID
+            | LEFT_PAREN VARID DOUBLE_COLON kind RIGHT_PAREN
+tvApp ::= tyVar
+            | LEFT_PAREN tvApp tvApp* RIGHT_PAREN
+tyCon ::= qConId
+            | emptyList
+            | unit
+            | tupleConstructor
+            | RIGHT_ARROW
+className ::= qConId
+kind ::= simpleKind
+            | simpleKind RIGHT_ARROW kind
+simpleKind ::= STAR // TODO 51 PAGE
+                | LEFT_PAREN kind RIGHT_PAREN
+
+
+
+/* Algebraic Data type Declaration */
+dataDcl ::= ABSTRACT? DATA CONID tyVar* EQ constructors (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+
+constructors ::= constructor (VERT_BAR constructor)*
+
+constructor ::= PRIVATE? conid simpleType*
+                | PRIVATE? conid LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE
+
+labels ::= EXLAMATION_MARK? VARID (COMMA EXLAMATION_MARK? VARID)*
+
+// TODO
+
+
+dotDot ::= DOT DOT
+
+
+todo ::= SYMBOL_OPERATOR | INTEGER | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
+            | CLASS | FALSE | INFIX | DERIVE | THROWS | NATIVE | INFIXL | INFIXR | IMPORT | MODULE | PUBLIC
+            | MUTABLE | INSTANCE | INTERFACE | PROTECTED | OF | STRING
