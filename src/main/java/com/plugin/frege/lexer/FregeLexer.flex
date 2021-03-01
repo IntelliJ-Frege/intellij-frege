@@ -91,7 +91,21 @@ hash                 = #
 backQuote            = ‘
 
 %%
+    // number
+      {integer}             { return FregeTypes.INTEGER; }
+      // TODO
 
+    // parentheses
+      {leftParen}            { return FregeTypes.LEFT_PAREN; }
+      {rightParen}           { return FregeTypes.RIGHT_PAREN; }
+      {leftBracket}          { return FregeTypes.LEFT_BRACKET; }
+      {rightBracket}         { return FregeTypes.RIGHT_BRACKET; }
+      {leftBrace}            { return FregeTypes.LEFT_BRACE; }
+      {rightBrace}           { return FregeTypes.RIGHT_BRACE; }
+
+      {comma}                { return FregeTypes.COMMA; }
+
+    // keywords
       "abstract"              { return FregeTypes.ABSTRACT; }
       "case"                  { return FregeTypes.CASE; }
       "class"                 { return FregeTypes.CLASS; }
