@@ -14,9 +14,116 @@ import com.intellij.psi.TokenType;
 %eof{ return;
 %eof}
 
-// there will be tokens
+whitespace           = \s
+
+/* number literals */
+digit                = \d
+digits               = {digit}+
+digitNonZero         = [1-9]
+signs                = [+-]
+decimal              = {signs}?(0 | {digitNonZero}{digits}({underscore}{digit}{digit}{digit})*)
+hexChar              = [0-9A-Fa-f]
+hex                  = 0[xX]{hexChar}({underscore}{hexChar}{hexChar}{hexChar})*
+octalChar            = [0-7]
+octal                = 0{octalChar}({underscore}{octalChar}{octalChar}{octalChar})*
+integer              = {decimal} | {hex} | {octal}
+integerLong          = {integer}[lL]
+integerBig           = {digit}+({underscore}{digit}{digit}{digit})*[nN]
+
+exponentIndicator    = [eE]
+exponentPart         = {exponentIndicator}{signs}{digits}
+floatSuffix          = [fFdD]
+float                = {digits}{dot}{digits}?{exponentPart}?{floatSuffix}?
+                       | {digits}{exponentPart}{floatSuffix}?
+                       | {digits}{exponentPart}?{floatSuffix}
+
+/* char literal */
+octalEscape          = {backSlash}{octalChar} | {backSlash}{octalChar}{octalChar}
+                       | {backSlash}[0-3]{octalChar}{octalChar}
+escapeSequence       = {backSlash}b | {backSlash}t | {backSlash}n | {backSlash}f {backSlash}r
+                       | {backSlash}{doubleQuote} | {backSlash}{quote} | {backSlash}{backSlash}
+                       | {octalEscape}
+// todo
+
+
+/* comments */
+lineCommentStart     = {dash}{dash}{dash}{questionMark} // ---?
+blockCommentStart    = {leftBrace}{dash}{dash}          // {--
+blockCommentEnd      = {dash}{rightBrace}               // -}
+
+/* identifiers */
+conid                = \p{Lu}(\d | {underscore} | \p{L})*
+varid                = \p{Ll}(\d | {underscore} | \p{L})*{quote}*
+qualifier            = {conid}{dot}
+
+/* operators */
+precedence           = [123456789] | 1[0123456]
+symop                = \W+
+wordop               = \w+
+
+doubleColon          = ::
+rightArrow           = ->
+leftArrow            = <-
+doubleRightArrow     = =>
+vertBar              = \|
+equal                = =
+dash                 = -
+exlamationMark       = \!
+questionMark         = \?
+comma                = ,
+semicolon            = ;
+dot                  = \.
+backSlash            = \\
+underscore           = _
+
+/* parentheses  */
+leftParen            = \(
+rightParen           = \)
+leftBracket          = \[
+rightBracket         = \]
+leftBrace            = \{
+rightBrace           = \}
+
+/* quotes */
+quote                = '
+doubleQuote          = \"
+hash                 = #
+backQuote            = ‘
 
 %%
 
-// there will be rules
+      "abstract"              { return FregeTypes.ABSTRACT; }
+      "case"                  { return FregeTypes.CASE; }
+      "class"                 { return FregeTypes.CLASS; }
+      "interface"             { return FregeTypes.INTERFACE; }
+      "data"                  { return FregeTypes.DATA; }
+      "derive"                { return FregeTypes.DERIVE; }
+      "do"                    { return FregeTypes.DO; }
+      "else"                  { return FregeTypes.ELSE; }
+      "false"                 { return FregeTypes.FALSE; }
+      "forall"                { return FregeTypes.FORALL; }
+      "if"                    { return FregeTypes.IF; }
+      "import"                { return FregeTypes.IMPORT; }
+      "in"                    { return FregeTypes.IN; }
+      "infix"                 { return FregeTypes.INFIX; }
+      "infixl"                { return FregeTypes.INFIXL; }
+      "infixr"                { return FregeTypes.INFIXR; }
+      "instance"              { return FregeTypes.INSTANCE; }
+      "let"                   { return FregeTypes.LET; }
+      "mutable"               { return FregeTypes.MUTABLE; }
+      "native"                { return FregeTypes.NATIVE; }
+      "of"                    { return FregeTypes.OF; }
+      "package"               { return FregeTypes.PACKAGE; }
+      "module"                { return FregeTypes.MODULE; }
+      "private"               { return FregeTypes.PRIVATE; }
+      "protected"             { return FregeTypes.PROTECTED; }
+      "pure"                  { return FregeTypes.PURE; }
+      "public"                { return FregeTypes.PUBLIC; }
+      "then"                  { return FregeTypes.THEN; }
+      "throws"                { return FregeTypes.THROWS; }
+      "true"                  { return FregeTypes.TRUE; }
+      "type"                  { return FregeTypes.TYPE; }
+      "where"                 { return FregeTypes.WHERE; }
+
+
 
