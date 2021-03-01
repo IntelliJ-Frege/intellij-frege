@@ -3,7 +3,7 @@ package com.plugin.frege.lexer;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.TokenType;
-// import com.plugin.frege.psi.FregeTypes; it will be needed after we write parser
+import com.plugin.frege.psi.FregeTypes;
 
 %%
 
@@ -66,7 +66,7 @@ qualifier            = {conid}{dot}
 
 /* operators */
 precedence           = [123456789] | 1[0123456]
-symop                = \W+
+symop                = \W+ // TODO FIX IT PLEASE
 wordop               = {backQuote}\w+{backQuote}
 
 colon                = :
@@ -152,9 +152,9 @@ backQuote            = ‘
    /* literals */
       {integer}               { return FregeTypes.INTEGER; }
       {float}                 { return FregeTypes.FLOAT; }
-      {char}                  { return Frege.CHAR; }
-      {string}                { return Frege.STRING; }
-      {regex}                 { return Frege.REGEX; }
+      {char}                  { return FregeTypes.CHAR; }
+      {string}                { return FregeTypes.STRING; }
+      {regex}                 { return FregeTypes.REGEX; }
 
    /* parentheses */
       {leftParen}             { return FregeTypes.LEFT_PAREN; }
@@ -169,7 +169,7 @@ backQuote            = ‘
       {colon}                 { return FregeTypes.COLON; }
       {rightArrow}            { return FregeTypes.RIGHT_ARROW; }
       {leftArrow}             { return FregeTypes.LEFT_ARROW; }
-      {doubleRightArrow}      { return FregeTypes.DOUBLE_RIHGT_ARROW; }
+      {doubleRightArrow}      { return FregeTypes.DOUBLE_RIGHT_ARROW; }
       {vertBar}               { return FregeTypes.VERT_BAR; }
       {equal}                 { return FregeTypes.EQUAL; }
       {dash}                  { return FregeTypes.DASH; }
