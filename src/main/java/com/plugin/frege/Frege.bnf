@@ -13,7 +13,7 @@
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
-fregeFile ::= unit*
+fregeFile ::= expr
 
 qVarId ::= QUALIFIER QUALIFIER VARID
             | QUALIFIER VARID
@@ -66,31 +66,29 @@ emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
 /* Primary Expression */
 primary ::= term
-            | primary DOT VARID
-            | primary DOT lexOp
-            | primary DOT unOp
-            | qualifier LEFT_BRACE VARID QUESTIONMARK RIGHT_BRACE
-            | qualifier LEFT_BRACE VARID EQUAL RIGHT_BRACE
-            | qualifier LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
-            | qualifier LEFT_BRACE field (COMMA field)* RIGHT_BRACE
-            | primary DOT LEFT_BRACE VARID QUESTION_MARK RIGHT_BRACE
-            | primary DOT LEFT_BRACE VARID EQUAL RIGHT_BRACE
-            | primary DOT LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
-            | primary DOT LEFT_BRACE field (COMMA field)* RIGHT_BRACE
-            | primary DOT LEFT_BRACKET expr RIGHT_BRACKET
+            | QUALIFIER LEFT_BRACE VARID QUESTIONMARK RIGHT_BRACE
+            | QUALIFIER LEFT_BRACE VARID EQUAL RIGHT_BRACE
+            | QUALIFIER LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
+            | QUALIFIER LEFT_BRACE field (COMMA field)* RIGHT_BRACE
             | DO LEFT_BRACE dlcqual (SEMICOLON dlcqual)* RIGHT_BRACE
+//            | primary DOT VARID TODO
+//            | primary DOT lexOp
+//            | primary DOT unOp
+//            | primary DOT LEFT_BRACE VARID QUESTION_MARK RIGHT_BRACE
+//            | primary DOT LEFT_BRACE VARID EQUAL RIGHT_BRACE
+//            | primary DOT LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
+//            | primary DOT LEFT_BRACE field (COMMA field)* RIGHT_BRACE
+//            | primary DOT LEFT_BRACKET expr RIGHT_BRACKET
 
 field ::= VARID EQUAL expr
             | VARID LEFTARROW expr
             | VARID
 
 /* Unary operator */
-unary ::= primary
-            | qUnOp unary
+unary ::= primary (qUnOp primary)*
 
 /* Function application */
-appex ::= unary
-            | appex unary
+appex ::= unary unary*
 
 /* Infix Expressions */
 // TODO
@@ -116,6 +114,8 @@ topEx ::= casEx
             | cond
             | lambda
             | binEx
+
+binEx ::= appex // TODO
 
 /* Patterns */
 pattern ::= pattern DOUBLE_COLON sigma // TODO PAGE 43
@@ -203,4 +203,4 @@ dotDot ::= DOT DOT
 
 todo ::= SYMBOL_OPERATOR | INTEGER | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
             | CLASS | FALSE | INFIX | DERIVE | THROWS | NATIVE | INFIXL | INFIXR | IMPORT | MODULE | PUBLIC
-            | MUTABLE | INSTANCE | INTERFACE | PROTECTED | OF | STRING
+            | MUTABLE | INSTANCE | INTERFACE | PROTECTED | OF | STRING | UNDERSCORE | QUESTION_MARK | DO | LEFT_ARROW
