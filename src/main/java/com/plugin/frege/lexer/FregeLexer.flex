@@ -10,9 +10,12 @@ import com.intellij.psi.TokenType;
 %class FregeLexer
 %implements FlexLexer
 %unicode
+%function advance
 %type IElementType
 %eof{ return;
 %eof}
+
+%xstate LINE_COMMENT, BLOCK_COMMENT
 
 whitespace           = \s
 
@@ -43,10 +46,10 @@ octalEscape          = {backSlash}{octalChar} | {backSlash}{octalChar}{octalChar
 escapeSequence       = {backSlash}b | {backSlash}t | {backSlash}n | {backSlash}f {backSlash}r
                        | {backSlash}{doubleQuote} | {backSlash}{quote} | {backSlash}{backSlash}
                        | {octalEscape}
-char                 = {quote}([^{quote}{backSlash}\n] | {escapeSequence}){quote}
+char                 = {quote}([^\'\\\n] | {escapeSequence}){quote}
 
 /* string literal */
-string               = {doubleQuote}([^{doubleQuote}]{backSlash} | {escapeSequence}){doubleQuote}
+string               = {doubleQuote}([^\"]{backSlash} | {escapeSequence}){doubleQuote}
 
 /* regex literal */
 regex                = `(\\`|[^\`])*`
@@ -98,6 +101,20 @@ backQuote            = ‘
 
 %%
 
+{lineCommentStart}            { yybegin(LINE_COMMENT); }
+
+<LINE_COMMENT> {
+      \n                      { yybegin(YYINITIAL); }
+      .                       {}
+}
+
+{blockCommentStart}           { yybegin(BLOCK_COMMENT); }
+
+<BLOCK_COMMENT> {
+      {blockCommentEnd}       { yybegin(YYINITIAL); }
+      .                       {}
+}
+
    /* keywords */
       "abstract"              { return FregeTypes.ABSTRACT; }
       "case"                  { return FregeTypes.CASE; }
@@ -148,8 +165,8 @@ backQuote            = ‘
       {rightBrace}            { return FregeTypes.RIGHT_BRACE; }
 
    /* symbols */
-      {doubleColon}           { return FregeTypes.COLON; }
       {doubleColon}           { return FregeTypes.DOUBLE_COLON; }
+      {colon}                 { return FregeTypes.COLON; }
       {rightArrow}            { return FregeTypes.RIGHT_ARROW; }
       {leftArrow}             { return FregeTypes.LEFT_ARROW; }
       {doubleRightArrow}      { return FregeTypes.DOUBLE_RIHGT_ARROW; }
