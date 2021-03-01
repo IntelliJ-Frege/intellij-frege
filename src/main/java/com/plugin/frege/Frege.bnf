@@ -1,0 +1,14 @@
+{
+    parserClass="com.plugin.frege.parser.FregeParser"
+
+    extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+    psiClassPrefix="Frege"
+    psiImplClassSuffix="Impl"
+    psiPackage="com.plugin.frege.psi"
+    psiImplPackage="com.plugin.frege.psi.impl"
+
+    elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
+    elementTypeClass="com.plugin.frege.psi.FregeElementType"
+    tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
+}
