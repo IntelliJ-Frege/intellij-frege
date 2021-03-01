@@ -188,3 +188,5 @@ backQuote            = ‘
       {qualifier}             { return FregeTypes.QUALIFIER; }
       {conid}                 { return FregeTypes.CONID; }
       {varid}                 { return FregeTypes.VARID; }
+
+      [^]                     { return TokenType.BAD_CHARACTER; }
