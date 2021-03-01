@@ -82,8 +82,12 @@ questionMark         = \?
 comma                = \,
 semicolon            = ;
 dot                  = \.
+slash                = \/
 backSlash            = \\
 underscore           = _
+star                 = \*
+at                   = @
+tilda                = \~
 
 /* parentheses  */
 leftParen            = \(
@@ -149,6 +153,8 @@ backQuote            = ‘
       "type"                  { return FregeTypes.TYPE; }
       "where"                 { return FregeTypes.WHERE; }
 
+      {whitespace}            { return TokenType.WHITE_SPACE; }
+
    /* literals */
       {integer}               { return FregeTypes.INTEGER; }
       {float}                 { return FregeTypes.FLOAT; }
@@ -164,7 +170,7 @@ backQuote            = ‘
       {leftBrace}             { return FregeTypes.LEFT_BRACE; }
       {rightBrace}            { return FregeTypes.RIGHT_BRACE; }
 
-   /* symbols */
+   /* special symbols */
       {doubleColon}           { return FregeTypes.DOUBLE_COLON; }
       {colon}                 { return FregeTypes.COLON; }
       {rightArrow}            { return FregeTypes.RIGHT_ARROW; }
@@ -177,8 +183,12 @@ backQuote            = ‘
       {questionMark}          { return FregeTypes.QUESTION_MARK; }
       {comma}                 { return FregeTypes.COMMA; }
       {semicolon}             { return FregeTypes.SEMICOLON; }
+      {slash}                 { return FregeTypes.SLASH; }
       {backSlash}             { return FregeTypes.BACK_SLASH; }
       {underscore}            { return FregeTypes.UNDERSCORE; }
+      {star}                  { return FregeTypes.STAR; }
+      {at}                    { return FregeTypes.AT; }
+      {tilda}                 { return FregeTypes.TILDA; }
 
    /* operators */
       {symop}                 { return FregeTypes.SYMBOL_OPERATOR; }
