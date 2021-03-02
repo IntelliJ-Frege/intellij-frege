@@ -32,7 +32,7 @@ octal                = 0{octalChar}({underscore}{octalChar}{octalChar}{octalChar
 int                  = {decimal} | {hex} | {octal}
 intLong              = {int}[lL]
 intBig               = {digit}+({underscore}{digit}{digit}{digit})*[nN]
-integer              = {int}{intLong}{intBig}
+integer              = {int} | {intLong} | {intBig}
 
 exponentIndicator    = [eE]
 exponentPart         = {exponentIndicator}{signs}{digits}
@@ -50,17 +50,17 @@ escapeSequence       = {backSlash}b | {backSlash}t | {backSlash}n | {backSlash}f
 char                 = {quote}([^\'\\\n] | {escapeSequence}){quote}
 
 /* string literal */
-string               = {doubleQuote}([^\"]{backSlash} | {escapeSequence}){doubleQuote}
+string               = {doubleQuote}([^\"] | {escapeSequence})*{doubleQuote}
 
 /* regex literal */
 regex                = `(\\`|[^\`])*`
 
 /* comments */
-lineCommentStart     = {dash}{dash}{dash}{questionMark}
+lineCommentStart     = {dash}{dash}{dash}?
 lineComment          = {lineCommentStart}[^\n]*
 blockCommentStart    = {leftBrace}{dash}{dash}
 blockCommentEnd      = {dash}{rightBrace}
-blockComment         = {blockCommentStart}(!({dash}{rightBrace})){blockCommentEnd}
+blockComment         = {blockCommentStart}~{blockCommentEnd}
 
 /* identifiers */
 conid                = \p{Lu}(\d | {underscore} | \p{L})*
@@ -143,8 +143,8 @@ backQuote            = ‘
       "type"                  { return FregeTypes.TYPE; }
       "where"                 { return FregeTypes.WHERE; }
 
-      {lineComment}           { return FregeTypes.LINE_COMMENT; }
       {blockComment}          { return FregeTypes.BLOCK_COMMENT; }
+      {lineComment}           { return FregeTypes.LINE_COMMENT; }
       {whitespace}            { return TokenType.WHITE_SPACE; }
 
    /* literals */
@@ -184,7 +184,7 @@ backQuote            = ‘
       {hash}                  { return FregeTypes.HASH; }
 
    /* operators */
-      {symop}                 { return FregeTypes.SYMBOL_OPERATOR; }
+      //{symop}                 { return FregeTypes.SYMBOL_OPERATOR; }
       {wordop}                { return FregeTypes.WORD_OPERATOR; }
 
    /* identifiers */
