@@ -17,6 +17,7 @@ import com.plugin.frege.psi.FregeTypes;
 
 %xstate LINE_COMMENT, BLOCK_COMMENT
 
+newline              = \r|\n|\r\n
 whitespace           = \s
 
 /* number literals */
@@ -69,7 +70,7 @@ qualifier            = {conid}{dot}
 
 /* operators */
 precedence           = [123456789] | 1[0123456]
-symop                = \W+ // TODO FIX IT PLEASE
+//symop                = \W+ // TODO FIX IT PLEASE
 wordop               = {backQuote}\w+{backQuote}
 
 colon                = :
@@ -145,6 +146,7 @@ backQuote            = ‘
 
       {blockComment}          { return FregeTypes.BLOCK_COMMENT; }
       {lineComment}           { return FregeTypes.LINE_COMMENT; }
+      {newline}               { return FregeTypes.NEW_LINE; }
       {whitespace}            { return TokenType.WHITE_SPACE; }
 
    /* literals */
