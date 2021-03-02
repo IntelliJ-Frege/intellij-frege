@@ -13,11 +13,26 @@
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
-fregeFile ::= expr
+fregeFile ::= annotation lhs
 
+/* Literals */
+literal ::= boolLiteral
+            | numericLiteral
+            | CHAR
+            | STRING
+            | REGEX
+numericLiteral ::= integralLiteral
+                    | floatLiteral
+boolLiteral ::= TRUE | FALSE
+integralLiteral ::= INTEGER
+floatLiteral ::= FLOAT
+
+
+
+/* ?? */ // TODO
 qVarId ::= QUALIFIER QUALIFIER VARID
             | QUALIFIER VARID
-            | CONID
+            | VARID
 qConId ::= QUALIFIER QUALIFIER CONID
             | QUALIFIER CONID
             | CONID
@@ -88,7 +103,7 @@ field ::= VARID EQUAL expr
 unary ::= primary (qUnOp primary)*
 
 /* Function application */
-appex ::= unary unary*
+appex ::= unary+ // was left rec
 
 /* Infix Expressions */
 // TODO
@@ -104,7 +119,12 @@ cond ::= IF expr THEN expr ELSE expr
 letEx ::= LET LEFT_BRACE decl (SEMICOLON decl)* RIGHT_BRACE IN expr
 
 /* Case Expression */
-// TODO
+casEx ::= CASE expr OF LEFT_BRACE alt (SEMICOLON alt)* RIGHT_BRACE
+alt ::= pattern RIGHT_ARROW expr
+        | pattern guardedExs
+        | alt WHERE LEFT_BRACE decl (SEMICOLON decl)* RIGHT_BRACE
+guardedExs ::= guardedEx+
+// guardedEx ::= lc TODO
 
 /* Annotated Expression */
 expr ::= topEx DOUBLE_COLON sigma
@@ -118,8 +138,26 @@ topEx ::= casEx
 binEx ::= appex // TODO
 
 /* Patterns */
-pattern ::= pattern DOUBLE_COLON sigma // TODO PAGE 43
-// TODO PAGE 43
+pattern ::= atPattern (DOUBLE_COLON sigma)* // was left rec
+
+atPattern ::= pVar AT atPattern
+                | listPattern
+listPattern ::= matcherPattern (COLON listPattern)?
+matcherPattern ::= pVar TILDA REGEX
+                    | pconApp
+pconApp ::= strictPattern+
+strictPattern ::= EXLAMATION_MARK? pTerm
+pTerm ::= CONID
+            | CONID LEFT_BRACE patternFields? RIGHT_BRACE
+            | pVar
+            | literal
+            | unit
+            | emptyList
+            | LEFT_BRACKET pattern (COMMA pattern)* RIGHT_BRACKET
+            | LEFT_PAREN pattern (COMMA pattern) RIGHT_PAREN
+pVar ::= VARID
+            | UNDERSCORE
+patternFields ::= VARID EQUAL pattern (COMMA VARID EQUAL pattern)*
 
 /* Declarations and Bindings */
 program ::= PACKAGE packageName inline? WHERE LEFT_BRACE body RIGHT_BRACE
@@ -158,10 +196,9 @@ rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
 constraints ::= constraint
                 | LEFT_PAREN constraints (COMMA constraint)* RIGHT_PAREN
 constraint ::= className tyApp tyApp*
-type ::= tyApp RIGHT_ARROW type
-            | tyApp
-tyApp ::= tyApp simpleType
-            | simpleType
+type ::= tyApp (RIGHT_ARROW type)* // was left rec
+tyApp ::= simpleType+ // was left rec
+
 simpleType ::= tyVar
                 | tyCon
                 | LEFT_PAREN type RIGHT_BRACE
@@ -180,13 +217,13 @@ tyCon ::= qConId
 className ::= qConId
 kind ::= simpleKind
             | simpleKind RIGHT_ARROW kind
-simpleKind ::= STAR // TODO 51 PAGE
+simpleKind ::= STAR
                 | LEFT_PAREN kind RIGHT_PAREN
 
 
 
 /* Algebraic Data type Declaration */
-dataDcl ::= ABSTRACT? DATA CONID tyVar* EQ constructors (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+dataDcl ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors (WHERE LEFT_BRACE decls RIGHT_BRACE)?
 
 constructors ::= constructor (VERT_BAR constructor)*
 
@@ -197,10 +234,25 @@ labels ::= EXLAMATION_MARK? VARID (COMMA EXLAMATION_MARK? VARID)*
 
 // TODO
 
+/*  Type Annotations */
+annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
+annoItem ::= VARID | SYMOP | UNOP
+
+/*  Function and Pattern Bindings */
+binding ::= lhs rhs
+lhs ::= funLhs | pattern
+funLhs ::= VARID pTerm+
+            | pconApp lexOp pconApp
+rhs ::= EQUAL expr (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+        | guardedExs (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+
+
+// TODO
+
 
 dotDot ::= DOT DOT
 
 
 todo ::= SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
             | CLASS | FALSE | INFIX | DERIVE | THROWS | NATIVE | INFIXL | INFIXR | IMPORT | MODULE | PUBLIC
-            | MUTABLE | INSTANCE | INTERFACE | PROTECTED | OF | STRING | UNDERSCORE | QUESTION_MARK | DO | LEFT_ARROW
+            | MUTABLE | INSTANCE | INTERFACE | PROTECTED | OF | STRING | UNDERSCORE | QUESTION_MARK | DO | LEFT_ARROW | SLASH | LINE_COMMENT | BLOCK_COMMENT
