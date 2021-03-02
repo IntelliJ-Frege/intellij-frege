@@ -125,6 +125,7 @@ backQuote            = ‘
       "infix"                 { return FregeTypes.INFIX; }
       "infixl"                { return FregeTypes.INFIXL; }
       "infixr"                { return FregeTypes.INFIXR; }
+      "inline"                { return FregeTypes.INLINE; }
       "instance"              { return FregeTypes.INSTANCE; }
       "let"                   { return FregeTypes.LET; }
       "mutable"               { return FregeTypes.MUTABLE; }
