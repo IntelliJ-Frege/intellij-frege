@@ -17,6 +17,8 @@
                   fieldName="INSTANCE" language="Frege" extensions="fr"/>
         <lang.parserDefinition language="Frege"
                                implementationClass="com.plugin.frege.parser.FregeParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="Frege"
+                                       implementationClass="com.plugin.frege.highlighter.FregeSyntaxHighlighterFactory"/>
     </extensions>
 
     <actions>

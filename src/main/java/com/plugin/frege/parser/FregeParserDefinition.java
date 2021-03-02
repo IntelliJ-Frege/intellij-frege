@@ -20,8 +20,15 @@ import org.jetbrains.annotations.NotNull;
 public class FregeParserDefinition implements ParserDefinition {
 
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet COMMENTS = TokenSet.create(); // HS_COMMENT, HS_NCOMMENT, HS_HADDOCK, HS_NHADDOCK
-    public static final TokenSet STRING_LITERALS = TokenSet.create(); // HS_CHARACTER_LITERAL, HS_STRING_LITERAL
+    public static final TokenSet COMMENTS = TokenSet.create(FregeTypes.LINE_COMMENT, FregeTypes.BLOCK_COMMENT);
+    public static final TokenSet STRING_LITERALS = TokenSet.create(FregeTypes.STRING, FregeTypes.CHAR);
+    public static final TokenSet KEYWORDS = TokenSet.create(FregeTypes.ABSTRACT, FregeTypes.CASE, FregeTypes.CLASS,
+            FregeTypes.INTERFACE, FregeTypes.DATA, FregeTypes.DERIVE, FregeTypes.DO, FregeTypes.ELSE,
+            FregeTypes.FALSE, FregeTypes.FORALL, FregeTypes.IF, FregeTypes.IMPORT, FregeTypes.IN, FregeTypes.INFIX,
+            FregeTypes.INFIXL, FregeTypes.INFIXR, FregeTypes.INLINE, FregeTypes.INSTANCE, FregeTypes.LET,
+            FregeTypes.MUTABLE, FregeTypes.NATIVE, FregeTypes.OF, FregeTypes.PACKAGE, FregeTypes.MODULE,
+            FregeTypes.PRIVATE, FregeTypes.PROTECTED, FregeTypes.PURE, FregeTypes.PUBLIC, FregeTypes.THEN,
+            FregeTypes.THROWS, FregeTypes.TRUE, FregeTypes.TYPE, FregeTypes.WHERE);
 
     public static final IFileElementType FILE = new IFileElementType(FregeLanguage.INSTANCE);
 
