@@ -70,7 +70,6 @@ qualifier            = {conid}{dot}
 
 /* operators */
 precedence           = [123456789] | 1[0123456]
-//symop                = \W+ // TODO FIX IT PLEASE
 wordop               = {backQuote}\w+{backQuote}
 
 colon                = :
@@ -194,7 +193,6 @@ regexQuote           = ´
       {greater}               { return FregeTypes.GREATER; }
 
    /* operators */
-      //{symop}                 { return FregeTypes.SYMBOL_OPERATOR; }
       {wordop}                { return FregeTypes.WORD_OPERATOR; }
 
    /* identifiers */

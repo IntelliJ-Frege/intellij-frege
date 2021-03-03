@@ -15,6 +15,21 @@
 
 fregeFile ::= (binding NEW_LINE)+
 
+/* Operators */
+fixity ::= infixRule PRECEDENCE lexOp+
+infixRule ::= INFIX | INFIXL | INFIXR
+symOp ::= STAR // TODO !#$%&*+./<=>?@\^|-~: and cannot begin with a :
+infixOp ::= symOp | WORDOP
+lexOp ::= BACK_QUOTE infixOp BACK_QUOTE | symOp
+
+/* Imported operators */
+qLexOp ::= QUALIFIER lexOp
+            | QUALIFIER QUALIFIER lexOp
+
+/* Unary operators */
+unOp ::= EXLAMATION_MARK | QUESTION_MARK
+
+
 /* Literals */
 literal ::= boolLiteral
             | numericLiteral
