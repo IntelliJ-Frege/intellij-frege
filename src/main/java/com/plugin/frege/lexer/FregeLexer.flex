@@ -54,7 +54,7 @@ char                 = {quote}([^\'\\\n] | {escapeSequence}){quote}
 string               = {doubleQuote}([^\"] | {escapeSequence})*{doubleQuote}
 
 /* regex literal */
-regex                = `(\\`|[^\`])*`
+regex                = {regexQuote}(\\{regexQuote}|[^\`])*{regexQuote}
 
 /* comments */
 lineCommentStart     = {dash}{dash}{dash}?
@@ -92,6 +92,9 @@ underscore           = _
 star                 = \*
 at                   = @
 tilda                = \~
+plus                 = \+
+less                 = <
+greater              = >
 
 /* parentheses  */
 leftParen            = \(
@@ -105,7 +108,8 @@ rightBrace           = \}
 quote                = \'
 doubleQuote          = \"
 hash                 = #
-backQuote            = ‘
+backQuote            = `
+regexQuote           = ´
 
 %%
 
@@ -184,6 +188,10 @@ backQuote            = ‘
       {at}                    { return FregeTypes.AT; }
       {tilda}                 { return FregeTypes.TILDA; }
       {hash}                  { return FregeTypes.HASH; }
+      {dot}                   { return FregeTypes.DOT; }
+      {plus}                  { return FregeTypes.PLUS; }
+      {less}                  { return FregeTypes.LESS; }
+      {greater}               { return FregeTypes.GREATER; }
 
    /* operators */
       //{symop}                 { return FregeTypes.SYMBOL_OPERATOR; }
