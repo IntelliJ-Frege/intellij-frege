@@ -14,6 +14,11 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <moduleBuilder id="FREGE_MODULE_BUILDER" builderClass="com.plugin.frege.module.FregeModuleBuilder" order="first" />
+        <moduleType id="FREGE_MODULE_TYPE" implementationClass="com.plugin.frege.module.FregeModuleType"/>
+        <framework.type implementation="com.plugin.frege.framework.FregeFramework"/>
+        <configurationType implementation="com.plugin.frege.runConfiguration.FregeRunConfigurationType"/>
+
         <fileType name="Frege File" implementationClass="com.plugin.frege.FregeFileType"
                   fieldName="INSTANCE" language="Frege" extensions="fr"/>
         <lang.parserDefinition language="Frege"
