@@ -31,9 +31,9 @@ public class FregeParserDefinition implements ParserDefinition {
             FregeTypes.BACK_SLASH, FregeTypes.STAR, FregeTypes.AT, FregeTypes.TILDA, FregeTypes.HASH,
             FregeTypes.LESS, FregeTypes.GREATER);
 
-    public static final TokenSet KEYWORDS = TokenSet.create(FregeTypes.ABSTRACT, FregeTypes.CASE, FregeTypes.CLASS,
+    public static final TokenSet KEYWORDS = TokenSet.create(FregeTypes.ABSTRACT, FregeTypes.AS, FregeTypes.CASE, FregeTypes.CLASS,
             FregeTypes.INTERFACE, FregeTypes.DATA, FregeTypes.DERIVE, FregeTypes.DO, FregeTypes.ELSE,
-            FregeTypes.FALSE, FregeTypes.FORALL, FregeTypes.IF, FregeTypes.IMPORT, FregeTypes.IN, FregeTypes.INFIX,
+            FregeTypes.FALSE, FregeTypes.FORALL, FregeTypes.HIDING, FregeTypes.IF, FregeTypes.IMPORT, FregeTypes.IN, FregeTypes.INFIX,
             FregeTypes.INFIXL, FregeTypes.INFIXR, FregeTypes.INLINE, FregeTypes.INSTANCE, FregeTypes.LET,
             FregeTypes.MUTABLE, FregeTypes.NATIVE, FregeTypes.OF, FregeTypes.PACKAGE, FregeTypes.MODULE,
             FregeTypes.PRIVATE, FregeTypes.PROTECTED, FregeTypes.PURE, FregeTypes.PUBLIC, FregeTypes.THEN,

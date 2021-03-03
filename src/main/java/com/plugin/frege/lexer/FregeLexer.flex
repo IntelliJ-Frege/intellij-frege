@@ -114,6 +114,7 @@ regexQuote           = ´
 
    /* keywords */
       "abstract"              { return FregeTypes.ABSTRACT; }
+      "as"                    { return FregeTypes.AS; }
       "case"                  { return FregeTypes.CASE; }
       "class"                 { return FregeTypes.CLASS; }
       "interface"             { return FregeTypes.INTERFACE; }
@@ -123,6 +124,7 @@ regexQuote           = ´
       "else"                  { return FregeTypes.ELSE; }
       "false"                 { return FregeTypes.FALSE; }
       "forall"                { return FregeTypes.FORALL; }
+      "hiding"                { return FregeTypes.HIDING; }
       "if"                    { return FregeTypes.IF; }
       "import"                { return FregeTypes.IMPORT; }
       "in"                    { return FregeTypes.IN; }

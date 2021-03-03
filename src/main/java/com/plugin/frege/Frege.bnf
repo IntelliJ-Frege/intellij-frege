@@ -278,8 +278,8 @@ javaItem ::= nativeName | unOp | symOp | STRING
 throwsRule ::= THROWS typeRule (COMMA typeRule)*
 
 /* Importing Packages */
-importDcl ::= IMPORT packageName (nameSpace)? PUBLIC? importList // TODO add AS keyword
-importList ::= LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN // TODO add HIDING keyword
+importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC? importList
+importList ::= HIDING? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
 importSpec ::= PUBLIC? importItem alias?
 importItem ::= VARID
                 | CONID members?
