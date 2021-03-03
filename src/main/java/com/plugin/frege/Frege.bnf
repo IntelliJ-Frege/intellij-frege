@@ -13,7 +13,7 @@
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
-fregeFile ::= annotation lhs
+fregeFile ::= (binding NEW_LINE)+
 
 /* Literals */
 literal ::= boolLiteral
@@ -154,7 +154,7 @@ pTerm ::= CONID
             | unit
             | emptyList
             | LEFT_BRACKET pattern (COMMA pattern)* RIGHT_BRACKET
-            | LEFT_PAREN pattern (COMMA pattern) RIGHT_PAREN
+            | LEFT_PAREN pattern (COMMA pattern)* RIGHT_PAREN
 pVar ::= VARID
             | UNDERSCORE
 patternFields ::= VARID EQUAL pattern (COMMA VARID EQUAL pattern)*
