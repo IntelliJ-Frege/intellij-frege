@@ -196,15 +196,15 @@ rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
 constraints ::= constraint
                 | LEFT_PAREN constraints (COMMA constraint)* RIGHT_PAREN
 constraint ::= className tyApp tyApp*
-type ::= tyApp (RIGHT_ARROW type)* // was left rec
+typeRule ::= tyApp (RIGHT_ARROW typeRule)* // was left rec
 tyApp ::= simpleType+ // was left rec
 
 simpleType ::= tyVar
                 | tyCon
-                | LEFT_PAREN type RIGHT_BRACE
-                | LEFT_PAREN type COMMA type (COMMA type)* RIGHT_PAREN
-                | LEFT_BRACKET type RIGHT_BRACKET
-                | LEFT_PAREN type VERT_BAR type (VERT_BAR type)* RIGHT_PAREN
+                | LEFT_PAREN typeRule RIGHT_BRACE
+                | LEFT_PAREN typeRule COMMA typeRule (COMMA typeRule)* RIGHT_PAREN
+                | LEFT_BRACKET typeRule RIGHT_BRACKET
+                | LEFT_PAREN typeRule VERT_BAR typeRule (VERT_BAR typeRule)* RIGHT_PAREN
 tyVar ::= VARID
             | LEFT_PAREN VARID DOUBLE_COLON kind RIGHT_PAREN
 tvApp ::= tyVar
