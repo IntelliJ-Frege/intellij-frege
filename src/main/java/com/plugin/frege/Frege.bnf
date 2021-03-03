@@ -244,8 +244,8 @@ nativeName ::= (VARID | CONID) (DOT nativeName)?
 
 constructors ::= constructor (VERT_BAR constructor)*
 
-constructor ::= PRIVATE? conid simpleType*
-                | PRIVATE? conid LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE
+constructor ::= PRIVATE? CONID simpleType*
+                | PRIVATE? CONID LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE
 
 labels ::= EXLAMATION_MARK? VARID (COMMA EXLAMATION_MARK? VARID)*
 
@@ -263,15 +263,14 @@ deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
 
 /*  Type Annotations */
 annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
-annoItem ::= VARID | SYMOP | UNOP
+annoItem ::= VARID | symOp | UNOP
 
 /*  Function and Pattern Bindings */
 binding ::= lhs rhs
 lhs ::= funLhs | pattern
 funLhs ::= VARID pTerm+
             | pconApp lexOp pconApp
-rhs ::= EQUAL expr (WHERE LEFT_BRACE decls RIGHT_BRACE)?
-        | guardedExs (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+rhs ::= EQUAL (expr | guardedExs) (WHERE LEFT_BRACE decls RIGHT_BRACE)?
 
 /* Native Declaration */
 nativeFun ::= PURE? NATIVE annoItem javaItem? DOUBLE_COLON sigma throwsRule?
@@ -293,7 +292,8 @@ member ::= VARID | symOp | CONID
 nameSpace ::= CONID
 
 
-dotDot ::= DOT DOT
+
+dotDot ::= DOT DOT // TODO move to lexer?
 
 
 todo ::= NEW_LINE | SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
