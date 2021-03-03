@@ -13,7 +13,7 @@
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
-fregeFile ::= (binding NEW_LINE)+
+fregeFile ::= program
 
 /* Operators */
 fixity ::= infixRule PRECEDENCE lexOp+
@@ -183,8 +183,7 @@ packageName ::= qConId
 
 inline ::= LEFT_PAREN qname (COMMA qName)* RIGHT_PAREN // TODO keyword inline?
 
-body ::= topDecl
-            | topDecl SEMICOLON body
+body ::= topDecl (SEMICOLON topDecl)* // was right rec
 
 topDecl ::= fixity
             | importDcl
