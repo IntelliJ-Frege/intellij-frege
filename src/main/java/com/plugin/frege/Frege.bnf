@@ -239,7 +239,7 @@ simpleKind ::= STAR
 
 /* Algebraic Data type Declaration */
 dataDcl ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors (WHERE LEFT_BRACE decls RIGHT_BRACE)?
-            | DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeItem (WHERE LEFT_BRACE decls RIGHT_BRACE)? /* Native Datatype Declaration */
+            | DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName (WHERE LEFT_BRACE decls RIGHT_BRACE)? /* Native Datatype Declaration */
 nativeName ::= (VARID | CONID) (DOT nativeName)?
 
 constructors ::= constructor (VERT_BAR constructor)*
