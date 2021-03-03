@@ -239,6 +239,8 @@ simpleKind ::= STAR
 
 /* Algebraic Data type Declaration */
 dataDcl ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+            | DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeItem (WHERE LEFT_BRACE decls RIGHT_BRACE)? /* Native Datatype Declaration */
+nativeName ::= (VARID | CONID) (DOT nativeName)?
 
 constructors ::= constructor (VERT_BAR constructor)*
 
@@ -247,7 +249,17 @@ constructor ::= PRIVATE? conid simpleType*
 
 labels ::= EXLAMATION_MARK? VARID (COMMA EXLAMATION_MARK? VARID)*
 
-// TODO
+typeDcl ::= TYPE CONID (tyVar)* EQUAL sigma
+
+/* Class Declarations */
+classDcl ::= CLASS CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+classVar ::= VARID
+
+/* Instance Declarations */
+instDcl ::= INSTANCE instDcl (constraints DOUBLE_RIGHT_ARROW)? typeRule (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+
+/* Derived Instances */
+deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
 
 /*  Type Annotations */
 annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
@@ -261,8 +273,24 @@ funLhs ::= VARID pTerm+
 rhs ::= EQUAL expr (WHERE LEFT_BRACE decls RIGHT_BRACE)?
         | guardedExs (WHERE LEFT_BRACE decls RIGHT_BRACE)?
 
+/* Native Declaration */
+nativeFun ::= PURE? NATIVE annoItem javaItem? DOUBLE_COLON sigma throwsRule?
+javaItem ::= nativeName | unOp | symOp | STRING
+throwsRule ::= THROWS typeRule (COMMA typeRule)*
 
-// TODO
+/* Importing Packages */
+importDcl ::= IMPORT packageName (nameSpace)? PUBLIC? importList // TODO add AS keyword
+importList ::= LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN // TODO add HIDING keyword
+importSpec ::= PUBLIC? importItem alias?
+importItem ::= VARID
+                | CONID members?
+                | symOp
+                | CONID DOT (VARID | CONID | symOp)
+alias ::= VARID | CONID | symOp
+members ::= LEFT_PAREN (memSpec (COMMA memSpec)*)? RIGHT_PAREN
+memSpec ::= PUBLIC? member alias?
+member ::= VARID | symOp | CONID
+nameSpace ::= CONID
 
 
 dotDot ::= DOT DOT
