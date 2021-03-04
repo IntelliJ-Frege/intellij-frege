@@ -90,7 +90,7 @@ list ::= emptyList
 
 dlcqual ::= pattern LEFTARROW expr
             | expr
-            | LET LEFT_BRACE decl (SEMICOLON decl)* RIGHT_BRACE
+            | LET VIRTUAL_OPEN_SECTION decl (VIRTUAL_END_DECL decl)* VIRTUAL_END_SECTION
 
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
@@ -100,7 +100,7 @@ primary ::= term
             | QUALIFIER LEFT_BRACE VARID EQUAL RIGHT_BRACE
             | QUALIFIER LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
             | QUALIFIER LEFT_BRACE field (COMMA field)* RIGHT_BRACE
-            | DO LEFT_BRACE dlcqual (SEMICOLON dlcqual)* RIGHT_BRACE
+            | DO VIRTUAL_OPEN_SECTION dlcqual (VIRTUAL_END_DECL dlcqual)* VIRTUAL_END_SECTION
 //            | primary DOT VARID TODO
 //            | primary DOT lexOp
 //            | primary DOT unOp
@@ -131,13 +131,13 @@ lambda ::= BACK_SLASH pattern lambda
 cond ::= IF expr THEN expr ELSE expr
 
 /* Let Expressions */
-letEx ::= LET LEFT_BRACE decl (SEMICOLON decl)* RIGHT_BRACE IN expr
+letEx ::= LET VIRTUAL_OPEN_SECTION decl (VIRTUAL_END_DECL decl)* VIRTUAL_END_SECTION IN expr
 
 /* Case Expression */
-casEx ::= CASE expr OF LEFT_BRACE alt (SEMICOLON alt)* RIGHT_BRACE
+casEx ::= CASE expr OF VIRTUAL_OPEN_SECTION alt (VIRTUAL_END_DECL alt)* VIRTUAL_END_SECTION
 alt ::= pattern RIGHT_ARROW expr
         | pattern guardedExs
-        | alt WHERE LEFT_BRACE decl (SEMICOLON decl)* RIGHT_BRACE
+        | alt WHERE VIRTUAL_OPEN_SECTION decl (VIRTUAL_END_DECL decl)* VIRTUAL_END_SECTION
 guardedExs ::= guardedEx+
 // guardedEx ::= lc TODO
 
@@ -175,7 +175,7 @@ pVar ::= VARID
 patternFields ::= VARID EQUAL pattern (COMMA VARID EQUAL pattern)*
 
 /* Declarations and Bindings */
-program ::= PACKAGE packageName inline? WHERE LEFT_BRACE body RIGHT_BRACE
+program ::= PACKAGE packageName inline? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION
 
 packageName ::= qConId
                 | qVarId DOT packageName
@@ -183,7 +183,7 @@ packageName ::= qConId
 
 inline ::= LEFT_PAREN qname (COMMA qName)* RIGHT_PAREN // TODO keyword inline?
 
-body ::= topDecl (SEMICOLON topDecl)* // was right rec
+body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
 
 topDecl ::= fixity
             | importDcl
@@ -198,12 +198,13 @@ decl ::= annotation
             | binding
             | nativeFun
 
-decls ::= decl (SEMICOLON decl)*
+decls ::= decl (VIRTUAL_END_DECL decl)*
 
 /* Syntax of Types */
 sigma ::= FORALL tyVar (tyVar)* DOT crho
             | chro
 chro ::= constraints DOUBLE_RIGHT_ARROW rho
+            | rho
 rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
         | tyApp RIGHT_ARROW rho
         | tyApp
@@ -237,25 +238,24 @@ simpleKind ::= STAR
 
 
 /* Algebraic Data type Declaration */
-dataDcl ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors (WHERE LEFT_BRACE decls RIGHT_BRACE)?
-            | DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName (WHERE LEFT_BRACE decls RIGHT_BRACE)? /* Native Datatype Declaration */
+dataDcl ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+            | DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)? /* Native Datatype Declaration */
 nativeName ::= (VARID | CONID) (DOT nativeName)?
 
 constructors ::= constructor (VERT_BAR constructor)*
 
-constructor ::= PRIVATE? CONID simpleType*
-                | PRIVATE? CONID LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE
+constructor ::= PRIVATE? CONID (LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE | simpleType*)
 
 labels ::= EXLAMATION_MARK? VARID (COMMA EXLAMATION_MARK? VARID)*
 
 typeDcl ::= TYPE CONID (tyVar)* EQUAL sigma
 
 /* Class Declarations */
-classDcl ::= CLASS CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+classDcl ::= CLASS CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
 classVar ::= VARID
 
 /* Instance Declarations */
-instDcl ::= INSTANCE instDcl (constraints DOUBLE_RIGHT_ARROW)? typeRule (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+instDcl ::= INSTANCE className (constraints DOUBLE_RIGHT_ARROW)? typeRule (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
 
 /* Derived Instances */
 deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
@@ -269,7 +269,7 @@ binding ::= lhs rhs
 lhs ::= funLhs | pattern
 funLhs ::= VARID pTerm+
             | pconApp lexOp pconApp
-rhs ::= EQUAL (expr | guardedExs) (WHERE LEFT_BRACE decls RIGHT_BRACE)?
+rhs ::= EQUAL (expr | guardedExs) (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
 
 /* Native Declaration */
 nativeFun ::= PURE? NATIVE annoItem javaItem? DOUBLE_COLON sigma throwsRule?
@@ -293,6 +293,9 @@ nameSpace ::= CONID
 
 
 dotDot ::= DOT DOT // TODO move to lexer?
+
+
+virtual ::= VIRTUAL_OPEN_SECTION | VIRTUAL_END_DECL | VIRTUAL_END_SECTION
 
 
 todo ::= NEW_LINE | SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
