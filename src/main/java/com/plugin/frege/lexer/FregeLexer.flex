@@ -25,7 +25,7 @@ digit                = \d
 digits               = {digit}+
 digitNonZero         = [1-9]
 signs                = [+-]
-decimal              = {signs}?(0 | {digitNonZero}{digits}({underscore}{digit}{digit}{digit})*)
+decimal              = {signs}?(0 | {digitNonZero}((\d)*)({underscore}{digit}{digit}{digit})*)
 hexChar              = [0-9A-Fa-f]
 hex                  = 0[xX]{hexChar}({underscore}{hexChar}{hexChar}{hexChar})*
 octalChar            = [0-7]
@@ -107,7 +107,7 @@ rightBrace           = \}
 quote                = \'
 doubleQuote          = \"
 hash                 = #
-backQuote            = `
+backQuote            = \`
 regexQuote           = ´
 
 %%
