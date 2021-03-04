@@ -28,7 +28,7 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("FREGE_TYPE_REF", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
     public static final TextAttributesKey BRACKETS =
             createTextAttributesKey("FREGE_BRACKETS", DefaultLanguageHighlighterColors.CLASS_REFERENCE);
-    public static final TextAttributesKey OPERATORS =
+    public static final TextAttributesKey OPERATOR =
             createTextAttributesKey("FREGE_OPERATORS", DefaultLanguageHighlighterColors.FUNCTION_DECLARATION);
     public static final TextAttributesKey LINE_COMMENT =
             createTextAttributesKey("FREGE_LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
@@ -44,7 +44,7 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[]{STRING};
     private static final TextAttributesKey[] TYPE_REF_KEYS = new TextAttributesKey[]{TYPE_REF};
     private static final TextAttributesKey[] BRACKETS_KEYS = new TextAttributesKey[]{BRACKETS};
-    private static final TextAttributesKey[] OPERATORS_KEYS = new TextAttributesKey[]{OPERATORS};
+    private static final TextAttributesKey[] OPERATOR_KEYS = new TextAttributesKey[]{OPERATOR};
     private static final TextAttributesKey[] LINE_COMMENT_KEYS = new TextAttributesKey[]{LINE_COMMENT};
     private static final TextAttributesKey[] BLOCK_COMMENT_KEYS = new TextAttributesKey[]{BLOCK_COMMENT};
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
@@ -63,7 +63,7 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
         } else if (FregeParserDefinition.BRACKETS.contains(tokenType)) {
             return BRACKETS_KEYS;
         } else if (FregeParserDefinition.OPERATORS.contains(tokenType)) {
-            return OPERATORS_KEYS;
+            return OPERATOR_KEYS;
         } else if (tokenType.equals(FregeTypes.NUMERIC_LITERAL)) {
             return NUMBER_KEYS;
         } else if (tokenType.equals(FregeTypes.CHAR)) {
