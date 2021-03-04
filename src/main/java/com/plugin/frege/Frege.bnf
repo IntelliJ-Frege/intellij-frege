@@ -18,13 +18,14 @@ fregeFile ::= program
 /* Operators */
 fixity ::= infixRule PRECEDENCE lexOp+
 infixRule ::= INFIX | INFIXL | INFIXR
-symOp ::= STAR // TODO !#$%&*+./<=>?@\^|-~: and cannot begin with a :
-infixOp ::= symOp | WORDOP
-lexOp ::= BACK_QUOTE infixOp BACK_QUOTE | symOp
+symOp ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
+            DOT | STAR | AT | COLON | DOUBLE_COLON | DASH |
+            VERT_BAR | SLASH | BACK_SLASH)+ // TODO $%&<=>^
+lexOp ::= WORD_OPERATOR | symOp
 
 /* Imported operators */
-qLexOp ::= QUALIFIER lexOp
-            | QUALIFIER QUALIFIER lexOp
+qLexOp ::= QUALIFIER QUALIFIER? lexOp
+qUnOp ::= QUALIFIER QUALIFIER? unOp
 
 /* Unary operators */
 unOp ::= EXLAMATION_MARK | QUESTION_MARK
@@ -58,8 +59,8 @@ term ::= qVarId
          | qConId LEFT_BRACE initFields RIGHT_BRACE
          | literal
          | UNDERSCORE
-         | LEFT_PAREN qLexOp RIGHT_BRACE
-         | LEFT_PAREN qUnOp RIGHT_BRACE
+         | LEFT_PAREN qLexOp RIGHT_PAREN
+         | LEFT_PAREN qUnOp RIGHT_PAREN
          | section
          | unit
          | tuple
@@ -70,8 +71,7 @@ initFields ::= initField (COMMA initField)*
 initField ::= VARID (EQUAL expr)
 
 /* Sections */
-section ::= LEFT_PAREN binEx lexOp RIGHT_PAREN
-            | LEFT_PAREN lexOp expr RIGHT_PAREN
+section ::= LEFT_PAREN (binEx lexOp | lexOp expr) RIGHT_PAREN
 
 /* Unit */
 unit ::= LEFT_PAREN RIGHT_PAREN
@@ -124,8 +124,7 @@ appex ::= unary+ // was left rec
 // TODO
 
 /* Lambda Expression */
-lambda ::= BACK_SLASH pattern lambda
-            | BACK_SLASH pattern RIGHT_ARROW expr
+lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 
 /* Conditional */
 cond ::= IF expr THEN expr ELSE expr
@@ -142,8 +141,7 @@ guardedExs ::= guardedEx+
 // guardedEx ::= lc TODO
 
 /* Annotated Expression */
-expr ::= topEx DOUBLE_COLON sigma
-            | topEx
+expr ::= topEx (DOUBLE_COLON sigma)?
 topEx ::= casEx
             | letEx
             | cond
@@ -175,13 +173,13 @@ pVar ::= VARID
 patternFields ::= VARID EQUAL pattern (COMMA VARID EQUAL pattern)*
 
 /* Declarations and Bindings */
-program ::= PACKAGE packageName inline? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION
+program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION
 
 packageName ::= qConId
                 | qVarId DOT packageName
                 | qConId DOT packageName
 
-inline ::= LEFT_PAREN qname (COMMA qName)* RIGHT_PAREN // TODO keyword inline?
+inlineRule ::= INLINE LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN // TODO qName??
 
 body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
 
@@ -251,7 +249,7 @@ labels ::= EXLAMATION_MARK? VARID (COMMA EXLAMATION_MARK? VARID)*
 typeDcl ::= TYPE CONID (tyVar)* EQUAL sigma
 
 /* Class Declarations */
-classDcl ::= CLASS CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+classDcl ::= (CLASS | INTERFACE) CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
 classVar ::= VARID
 
 /* Instance Declarations */
