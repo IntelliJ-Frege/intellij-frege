@@ -12,7 +12,7 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.plugin.frege.FregeLanguage;
-import com.plugin.frege.lexer.FregeLexerAdapter;
+import com.plugin.frege.lexer.FregeLayoutLexer;
 import com.plugin.frege.psi.FregeFile;
 import com.plugin.frege.psi.FregeTypes;
 import org.jetbrains.annotations.NotNull;
@@ -43,12 +43,21 @@ public class FregeParserDefinition implements ParserDefinition {
 
     @Override
     public @NotNull Lexer createLexer(Project project) {
-        return new FregeLexerAdapter();
+        return new FregeLayoutLexer();
     }
 
     @Override
     public PsiParser createParser(Project project) {
-        return new FregeParser();
+        return (root, builder) -> {
+            builder.setTokenTypeRemapper((source, start, end, text) -> {
+                if (source == FregeTypes.NEW_LINE) {
+                    return TokenType.WHITE_SPACE;
+                } else {
+                    return source;
+                }
+            });
+            return new FregeParser().parse(root, builder);
+        };
     }
 
     @Override
