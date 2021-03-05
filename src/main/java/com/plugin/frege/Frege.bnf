@@ -185,7 +185,7 @@ topDecl ::= fixity
             | accessModifier? deriveDcl
             | accessModifier? decl
 
-accessModifier ::= PUBLIC | PROTECTED | PRIVATE_MODIFIER
+accessModifier ::= PUBLIC_MODIFIER | PROTECTED_MODIFIER | PRIVATE_MODIFIER
 
 decl ::= annotation
             | binding
@@ -268,16 +268,16 @@ javaItem ::= nativeName | unOp | symOp | STRING
 throwsRule ::= THROWS typeRule (COMMA typeRule)*
 
 /* Importing Packages */
-importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC? importList
+importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC_MODIFIER? importList
 importList ::= HIDING? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
-importSpec ::= PUBLIC? importItem alias?
+importSpec ::= PUBLIC_MODIFIER? importItem alias?
 importItem ::= VARID
                 | CONID members?
                 | symOp
                 | CONID DOT (VARID | CONID | symOp)
 alias ::= VARID | CONID | symOp
 members ::= LEFT_PAREN (memSpec (COMMA memSpec)*)? RIGHT_PAREN
-memSpec ::= PUBLIC? member alias?
+memSpec ::= PUBLIC_MODIFIER? member alias?
 member ::= VARID | symOp | CONID
 nameSpace ::= CONID
 
@@ -290,5 +290,5 @@ virtual ::= VIRTUAL_OPEN_SECTION | VIRTUAL_END_DECL | VIRTUAL_END_SECTION
 
 
 todo ::= NEW_LINE | SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
-            | CLASS | FALSE | INFIX | DERIVE | THROWS | NATIVE | INFIXL | INFIXR | IMPORT | MODULE | PUBLIC | PLUS | LESS | GREATER
-            | MUTABLE | INSTANCE | INTERFACE | PROTECTED | OF | STRING | UNDERSCORE | QUESTION_MARK | DO | LEFT_ARROW | SLASH | LINE_COMMENT | BLOCK_COMMENT
+            | CLASS | FALSE | INFIX | DERIVE | THROWS | NATIVE | INFIXL | INFIXR | IMPORT | MODULE | PUBLIC_MODIFIER | PLUS | LESS | GREATER
+            | MUTABLE | INSTANCE | INTERFACE | PROTECTED_MODIFIER | OF | STRING | UNDERSCORE | QUESTION_MARK | DO | LEFT_ARROW | SLASH | LINE_COMMENT | BLOCK_COMMENT

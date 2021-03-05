@@ -140,10 +140,10 @@ regexQuote           = ´
       "of"                    { return FregeTypes.OF; }
       "package"               { return FregeTypes.PACKAGE; }
       "module"                { return FregeTypes.MODULE; }
-      "private"               { return FregeTypes.PRIVATE_MODIFIER; } // to avoid conflict with bnf `private` keyword
-      "protected"             { return FregeTypes.PROTECTED; }
+      "private"               { return FregeTypes.PRIVATE_MODIFIER; }
+      "protected"             { return FregeTypes.PROTECTED_MODIFIER; }
       "pure"                  { return FregeTypes.PURE; }
-      "public"                { return FregeTypes.PUBLIC; }
+      "public"                { return FregeTypes.PUBLIC_MODIFIER; }
       "then"                  { return FregeTypes.THEN; }
       "throws"                { return FregeTypes.THROWS; }
       "true"                  { return FregeTypes.TRUE; }
