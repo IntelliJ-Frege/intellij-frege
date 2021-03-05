@@ -18,17 +18,24 @@ fregeFile ::= program
 /* Operators */
 fixity ::= infixRule PRECEDENCE lexOp+
 infixRule ::= INFIX | INFIXL | INFIXR
-symOp ::= STAR // TODO !#$%&*+./<=>?@\^|-~: and cannot begin with a :
-infixOp ::= symOp | WORDOP
-lexOp ::= BACK_QUOTE infixOp BACK_QUOTE | symOp
+private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
+            DOT | STAR | AT | COLON | DOUBLE_COLON | DASH |
+            SLASH | BACK_SLASH | DOLLAR |
+            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER) // TODO %&^
+private cannotAlone ::= EQUAL | VERT_BAR
+symOp ::= opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
+            | cannotAlone (opCharsCanUseAlone | cannotAlone)+
 
-/* Imported operators */
-qLexOp ::= QUALIFIER lexOp
-            | QUALIFIER QUALIFIER lexOp
+lexOp ::= WORD_OPERATOR | symOp
 
 /* Unary operators */
 unOp ::= EXLAMATION_MARK | QUESTION_MARK
 
+/* Imported operators */
+// Unary operators can not be qualified.
+qLexOp ::= QUALIFIER? QUALIFIER? lexOp
+qVarId ::= QUALIFIER? QUALIFIER? VARID
+qConId ::= QUALIFIER? QUALIFIER? CONID
 
 /* Literals */
 literal ::= boolLiteral
@@ -42,36 +49,26 @@ boolLiteral ::= TRUE | FALSE
 integralLiteral ::= INTEGER
 floatLiteral ::= FLOAT
 
-
-
-/* ?? */ // TODO
-qVarId ::= QUALIFIER QUALIFIER VARID
-            | QUALIFIER VARID
-            | VARID
-qConId ::= QUALIFIER QUALIFIER CONID
-            | QUALIFIER CONID
-            | CONID
-
 /* Terms */
 term ::= qVarId
          | qConId
-         | qConId LEFT_BRACE initFields RIGHT_BRACE
          | literal
-         | UNDERSCORE
-         | LEFT_PAREN qLexOp RIGHT_BRACE
-         | LEFT_PAREN qUnOp RIGHT_BRACE
+         | LEFT_PAREN expr RIGHT_PAREN
+         | list
          | section
          | unit
          | tuple
-         | list
+         | qConId LEFT_BRACE initFields RIGHT_BRACE
+         | UNDERSCORE
+         | LEFT_PAREN qLexOp RIGHT_PAREN
+         | LEFT_PAREN unOp RIGHT_PAREN
 
 initFields ::= initField (COMMA initField)*
 
 initField ::= VARID (EQUAL expr)
 
 /* Sections */
-section ::= LEFT_PAREN binEx lexOp RIGHT_PAREN
-            | LEFT_PAREN lexOp expr RIGHT_PAREN
+section ::= LEFT_PAREN (binEx lexOp | lexOp expr) RIGHT_PAREN
 
 /* Unit */
 unit ::= LEFT_PAREN RIGHT_PAREN
@@ -88,44 +85,35 @@ list ::= emptyList
             | LEFT_BRACKET (COMMA expr)? dotDot expr? RIGHT_BRACKET
             | LEFT_BRACKET expr VERT_BAR dlcqual (COMMA dlcqual)? RIGHT_BRACKET
 
-dlcqual ::= pattern LEFTARROW expr
+dlcqual ::= pattern LEFT_ARROW expr
             | expr
             | LET VIRTUAL_OPEN_SECTION decl (VIRTUAL_END_DECL decl)* VIRTUAL_END_SECTION
 
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
 /* Primary Expression */
-primary ::= term
-            | QUALIFIER LEFT_BRACE VARID QUESTIONMARK RIGHT_BRACE
-            | QUALIFIER LEFT_BRACE VARID EQUAL RIGHT_BRACE
-            | QUALIFIER LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
-            | QUALIFIER LEFT_BRACE field (COMMA field)* RIGHT_BRACE
-            | DO VIRTUAL_OPEN_SECTION dlcqual (VIRTUAL_END_DECL dlcqual)* VIRTUAL_END_SECTION
-//            | primary DOT VARID TODO
-//            | primary DOT lexOp
-//            | primary DOT unOp
-//            | primary DOT LEFT_BRACE VARID QUESTION_MARK RIGHT_BRACE
-//            | primary DOT LEFT_BRACE VARID EQUAL RIGHT_BRACE
-//            | primary DOT LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
-//            | primary DOT LEFT_BRACE field (COMMA field)* RIGHT_BRACE
-//            | primary DOT LEFT_BRACKET expr RIGHT_BRACKET
+primaryInner ::= term
+                    | QUALIFIER LEFT_BRACE VARID QUESTIONMARK RIGHT_BRACE
+                    | QUALIFIER LEFT_BRACE VARID EQUAL RIGHT_BRACE
+                    | QUALIFIER LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
+                    | QUALIFIER LEFT_BRACE field (COMMA field)* RIGHT_BRACE
+                    | DO VIRTUAL_OPEN_SECTION dlcqual (VIRTUAL_END_DECL dlcqual)* VIRTUAL_END_SECTION
+
+primary ::= primaryInner (DOT (
+                VARID | lexOp | unOp |
+                LEFT_BRACE VARID QUESTION_MARK RIGHT_BRACE |
+                LEFT_BRACE VARID EQUAL RIGHT_BRACE |
+                LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE |
+                LEFT_BRACE field (COMMA field)* RIGHT_BRACE |
+                LEFT_BRACKET expr RIGHT_BRACKET
+                    ))* // was left rec
 
 field ::= VARID EQUAL expr
-            | VARID LEFTARROW expr
+            | VARID LEFT_ARROW expr
             | VARID
 
-/* Unary operator */
-unary ::= primary (qUnOp primary)*
-
-/* Function application */
-appex ::= unary+ // was left rec
-
-/* Infix Expressions */
-// TODO
-
 /* Lambda Expression */
-lambda ::= BACK_SLASH pattern lambda
-            | BACK_SLASH pattern RIGHT_ARROW expr
+lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 
 /* Conditional */
 cond ::= IF expr THEN expr ELSE expr
@@ -139,18 +127,21 @@ alt ::= pattern RIGHT_ARROW expr
         | pattern guardedExs
         | alt WHERE VIRTUAL_OPEN_SECTION decl (VIRTUAL_END_DECL decl)* VIRTUAL_END_SECTION
 guardedExs ::= guardedEx+
-// guardedEx ::= lc TODO
+guardedEx ::= VERT_BAR dlcqual (COMMA dlcqual)* EQUAL expr
 
 /* Annotated Expression */
-expr ::= topEx DOUBLE_COLON sigma
-            | topEx
-topEx ::= casEx
+expr ::= topEx (DOUBLE_COLON sigma)?
+topEx ::= casEx // TODO add do
             | letEx
             | cond
             | lambda
             | binEx
 
-binEx ::= appex // TODO
+/* Binary application */
+binEx ::= fExp (lexOp fExp)*
+
+/* Function application */
+fExp ::= primary+
 
 /* Patterns */
 pattern ::= atPattern (DOUBLE_COLON sigma)* // was left rec
@@ -175,24 +166,26 @@ pVar ::= VARID
 patternFields ::= VARID EQUAL pattern (COMMA VARID EQUAL pattern)*
 
 /* Declarations and Bindings */
-program ::= PACKAGE packageName inline? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION
+program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION
 
 packageName ::= qConId
                 | qVarId DOT packageName
                 | qConId DOT packageName
 
-inline ::= LEFT_PAREN qname (COMMA qName)* RIGHT_PAREN // TODO keyword inline?
+inlineRule ::= INLINE LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN // TODO qName??
 
 body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
 
 topDecl ::= fixity
             | importDcl
-            | typeDcl
-            | dataDcl
-            | classDcl
-            | instDcl
-            | deriveDcl
-            | decl
+            | accessModifier? typeDcl
+            | accessModifier? dataDcl
+            | accessModifier? classDcl
+            | accessModifier? instDcl
+            | accessModifier? deriveDcl
+            | accessModifier? decl
+
+accessModifier ::= PUBLIC_MODIFIER | PROTECTED_MODIFIER | PRIVATE_MODIFIER
 
 decl ::= annotation
             | binding
@@ -201,10 +194,8 @@ decl ::= annotation
 decls ::= decl (VIRTUAL_END_DECL decl)*
 
 /* Syntax of Types */
-sigma ::= FORALL tyVar (tyVar)* DOT crho
-            | chro
-chro ::= constraints DOUBLE_RIGHT_ARROW rho
-            | rho
+sigma ::= (FORALL tyVar (tyVar)* DOT)? chro
+chro ::= (constraints DOUBLE_RIGHT_ARROW)? rho
 rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
         | tyApp RIGHT_ARROW rho
         | tyApp
@@ -251,7 +242,7 @@ labels ::= EXLAMATION_MARK? VARID (COMMA EXLAMATION_MARK? VARID)*
 typeDcl ::= TYPE CONID (tyVar)* EQUAL sigma
 
 /* Class Declarations */
-classDcl ::= CLASS CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+classDcl ::= (CLASS | INTERFACE) CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
 classVar ::= VARID
 
 /* Instance Declarations */
@@ -260,16 +251,19 @@ instDcl ::= INSTANCE className (constraints DOUBLE_RIGHT_ARROW)? typeRule (WHERE
 /* Derived Instances */
 deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
 
+/* fake function name rule for highlighting */
+functionName ::= rVarId
+
 /*  Type Annotations */
 annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
-annoItem ::= VARID | symOp | UNOP
+annoItem ::= functionName | symOp | UNOP
 
 /*  Function and Pattern Bindings */
 binding ::= lhs rhs
 lhs ::= funLhs | pattern
-funLhs ::= VARID pTerm+
+funLhs ::= functionName pTerm+
             | pconApp lexOp pconApp
-rhs ::= EQUAL (expr | guardedExs) (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+rhs ::= (EQUAL expr | guardedExs) (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
 
 /* Native Declaration */
 nativeFun ::= PURE? NATIVE annoItem javaItem? DOUBLE_COLON sigma throwsRule?
@@ -277,16 +271,16 @@ javaItem ::= nativeName | unOp | symOp | STRING
 throwsRule ::= THROWS typeRule (COMMA typeRule)*
 
 /* Importing Packages */
-importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC? importList
+importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC_MODIFIER? importList
 importList ::= HIDING? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
-importSpec ::= PUBLIC? importItem alias?
+importSpec ::= PUBLIC_MODIFIER? importItem alias?
 importItem ::= VARID
                 | CONID members?
                 | symOp
                 | CONID DOT (VARID | CONID | symOp)
 alias ::= VARID | CONID | symOp
 members ::= LEFT_PAREN (memSpec (COMMA memSpec)*)? RIGHT_PAREN
-memSpec ::= PUBLIC? member alias?
+memSpec ::= PUBLIC_MODIFIER? member alias?
 member ::= VARID | symOp | CONID
 nameSpace ::= CONID
 
@@ -299,5 +293,5 @@ virtual ::= VIRTUAL_OPEN_SECTION | VIRTUAL_END_DECL | VIRTUAL_END_SECTION
 
 
 todo ::= NEW_LINE | SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
-            | CLASS | FALSE | INFIX | DERIVE | THROWS | NATIVE | INFIXL | INFIXR | IMPORT | MODULE | PUBLIC | PLUS | LESS | GREATER
-            | MUTABLE | INSTANCE | INTERFACE | PROTECTED | OF | STRING | UNDERSCORE | QUESTION_MARK | DO | LEFT_ARROW | SLASH | LINE_COMMENT | BLOCK_COMMENT
+            | CLASS | FALSE | INFIX | DERIVE | THROWS | NATIVE | INFIXL | INFIXR | IMPORT | MODULE | PUBLIC_MODIFIER | PLUS | LESS | GREATER
+            | MUTABLE | INSTANCE | INTERFACE | PROTECTED_MODIFIER | OF | STRING | UNDERSCORE | QUESTION_MARK | DO | LEFT_ARROW | SLASH | LINE_COMMENT | BLOCK_COMMENT

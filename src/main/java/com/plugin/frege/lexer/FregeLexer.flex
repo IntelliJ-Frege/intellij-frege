@@ -25,7 +25,7 @@ digit                = \d
 digits               = {digit}+
 digitNonZero         = [1-9]
 signs                = [+-]
-decimal              = {signs}?(0 | {digitNonZero}{digits}({underscore}{digit}{digit}{digit})*)
+decimal              = {signs}?(0 | {digitNonZero}((\d)*)({underscore}{digit}{digit}{digit})*)
 hexChar              = [0-9A-Fa-f]
 hex                  = 0[xX]{hexChar}({underscore}{hexChar}{hexChar}{hexChar})*
 octalChar            = [0-7]
@@ -94,6 +94,7 @@ tilda                = \~
 plus                 = \+
 less                 = <
 greater              = >
+dollar               = \$
 
 /* parentheses  */
 leftParen            = \(
@@ -107,7 +108,7 @@ rightBrace           = \}
 quote                = \'
 doubleQuote          = \"
 hash                 = #
-backQuote            = `
+backQuote            = \`
 regexQuote           = ´
 
 %%
@@ -139,10 +140,10 @@ regexQuote           = ´
       "of"                    { return FregeTypes.OF; }
       "package"               { return FregeTypes.PACKAGE; }
       "module"                { return FregeTypes.MODULE; }
-      "private"               { return FregeTypes.PRIVATE; }
-      "protected"             { return FregeTypes.PROTECTED; }
+      "private"               { return FregeTypes.PRIVATE_MODIFIER; }
+      "protected"             { return FregeTypes.PROTECTED_MODIFIER; }
       "pure"                  { return FregeTypes.PURE; }
-      "public"                { return FregeTypes.PUBLIC; }
+      "public"                { return FregeTypes.PUBLIC_MODIFIER; }
       "then"                  { return FregeTypes.THEN; }
       "throws"                { return FregeTypes.THROWS; }
       "true"                  { return FregeTypes.TRUE; }
@@ -193,6 +194,7 @@ regexQuote           = ´
       {plus}                  { return FregeTypes.PLUS; }
       {less}                  { return FregeTypes.LESS; }
       {greater}               { return FregeTypes.GREATER; }
+      {dollar}                { return FregeTypes.DOLLAR; }
 
    /* operators */
       {wordop}                { return FregeTypes.WORD_OPERATOR; }

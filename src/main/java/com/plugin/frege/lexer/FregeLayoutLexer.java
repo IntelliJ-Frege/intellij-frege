@@ -20,8 +20,8 @@ public class FregeLayoutLexer extends LexerBase {
     private static final TokenSet NON_CODE_TOKENS;
 
     static {
-        SECTION_CREATING_KEYWORDS = TokenSet.create(WHERE, LET, OF);
-        NON_CODE_TOKENS = TokenSet.create(TokenType.WHITE_SPACE, NEW_LINE); // TODO add comments
+        SECTION_CREATING_KEYWORDS = TokenSet.create(WHERE, LET, OF, DO);
+        NON_CODE_TOKENS = TokenSet.create(TokenType.WHITE_SPACE, NEW_LINE, LINE_COMMENT, BLOCK_COMMENT);
     }
 
     private Token getCurrentToken() {
