@@ -251,14 +251,17 @@ instDcl ::= INSTANCE className (constraints DOUBLE_RIGHT_ARROW)? typeRule (WHERE
 /* Derived Instances */
 deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
 
+/* fake function name rule for highlighting */
+functionName ::= rVarId
+
 /*  Type Annotations */
 annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
-annoItem ::= VARID | symOp | UNOP
+annoItem ::= functionName | symOp | UNOP
 
 /*  Function and Pattern Bindings */
 binding ::= lhs rhs
 lhs ::= funLhs | pattern
-funLhs ::= VARID pTerm+
+funLhs ::= functionName pTerm+
             | pconApp lexOp pconApp
 rhs ::= (EQUAL expr | guardedExs) (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
 

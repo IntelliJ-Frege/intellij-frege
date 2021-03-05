@@ -20,6 +20,7 @@
         <lang.syntaxHighlighterFactory language="Frege"
                                        implementationClass="com.plugin.frege.highlighter.FregeSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
+        <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
     </extensions>
 
     <actions>

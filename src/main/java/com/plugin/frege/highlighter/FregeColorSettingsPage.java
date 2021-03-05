@@ -19,9 +19,11 @@ public class FregeColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Number", FregeSyntaxHighlighter.NUMBER),
             new AttributesDescriptor("Char", FregeSyntaxHighlighter.CHAR),
             new AttributesDescriptor("String", FregeSyntaxHighlighter.STRING),
-            new AttributesDescriptor("Type or Constructor", FregeSyntaxHighlighter.TYPE_REF),
+            new AttributesDescriptor("Constructor", FregeSyntaxHighlighter.CONSTRUCTOR),
+            new AttributesDescriptor("Type", FregeSyntaxHighlighter.TYPE), //TODO
             new AttributesDescriptor("Brackets", FregeSyntaxHighlighter.BRACKETS),
             new AttributesDescriptor("Operator", FregeSyntaxHighlighter.OPERATOR),
+            new AttributesDescriptor("Function name", FregeSyntaxHighlighter.FUNCTION_NAME),
             new AttributesDescriptor("Line comment", FregeSyntaxHighlighter.LINE_COMMENT),
             new AttributesDescriptor("Block comment", FregeSyntaxHighlighter.BLOCK_COMMENT),
             new AttributesDescriptor("Bad value", FregeSyntaxHighlighter.BAD_CHARACTER)
