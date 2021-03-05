@@ -94,6 +94,7 @@ tilda                = \~
 plus                 = \+
 less                 = <
 greater              = >
+dollar               = \$
 
 /* parentheses  */
 leftParen            = \(
@@ -139,7 +140,7 @@ regexQuote           = ´
       "of"                    { return FregeTypes.OF; }
       "package"               { return FregeTypes.PACKAGE; }
       "module"                { return FregeTypes.MODULE; }
-      "private"               { return FregeTypes.PRIVATE; }
+      "private"               { return FregeTypes.PRIVATE_MODIFIER; } // to avoid conflict with bnf `private` keyword
       "protected"             { return FregeTypes.PROTECTED; }
       "pure"                  { return FregeTypes.PURE; }
       "public"                { return FregeTypes.PUBLIC; }
@@ -193,6 +194,7 @@ regexQuote           = ´
       {plus}                  { return FregeTypes.PLUS; }
       {less}                  { return FregeTypes.LESS; }
       {greater}               { return FregeTypes.GREATER; }
+      {dollar}                { return FregeTypes.DOLLAR; }
 
    /* operators */
       {wordop}                { return FregeTypes.WORD_OPERATOR; }
