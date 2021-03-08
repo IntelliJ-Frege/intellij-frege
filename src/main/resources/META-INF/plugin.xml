@@ -19,6 +19,10 @@
                                implementationClass="com.plugin.frege.parser.FregeParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Frege"
                                        implementationClass="com.plugin.frege.highlighter.FregeSyntaxHighlighterFactory"/>
+        <lang.braceMatcher language="Frege"
+                           implementationClass="com.plugin.frege.highlighter.FregeBraceMatcher"/>
+        <lang.commenter language="Frege"
+                        implementationClass="com.plugin.frege.editor.FregeCommenter"/>
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
     </extensions>
