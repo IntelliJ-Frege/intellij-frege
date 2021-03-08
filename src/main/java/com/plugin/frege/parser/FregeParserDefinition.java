@@ -23,6 +23,7 @@ public class FregeParserDefinition implements ParserDefinition {
     public static final TokenSet COMMENTS = TokenSet.create(FregeTypes.LINE_COMMENT, FregeTypes.BLOCK_COMMENT);
     public static final TokenSet STRING_LITERALS = TokenSet.create(FregeTypes.STRING, FregeTypes.CHAR);
     public static final TokenSet BRACKETS = TokenSet.create(FregeTypes.LEFT_BRACKET, FregeTypes.RIGHT_BRACKET);
+    public static final TokenSet IDENTIFIERS = TokenSet.create(FregeTypes.CONID, FregeTypes.VARID);
 
     public static final TokenSet OPERATORS = TokenSet.create(FregeTypes.WORD_OPERATOR, FregeTypes.DOUBLE_COLON,
             FregeTypes.COLON, FregeTypes.RIGHT_ARROW, FregeTypes.LEFT_ARROW, FregeTypes.DOUBLE_RIGHT_ARROW,
