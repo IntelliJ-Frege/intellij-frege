@@ -1,9 +1,14 @@
+import org.jetbrains.grammarkit.tasks.*
+
 plugins {
     id 'java'
     id 'org.jetbrains.intellij' version '0.7.2'
+    id 'org.jetbrains.grammarkit' version '2020.3.2'
 }
 
-group 'org.example'
+apply plugin: 'org.jetbrains.grammarkit'
+
+group 'com.plugin.frege'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -15,17 +20,38 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version '2020.3'
 }
+
+task generateFregeLexer(type: GenerateLexer) {
+    source = 'src/main/java/com/plugin/frege/lexer/FregeLexer.flex'
+    targetDir = 'src/gen/com/plugin/frege/lexer/'
+    targetClass = 'FregeLexer'
+    purgeOldFiles = true
+}
+
+task generateFregeParser(type: GenerateParser) {
+    source = 'src/main/java/com/plugin/frege/Frege.bnf'
+    targetRoot = 'src/gen'
+    pathToParser = '/com/plugin/frege/parser/FregeParser.java'
+    pathToPsiRoot = '/com/plugin/frege/psi'
+    purgeOldFiles = true
+}
+
+compileJava {
+    dependsOn generateFregeParser
+    dependsOn generateFregeLexer
+}
+
 patchPluginXml {
     changeNotes """
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""
 }
+
 test {
     useJUnitPlatform()
 }
 
-sourceSets.main.java.srcDirs 'src/main/gen'
+sourceSets.main.java.srcDirs 'src/gen'
