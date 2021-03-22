@@ -13,9 +13,6 @@ import java.util.Stack;
 import static com.plugin.frege.psi.FregeTypes.*;
 
 public class FregeLayoutLexer extends LexerBase {
-    private final FregeLexerAdapter lexer = new FregeLexerAdapter();
-    private int currentTokenIndex = 0;
-    private ArrayList<Token> tokens = new ArrayList<>();
     private static final TokenSet SECTION_CREATING_KEYWORDS;
     private static final TokenSet NON_CODE_TOKENS;
 
@@ -23,6 +20,10 @@ public class FregeLayoutLexer extends LexerBase {
         SECTION_CREATING_KEYWORDS = TokenSet.create(WHERE, LET, OF, DO);
         NON_CODE_TOKENS = TokenSet.create(TokenType.WHITE_SPACE, NEW_LINE, LINE_COMMENT, BLOCK_COMMENT);
     }
+
+    private final FregeLexerAdapter lexer = new FregeLexerAdapter();
+    private int currentTokenIndex = 0;
+    private ArrayList<Token> tokens = new ArrayList<>();
 
     private Token getCurrentToken() {
         return tokens.get(currentTokenIndex);
@@ -38,7 +39,8 @@ public class FregeLayoutLexer extends LexerBase {
         }
         lexer.start(buffer, startOffset, endOffset, initialState);
 
-        tokens = doLayout();
+        getTokens();
+        layoutTokens();
         currentTokenIndex = 0;
     }
 
@@ -79,20 +81,14 @@ public class FregeLayoutLexer extends LexerBase {
         return 0;
     }
 
-    private enum State {
-        START,
-        WAITING_FOR_SECTION_START,
-        NORMAL
-    }
-
     private Token createVirtualToken(IElementType elementType, Token precedesToken) {
         return new Token(elementType, precedesToken.start,
                 precedesToken.end, precedesToken.column, precedesToken.line);
     }
 
-    private ArrayList<Token> slurpTokens() {
-        ArrayList<Token> tokens = new ArrayList<>();
-        Line line = new Line();
+    private void getTokens() {
+        tokens = new ArrayList<>();
+        Token.Line line = new Token.Line();
         int currentColumn = 0;
         while (true) {
             Token token = new Token(lexer.getTokenType(),
@@ -108,21 +104,18 @@ public class FregeLayoutLexer extends LexerBase {
             if (token.isEof()) {
                 break;
             } else if (token.elementType == NEW_LINE) {
-                line = new Line();
+                line = new Token.Line();
                 currentColumn = 0;
             }
             lexer.advance();
         }
-        return tokens;
     }
 
-    private ArrayList<Token> doLayout() {
-        ArrayList<Token> tokens = slurpTokens();
-        int i = 0;
+    private void layoutTokens() {
         State state = State.START;
         Stack<Integer> indentStack = new Stack<>();
         indentStack.push(-1); // top-level section
-        do {
+        for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
             switch (state) {
                 case START:
@@ -145,23 +138,7 @@ public class FregeLayoutLexer extends LexerBase {
                     if (SECTION_CREATING_KEYWORDS.contains(token.elementType)) {
                         state = State.WAITING_FOR_SECTION_START;
                     } else if (token.isFirstSignificantTokenOnLine()) {
-                        int insertAt = i;
-                        boolean findInsertPos = false;
-                        for (int k = i - 1; k >= 1; k--) {
-                            if (tokens.get(k).isCode()) {
-                                for (int m = k + 1; m < i + 1; m++) {
-                                    if (tokens.get(m).elementType == NEW_LINE) {
-                                        insertAt = m + 1;
-                                        findInsertPos = true;
-                                        break;
-                                    }
-                                }
-                                if (findInsertPos) {
-                                    break;
-                                }
-                            }
-                        }
-
+                        int insertAt = getInsertionPos(i);
                         Token precedingToken = tokens.get(insertAt - 1);
                         while (token.column <= indentStack.peek()) {
                             if (token.column == indentStack.peek()) {
@@ -178,24 +155,52 @@ public class FregeLayoutLexer extends LexerBase {
                     }
                     break;
             }
-            i++;
-        } while (i < tokens.size());
-        for (int j = 0; j < indentStack.size() - 2; j++) {
-            tokens.add(tokens.size() - 1, createVirtualToken(VIRTUAL_END_SECTION, tokens.get(tokens.size() - 1)));
         }
-        return tokens;
+        if (indentStack.size() > 2) {
+            int insertAt = getInsertionPos(tokens.size() - 1);
+            Token precedingToken = tokens.get(insertAt - 1);
+            for (int j = 0; j < indentStack.size() - 2; j++) {
+                tokens.add(insertAt, createVirtualToken(VIRTUAL_END_SECTION, precedingToken));
+                insertAt++;
+            }
+        }
     }
 
-    private static class Line {
-        private Integer columnWhereCodeStarts;
+    private int getInsertionPos(int i) {
+        if (i == tokens.size() - 1) {
+            return i;
+        }
+        int insertAt = i;
+        boolean findInsertPos = false;
+        for (int k = i - 1; k > 0; k--) {
+            if (tokens.get(k).isCode()) {
+                for (int m = k + 1; m <= i; m++) {
+                    if (tokens.get(m).elementType == NEW_LINE) {
+                        insertAt = m + 1;
+                        findInsertPos = true;
+                        break;
+                    }
+                }
+                if (findInsertPos) {
+                    break;
+                }
+            }
+        }
+        return insertAt;
+    }
+
+    private enum State {
+        START,
+        WAITING_FOR_SECTION_START,
+        NORMAL
     }
 
     private static class Token {
-        IElementType elementType;
-        int start;
-        int end;
-        int column;
-        Line line;
+        private final IElementType elementType;
+        private final int start;
+        private final int end;
+        private final int column;
+        private final Line line;
 
         public Token(IElementType elementType, int start, int end, int column, Line line) {
             this.elementType = elementType;
@@ -220,6 +225,10 @@ public class FregeLayoutLexer extends LexerBase {
 
         boolean isFirstSignificantTokenOnLine() {
             return isCode() && column == line.columnWhereCodeStarts;
+        }
+
+        private static class Line {
+            private Integer columnWhereCodeStarts;
         }
     }
 }
