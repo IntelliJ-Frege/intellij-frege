@@ -180,7 +180,7 @@ public class FregeLayoutLexer extends LexerBase {
             }
             i++;
         } while (i < tokens.size());
-        for (int j = 0; j < indentStack.size() - 1; j++) {
+        for (int j = 0; j < indentStack.size() - 2; j++) {
             tokens.add(tokens.size() - 1, createVirtualToken(VIRTUAL_END_SECTION, tokens.get(tokens.size() - 1)));
         }
         return tokens;

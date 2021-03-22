@@ -13,10 +13,14 @@
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
-fregeFile ::= program
+fregeFile ::= !<<eof>> program
+
+private declRecover ::= !(VIRTUAL_END_DECL)
 
 /* Operators */
 fixity ::= infixRule PRECEDENCE lexOp+
+    { pin=1 }
+
 infixRule ::= INFIX | INFIXL | INFIXR
 private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
             DOT | STAR | AT | COLON | DOUBLE_COLON | DASH |
@@ -145,6 +149,7 @@ fExp ::= primary+
 
 /* Patterns */
 pattern ::= atPattern (DOUBLE_COLON sigma)* // was left rec
+    { pin=1 }
 
 atPattern ::= pVar AT atPattern
                 | listPattern
@@ -166,7 +171,8 @@ pVar ::= VARID
 patternFields ::= VARID EQUAL pattern (COMMA VARID EQUAL pattern)*
 
 /* Declarations and Bindings */
-program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION
+program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION?
+    { pin=1 }
 
 packageName ::= qConId
                 | qVarId DOT packageName
@@ -176,14 +182,16 @@ inlineRule ::= INLINE LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN // TODO qName?
 
 body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
 
-topDecl ::= fixity
+topDecl ::= !<<eof>> (
+              fixity
             | importDcl
             | accessModifier? typeDcl
             | accessModifier? dataDcl
             | accessModifier? classDcl
             | accessModifier? instDcl
             | accessModifier? deriveDcl
-            | accessModifier? decl
+            | accessModifier? decl)
+    { pin=1 recoverWhile=declRecover }
 
 accessModifier ::= PUBLIC_MODIFIER | PROTECTED_MODIFIER | PRIVATE_MODIFIER
 
@@ -231,6 +239,8 @@ simpleKind ::= STAR
 /* Algebraic Data type Declaration */
 dataDcl ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
             | DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)? /* Native Datatype Declaration */
+    { pin(".*")=DATA }
+
 nativeName ::= (VARID | CONID) (DOT nativeName)?
 
 constructors ::= constructor (VERT_BAR constructor)*
@@ -240,38 +250,48 @@ constructor ::= PRIVATE? CONID (LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labe
 labels ::= EXLAMATION_MARK? VARID (COMMA EXLAMATION_MARK? VARID)*
 
 typeDcl ::= TYPE CONID (tyVar)* EQUAL sigma
+    { pin=1 }
 
 /* Class Declarations */
 classDcl ::= (CLASS | INTERFACE) CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+    { pin=1 }
+
 classVar ::= VARID
 
 /* Instance Declarations */
 instDcl ::= INSTANCE className (constraints DOUBLE_RIGHT_ARROW)? typeRule (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+    { pin=1 }
 
 /* Derived Instances */
 deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
+    { pin=1 }
 
 /* fake function name rule for highlighting */
 functionName ::= VARID
 
 /*  Type Annotations */
 annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
+    { pin=3 }
 annoItem ::= functionName | symOp | UNOP
 
 /*  Function and Pattern Bindings */
 binding ::= lhs rhs
 lhs ::= funLhs | pattern
-funLhs ::= functionName pTerm+
+funLhs ::= functionName pTerm*
             | pconApp lexOp pconApp
 rhs ::= (EQUAL expr | guardedExs) (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+    { pin=1 }
 
 /* Native Declaration */
 nativeFun ::= PURE? NATIVE annoItem javaItem? DOUBLE_COLON sigma throwsRule?
+    {pin=2}
 javaItem ::= nativeName | unOp | symOp | STRING
 throwsRule ::= THROWS typeRule (COMMA typeRule)*
 
 /* Importing Packages */
-importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC_MODIFIER? importList
+importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC_MODIFIER? importList?
+    {pin=1}
+
 importList ::= HIDING? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
 importSpec ::= PUBLIC_MODIFIER? importItem alias?
 importItem ::= VARID
