@@ -1,0 +1,60 @@
+package psi.InstanceDcl where
+
+instance Monoid [a] where
+  mempty = []
+  mappend = (++)
+
+instance Monoid String where
+    mappend = (++)
+    mempty  = String.empty
+
+instance Monoid () where
+  mempty = ()
+  _ `mappend` _ = ()
+
+instance Semigroup a => Monoid (Maybe a) where
+  mempty = Nothing
+  Nothing `mappend` b = b
+  Just a `mappend` Just b = Just (mappend a b)
+  a `mappend` _ = a
+
+instance (Semigroup a, Semigroup b) => Semigroup (a, b) where
+  (a, b) `mappend` (a', b') = (a <> a', b <> b')
+instance (Monoid a, Monoid b) => Monoid (a, b) where
+  mempty = (mempty, mempty)
+
+instance (Semigroup a, Semigroup b, Semigroup c) => Semigroup (a, b, c) where
+  (a, b, c) `mappend` (a', b', c') = (a <> a', b <> b', c <> c')
+instance (Monoid a, Monoid b, Monoid c) => Monoid (a, b, c) where
+  mempty = (mempty, mempty, mempty)
+
+instance (Semigroup a, Semigroup b, Semigroup c, Semigroup d) => Semigroup (a, b, c, d) where
+  (a, b, c, d) `mappend` (a', b', c', d') = (a <> a', b <> b', c <> c', d <> d')
+instance (Monoid a, Monoid b, Monoid c, Monoid d) => Monoid (a, b, c, d) where
+  mempty = (mempty, mempty, mempty, mempty)
+
+
+instance Functor ((,,,) a b c) where
+  fmap fn (a, b, c, x) = (a, b, c, fn x)
+instance Functor ((,,,,) a b c d) where
+  fmap fn (a, b, c, d, x) = (a, b, c, d, fn x)
+instance Functor ((,,,,,) a b c d e) where
+  fmap fn (a, b, c, d, e, x) = (a, b, c, d, e, fn x)
+instance Functor ((,,,,,,) a b c d e f) where
+  fmap fn (a, b, c, d, e, f, x) = (a, b, c, d, e, f, fn x)
+
+
+instance (Monoid a) => Monad ((,) a) where
+  pure x = (mempty, x)
+  (a, fn) <*> (a', x) = (a <> a', fn x)
+  (a, x) >>= fn = let (a', y) = fn x in (a <> a', y)
+
+instance (Monoid a, Monoid b) => Monad ((,,) a b) where
+  pure x = (mempty, mempty, x)
+  (a, b, fn) <*> (a', b', x) = (a <> a', b <> b', fn x)
+  (a, b, x) >>= fn = let (a', b', y) = fn x in (a <> a', b <> b', y)
+
+instance (Monoid a, Monoid b, Monoid c) => Monad ((,,,) a b c) where
+  pure x = (mempty, mempty, mempty, x)
+  (a, b, c, fn) <*> (a', b', c', x) = (a <> a', b <> b', c <> c', fn x)
+  (a, b, c, x) >>= fn = let (a', b', c', y) = fn x in (a <> a', b <> b', c <> c', y)

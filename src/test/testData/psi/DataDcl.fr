@@ -1,0 +1,26 @@
+package psi.DataDcl where
+
+data C = C
+data Bool = False | True
+data Shape = Circle Float Float Float | Rectangle Float Float Float Float
+data Const a b = Const { get :: a }
+data Tape = Tape { left :: [Int], cell :: Int, right :: [Int] }
+
+data TokenParser st = TokenParser { whiteSpace :: CharParser st ()
+                                  , lexeme     :: forall a. CharParser st a -> CharParser st a
+                                  , integer    :: CharParser st Integer
+                                  , natural    :: CharParser st Integer }
+
+data FileNotFoundException = pure native java.io.FileNotFoundException
+data RejectedExecutionException = pure native java.util.concurrent.RejectedExecutionException derive Exceptional RejectedExecutionException
+
+data GenParser tok st a = Parser (State tok st -> Consumed (Reply tok st a))
+data Consumed a     = Consumed a
+data State tok st   = State
+data Reply tok st a = Ok a (State tok st) String
+
+data Assumption =
+              !ISNOT Position Element
+            | !IS    Position Element
+data U = pure native frege.runtime.Undefined where
+    pure native new :: String -> U | String -> Throwable -> U

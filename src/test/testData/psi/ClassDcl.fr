@@ -1,0 +1,45 @@
+package psi.ClassDcl where
+
+class A a where whateverA :: a -> Int
+class B a where whateverB :: Int -> a
+class C a
+
+class Ord a where compare :: a -> a -> Ordering
+
+class Functor this where
+    fmap,(<$>) :: (a -> b) -> this a -> this b
+    f <$> x = fmap f x
+
+class Apply Functor this => this where
+    ap,(<*>) :: this (a -> b) -> this a -> this b
+    f <*> x = ap f x
+
+class Applicative Apply this => this where
+    return :: a -> this a
+    fmap f x = return f <*> x
+
+class Bind Apply this => this where
+    (>>=) :: this a -> (a -> this b) -> this b
+    (>>)  :: this a -> this b -> this b
+    a >> b = a >>= P.const b
+
+class Monad (Applicative this, Bind this) => this where
+    ap mf mx = mf >>= (\f -> mx >>= (\x -> return (f x)))
+    fail :: P.String -> this a
+    fail s = P.error s
+
+class ArrowChoice Arrow a => a where
+    left :: a b c -> a (Either b d) (Either c d)
+    right :: a b c -> a (Either d b) (Either d c)
+    right f = arr mirror >>> left f >>> arr mirror
+      where
+        mirror :: Either x y -> Either y x
+        mirror (Left x) = Right x
+        mirror (Right y) = Left y
+    (+++) :: a b c -> a b' c' -> a (Either b b') (Either c c')
+    f +++ g = left f >>> right g
+    (|||) :: a b d -> a c d -> a (Either b c) d
+    f ||| g = f +++ g >>> arr untag
+      where
+        untag (Left x) = x
+        untag (Right y) = y

@@ -50,8 +50,4 @@ patchPluginXml {
       <em>most HTML tags may be used</em>"""
 }
 
-test {
-    useJUnitPlatform()
-}
-
 sourceSets.main.java.srcDirs 'src/gen'

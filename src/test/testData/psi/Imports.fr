@@ -1,0 +1,8 @@
+package psi.Imports where
+
+import frege.data.List(lookup)
+import frege.Prelude hiding (*>, pred, succ, zero, one)
+import Data.TreeMap as TM hiding(union, delete, insert, !!)
+import Data.List as DL hiding (lookup)
+import Data.Bits
+import frege.test.QuickCheckProperty (forAll, `==>`, property)
