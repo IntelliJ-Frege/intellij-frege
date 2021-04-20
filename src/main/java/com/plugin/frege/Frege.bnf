@@ -11,6 +11,8 @@
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
+
+    psiImplUtilClass="com.plugin.frege.psi.impl.FregePsiImplUtil"
 }
 
 fregeFile ::= !<<eof>> program
@@ -267,7 +269,11 @@ deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
     { pin=1 }
 
 /* fake function name rule for highlighting */
-functionName ::= VARID
+functionName ::= VARID {
+    mixin="com.plugin.frege.psi.impl.FregeNamedElementImpl"
+    implements="com.plugin.frege.psi.FregeNamedElement"
+    methods=[getName setName getNameIdentifier]
+}
 
 /*  Type Annotations */
 annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
