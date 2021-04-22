@@ -1,6 +1,6 @@
 package com.plugin.frege.psi;
 
-import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiNamedElement;
 
-public interface FregeNamedElement extends PsiNameIdentifierOwner {
+public interface FregeNamedElement extends PsiNamedElement {
 }
