@@ -27,15 +27,9 @@ dependencies {
 }
 
 intellij {
-<<<<<<< HEAD
     version '2020.3'
-    plugins = ['java']
-=======
-    version '2021.1'
-//    version 'LATEST-EAP-SNAPSHOT'
-    plugins = ['java', 'gradle']
+    plugins = ['java', 'gradle', 'gradle-java']
     downloadSources true
->>>>>>> Add WIP files for gradle support
 }
 
 task generateFregeLexer(type: GenerateLexer) {

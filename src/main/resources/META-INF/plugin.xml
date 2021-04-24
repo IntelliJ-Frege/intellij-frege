@@ -11,14 +11,12 @@
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-<<<<<<< HEAD
     <depends>com.intellij.modules.java</depends>
-=======
-    <depends>com.intellij.java</depends>
     <depends optional="true">com.intellij.gradle</depends>
->>>>>>> Add WIP files for gradle support
+    <depends>org.jetbrains.plugins.gradle</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+
         <moduleBuilder id="FREGE_MODULE_BUILDER" builderClass="com.plugin.frege.module.FregeModuleBuilder" order="first" />
         <moduleType id="FREGE_MODULE_TYPE" implementationClass="com.plugin.frege.module.FregeModuleType"/>
         <framework.type implementation="com.plugin.frege.framework.FregeFramework"/>
@@ -40,6 +38,9 @@
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
     </extensions>
 
+    <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
+        <frameworkSupport implementation="com.plugin.frege.gradle.GradleFregeFrameworkSupportProvider" />
+    </extensions>
     <actions>
         <!-- Add your actions here -->
     </actions>
