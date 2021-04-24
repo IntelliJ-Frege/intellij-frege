@@ -1,12 +1,17 @@
 import org.jetbrains.grammarkit.tasks.*
 
 plugins {
+//    idea
     id 'java'
     id 'org.jetbrains.intellij' version '0.7.2'
     id 'org.jetbrains.grammarkit' version '2020.3.2'
+//    id 'org.jetbrains.plugins.gradle'
 }
 
+
+apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'org.jetbrains.grammarkit'
+//apply plugin: 'gradle-intellij-plugin'
 
 group 'com.plugin.frege'
 version '1.0-SNAPSHOT'
@@ -16,13 +21,21 @@ repositories {
 }
 
 dependencies {
+//    implementation 'gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.2.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
 intellij {
+<<<<<<< HEAD
     version '2020.3'
     plugins = ['java']
+=======
+    version '2021.1'
+//    version 'LATEST-EAP-SNAPSHOT'
+    plugins = ['java', 'gradle']
+    downloadSources true
+>>>>>>> Add WIP files for gradle support
 }
 
 task generateFregeLexer(type: GenerateLexer) {
