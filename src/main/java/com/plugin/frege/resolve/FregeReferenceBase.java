@@ -1,5 +1,6 @@
 package com.plugin.frege.resolve;
 
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
 import org.jetbrains.annotations.NotNull;
@@ -7,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public abstract class FregeReferenceBase extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
-    private final PsiElement element;
+    protected final PsiElement element;
 
-    public FregeReferenceBase(@NotNull PsiElement element) {
-        super(element, element.getTextRange());
+    public FregeReferenceBase(@NotNull PsiElement element, @NotNull TextRange range) {
+        super(element, range);
         this.element = element;
     }
 
