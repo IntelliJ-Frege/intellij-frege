@@ -44,6 +44,10 @@ qVarId ::= QUALIFIER? QUALIFIER? VARID {
 }
 qConId ::= QUALIFIER? QUALIFIER? CONID
 
+/* fake rule for WHERE and EQUAL */
+whereSection ::= WHERE
+equalSign ::= EQUAL
+
 /* Literals */
 literal ::= boolLiteral
             | numericLiteral
@@ -94,7 +98,7 @@ list ::= emptyList
 
 dlcqual ::= pattern LEFT_ARROW expr
             | expr
-            | LET VIRTUAL_OPEN_SECTION decl (VIRTUAL_END_DECL decl)* VIRTUAL_END_SECTION
+            | LET VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION
 
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
@@ -126,13 +130,13 @@ lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 cond ::= IF expr THEN expr ELSE expr
 
 /* Let Expressions */
-letEx ::= LET VIRTUAL_OPEN_SECTION decl (VIRTUAL_END_DECL decl)* VIRTUAL_END_SECTION IN expr
+letEx ::= LET VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION IN expr
 
 /* Case Expression */
 casEx ::= CASE expr OF VIRTUAL_OPEN_SECTION alt (VIRTUAL_END_DECL alt)* VIRTUAL_END_SECTION
 alt ::= pattern RIGHT_ARROW expr
         | pattern guardedExs
-        | alt WHERE VIRTUAL_OPEN_SECTION decl (VIRTUAL_END_DECL decl)* VIRTUAL_END_SECTION
+        | alt whereSection VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION
 guardedExs ::= guardedEx+
 guardedEx ::= VERT_BAR dlcqual (COMMA dlcqual)* EQUAL expr
 
@@ -174,7 +178,7 @@ pVar ::= VARID
 patternFields ::= VARID EQUAL pattern (COMMA VARID EQUAL pattern)*
 
 /* Declarations and Bindings */
-program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION?
+program ::= (PACKAGE | MODULE) packageName inlineRule? whereSection VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION?
     { pin=1 }
 
 packageName ::= qConId
@@ -240,8 +244,8 @@ simpleKind ::= STAR
 
 
 /* Algebraic Data type Declaration */
-dataDcl ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
-            | DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)? /* Native Datatype Declaration */
+dataDcl ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors (whereSection VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+            | DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName (whereSection VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)? /* Native Datatype Declaration */
     { pin(".*")=DATA }
 
 nativeName ::= (VARID | CONID) (DOT nativeName)?
@@ -256,13 +260,13 @@ typeDcl ::= TYPE CONID (tyVar)* EQUAL sigma
     { pin=1 }
 
 /* Class Declarations */
-classDcl ::= (CLASS | INTERFACE) CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+classDcl ::= (CLASS | INTERFACE) CONID (constraints DOUBLE_RIGHT_ARROW)? classVar (whereSection VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
     { pin=1 }
 
 classVar ::= VARID
 
 /* Instance Declarations */
-instDcl ::= INSTANCE className (constraints DOUBLE_RIGHT_ARROW)? typeRule (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+instDcl ::= INSTANCE className (constraints DOUBLE_RIGHT_ARROW)? typeRule (whereSection VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
     { pin=1 }
 
 /* Derived Instances */
@@ -285,7 +289,7 @@ binding ::= lhs rhs
 lhs ::= funLhs | pattern
 funLhs ::= functionName pTerm*
             | pconApp lexOp pconApp
-rhs ::= (EQUAL expr | guardedExs) (WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
+rhs ::= (equalSign expr | guardedExs) (whereSection VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION)?
     { pin=1 }
 
 /* Native Declaration */
