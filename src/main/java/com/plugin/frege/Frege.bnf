@@ -38,7 +38,10 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 /* Imported operators */
 // Unary operators can not be qualified.
 qLexOp ::= QUALIFIER? QUALIFIER? lexOp
-qVarId ::= QUALIFIER? QUALIFIER? VARID
+qVarId ::= QUALIFIER? QUALIFIER? VARID {
+    implements="com.plugin.frege.psi.FregeNamedElement"
+    mixin="com.plugin.frege.psi.mixin.FregeQVaridMixin"
+}
 qConId ::= QUALIFIER? QUALIFIER? CONID
 
 /* Literals */
