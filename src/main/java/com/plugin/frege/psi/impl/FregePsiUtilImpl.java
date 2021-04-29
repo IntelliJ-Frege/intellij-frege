@@ -97,7 +97,7 @@ public class FregePsiUtilImpl {
      * Stops when no parents anymore or {@link FregeEqualSign} was found but {@link FregeWhereSection} wasn't.
      * If {@link FregeWhereSection} was found after all, then searches for the decls of the where-expression.
      */
-    public static @Nullable PsiElement findWhereDeclsInExpression(PsiElement element) {
+    public static @Nullable PsiElement findWhereDeclsInExpression(@NotNull PsiElement element) {
         while (element.getParent() != null && PsiTreeUtil.getChildOfType(element.getParent(), FregeEqualSign.class) == null) {
             element = element.getParent();
         }
@@ -111,5 +111,25 @@ public class FregePsiUtilImpl {
 
         // WHERE VIRTUAL_OPEN DECLS TODO maybe other patterns
         return element.getNextSibling().getNextSibling();
+    }
+
+    /**
+     * Checks if the passed scope is global.
+     * @throws IllegalArgumentException if the passed element is not a scope.
+     */
+    public static boolean isScopeGlobal(@Nullable PsiElement scope) {
+        if (!isScope(scope)) {
+            throw new IllegalArgumentException("The passed element is not a scope.");
+        }
+
+        return scope instanceof FregeBody;
+    }
+
+    /**
+     * Checks if the passed element is in the global scope.
+     * It means that it is one of {@link FregeTopDecl}.
+     */
+    public static boolean isInGlobalScope(@NotNull PsiElement element) {
+        return isScopeGlobal(scopeOfElement(element));
     }
 }
