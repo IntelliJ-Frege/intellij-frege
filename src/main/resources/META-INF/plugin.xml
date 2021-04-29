@@ -23,6 +23,8 @@
                            implementationClass="com.plugin.frege.highlighter.FregeBraceMatcher"/>
         <lang.commenter language="Frege"
                         implementationClass="com.plugin.frege.editor.FregeCommenter"/>
+        <lang.findUsagesProvider language="Frege"
+                                 implementationClass="com.plugin.frege.findusages.FregeFindUsagesProvider"/>
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
     </extensions>
