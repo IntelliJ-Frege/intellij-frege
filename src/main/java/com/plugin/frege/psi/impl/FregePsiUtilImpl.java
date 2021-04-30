@@ -109,10 +109,10 @@ public class FregePsiUtilImpl {
      */
     public static @Nullable FregeWhereSection findWhereInExpression(@NotNull PsiElement element) {
         FregeBinding binding = parentBinding(element);
-        if (findElementsWithinElement(binding, (elem -> elem.equals(element))).noneMatch(x -> true)) {
+        if (findElementsWithinElementStream(binding, (elem -> elem.equals(element))).noneMatch(x -> true)) {
             return null;
         }
-        return (FregeWhereSection) findElementsWithinElement(binding, (elem -> elem instanceof FregeWhereSection))
+        return (FregeWhereSection) findElementsWithinElementStream(binding, (elem -> elem instanceof FregeWhereSection))
                 .findFirst().orElse(null);
     }
 
@@ -143,12 +143,12 @@ public class FregePsiUtilImpl {
                                                                     @NotNull Predicate<PsiElement> predicate) {
         List<FregeDecl> decls = declsFromScopeOfElement(element);
         return decls.stream()
-                .flatMap(decl -> findElementsWithinElement(decl, predicate))
+                .flatMap(decl -> findElementsWithinElementStream(decl, predicate))
                 .collect(Collectors.toList());
     }
 
-    private static @NotNull Stream<PsiElement> findElementsWithinElement(@Nullable PsiElement element,
-                                                                         @NotNull Predicate<PsiElement> predicate) {
+    private static @NotNull Stream<PsiElement> findElementsWithinElementStream(@Nullable PsiElement element,
+                                                                               @NotNull Predicate<PsiElement> predicate) {
         if (element == null) {
             return Stream.of();
         }
@@ -160,7 +160,15 @@ public class FregePsiUtilImpl {
         }
 
         return Arrays.stream(element.getChildren())
-                .flatMap(elem -> findElementsWithinElement(elem, predicate));
+                .flatMap(elem -> findElementsWithinElementStream(elem, predicate));
+    }
+
+    /**
+     * Searches for the elements matched the passed predicate in the children of the passed element within its scope.
+     */
+    public static @NotNull List<PsiElement> findElementsWithinElement(@Nullable PsiElement element,
+                                                                      @NotNull Predicate<PsiElement> predicate) {
+        return findElementsWithinElementStream(element, predicate).collect(Collectors.toList());
     }
 
     /**
@@ -169,6 +177,4 @@ public class FregePsiUtilImpl {
     public static @Nullable FregeBinding parentBinding(@Nullable PsiElement element) {
         return PsiTreeUtil.getParentOfType(element, FregeBinding.class);
     }
-
-//    public static @Nullable
 }

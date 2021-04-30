@@ -2,7 +2,9 @@ package com.plugin.frege.resolve;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.plugin.frege.psi.FregeBinding;
 import com.plugin.frege.psi.FregeFunctionName;
+import com.plugin.frege.psi.FregePTerm;
 import com.plugin.frege.psi.FregeWhereSection;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +20,20 @@ public class FregeQVaridReference extends FregeReferenceBase {
     // TODO take into account: qualified names and parameters of bindings.
     @Override
     protected List<PsiElement> resolveInner(boolean incompleteCode) {
+        List<PsiElement> functions = tryFindFunction();
+        if (!functions.isEmpty()) {
+            return functions;
+        }
+
+        List<PsiElement> params = tryFindParameters();
+        if (!params.isEmpty()) {
+            return params;
+        }
+
+        return List.of();
+    }
+
+    private List<PsiElement> tryFindFunction() {
         String referenceText = element.getText();
 
         // check if this expression has `where` ans search there for definitions if it does.
@@ -42,6 +58,23 @@ public class FregeQVaridReference extends FregeReferenceBase {
             }
 
             scope = scopeOfElement(scope.getParent());
+        }
+
+        return List.of();
+    }
+
+    private List<PsiElement> tryFindParameters() {
+        String referenceText = element.getText();
+
+        FregeBinding binding = parentBinding(element);
+        while (binding != null) {
+            List<PsiElement> params = findElementsWithinElement(binding,
+                    elem -> elem instanceof FregePTerm && elem.getText().equals(referenceText));
+            if (!params.isEmpty()) {
+                return params;
+            }
+
+            binding = parentBinding(binding.getParent());
         }
 
         return List.of();
