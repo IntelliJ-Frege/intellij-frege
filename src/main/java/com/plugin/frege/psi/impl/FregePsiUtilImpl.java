@@ -74,7 +74,10 @@ public class FregePsiUtilImpl {
             return List.of();
         }
 
-        return declsFromScope(scope).stream().map(getter).collect(Collectors.toList());
+        return declsFromScope(scope).stream()
+                .map(getter)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -88,8 +91,8 @@ public class FregePsiUtilImpl {
      * Returns a predicate, accepting only {@link PsiElement}
      * for which {@link PsiElement#getText()} equals the passed text.
      */
-    public static @NotNull Predicate<PsiElement> keepWithText(String text) {
-        return elem -> text.equals(elem.getText());
+    public static @NotNull Predicate<PsiElement> keepWithText(@NotNull String text) {
+        return elem -> elem != null && text.equals(elem.getText());
     }
 
     /**

@@ -8,6 +8,7 @@ import com.plugin.frege.psi.FregeFunctionName;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.plugin.frege.psi.impl.FregePsiUtilImpl.*;
@@ -26,7 +27,7 @@ public class FregeQVaridReference extends FregeReferenceBase {
         PsiElement whereDecls = findWhereDeclsInExpression(element);
         if (whereDecls != null) {
             List<PsiElement> whereFuncNames = declsFromScopeOfElement(whereDecls, FregeDecl::getBinding).stream()
-                    .map(binding -> PsiTreeUtil.findChildOfType(binding, FregeFunctionName.class))
+                    .map(binding -> PsiTreeUtil.findChildOfType(binding.getLhs(), FregeFunctionName.class))
                     .filter(keepWithText(referenceText))
                     .collect(Collectors.toList());
 
@@ -39,7 +40,8 @@ public class FregeQVaridReference extends FregeReferenceBase {
         PsiElement scope = scopeOfElement(element);
         while (scope != null) {
             List<PsiElement> functionNames = declsFromScopeOfElement(scope, FregeDecl::getBinding).stream()
-                    .map(binding -> PsiTreeUtil.findChildOfType(binding, FregeFunctionName.class))
+                    .map(binding -> PsiTreeUtil.findChildOfType(binding.getLhs(), FregeFunctionName.class))
+                    .filter(Objects::nonNull)
                     .filter(keepWithText(referenceText))
                     .collect(Collectors.toList());
 
