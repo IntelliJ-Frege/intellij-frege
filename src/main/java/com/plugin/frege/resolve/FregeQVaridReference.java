@@ -2,14 +2,11 @@ package com.plugin.frege.resolve;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.plugin.frege.psi.FregeDecl;
 import com.plugin.frege.psi.FregeFunctionName;
+import com.plugin.frege.psi.FregeWhereSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.plugin.frege.psi.impl.FregePsiUtilImpl.*;
 
@@ -24,12 +21,10 @@ public class FregeQVaridReference extends FregeReferenceBase {
         String referenceText = element.getText();
 
         // check if this expression has `where` ans search there for definitions if it does.
-        PsiElement whereDecls = findWhereDeclsInExpression(element);
-        if (whereDecls != null) {
-            List<PsiElement> whereFuncNames = declsFromScopeOfElement(whereDecls, FregeDecl::getBinding).stream()
-                    .map(binding -> PsiTreeUtil.findChildOfType(binding.getLhs(), FregeFunctionName.class))
-                    .filter(keepWithText(referenceText))
-                    .collect(Collectors.toList());
+        FregeWhereSection where = findWhereInExpression(element);
+        if (where != null) {
+            List<PsiElement> whereFuncNames = findElementsWithinScope(where.getDecls(),
+                    element -> element instanceof FregeFunctionName && element.getText().equals(referenceText));
 
             if (!whereFuncNames.isEmpty()) {
                 return whereFuncNames;
@@ -39,11 +34,8 @@ public class FregeQVaridReference extends FregeReferenceBase {
         // searching for definitions in the current and outer scopes
         PsiElement scope = scopeOfElement(element);
         while (scope != null) {
-            List<PsiElement> functionNames = declsFromScopeOfElement(scope, FregeDecl::getBinding).stream()
-                    .map(binding -> PsiTreeUtil.findChildOfType(binding.getLhs(), FregeFunctionName.class))
-                    .filter(Objects::nonNull)
-                    .filter(keepWithText(referenceText))
-                    .collect(Collectors.toList());
+            List<PsiElement> functionNames = findElementsWithinScope(scope,
+                    element -> element instanceof FregeFunctionName && element.getText().equals(referenceText));
 
             if (!functionNames.isEmpty()) {
                 return functionNames;

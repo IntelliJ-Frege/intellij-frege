@@ -12,15 +12,21 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Definitions:
  * <ul>
- *     <li>Scope is a {@link PsiElement} that has a list of {@link FregeDecl}. </li>
+ *     <li> Scope is a {@link PsiElement} that has a list of {@link FregeDecl}. </li>
  * </ul>
  */
 public class FregePsiUtilImpl {
-    private static final Class<?>[] scopeElementTypes = { FregeBody.class, FregeDecls.class };
+    // TODO do-expr and lambdas
+    private static final Class<?>[] scopeElementTypes = {
+            FregeBody.class,
+            FregeDecls.class,
+            FregeLetEx.class
+    };
 
     private static boolean isScope(@Nullable PsiElement element) {
         if (element == null) {
@@ -44,6 +50,8 @@ public class FregePsiUtilImpl {
                     .collect(Collectors.toList());
         } else if (scope instanceof FregeDecls) {
             return ((FregeDecls) scope).getDeclList();
+        } else if (scope instanceof FregeLetEx) {
+            return ((FregeLetEx) scope).getDecls().getDeclList();
         } else {
             throw new RuntimeException("Cannot get decls.");
         }
@@ -83,7 +91,7 @@ public class FregePsiUtilImpl {
     /**
      * Finds a scope of the passed element and gets a list of {@link FregeDecl}.
      */
-    public static @NotNull List<PsiElement> declsFromScopeOfElement(@NotNull PsiElement element) {
+    public static @NotNull List<FregeDecl> declsFromScopeOfElement(@NotNull PsiElement element) {
         return declsFromScopeOfElement(element, (decl -> decl));
     }
 
@@ -96,24 +104,16 @@ public class FregePsiUtilImpl {
     }
 
     /**
-     * Searches for the first parent of the passed element that contains {@link FregeWhereSection}.
-     * Stops when no parents anymore or {@link FregeEqualSign} was found but {@link FregeWhereSection} wasn't.
-     * If {@link FregeWhereSection} was found after all, then searches for the decls of the where-expression.
+     * Searches for the first binding and if it contains {@link FregeWhereSection}, returns it.
+     * Otherwise {@code null} is returned.
      */
-    public static @Nullable PsiElement findWhereDeclsInExpression(@NotNull PsiElement element) {
-        while (element.getParent() != null && PsiTreeUtil.getChildOfType(element.getParent(), FregeEqualSign.class) == null) {
-            element = element.getParent();
+    public static @Nullable FregeWhereSection findWhereInExpression(@NotNull PsiElement element) {
+        FregeBinding binding = parentBinding(element);
+        if (findElementsWithinElement(binding, (elem -> elem.equals(element))).noneMatch(x -> true)) {
+            return null;
         }
-
-        while (!(element instanceof FregeWhereSection)) {
-            element = element.getNextSibling();
-            if (element == null) {
-                return null;
-            }
-        }
-
-        // WHERE VIRTUAL_OPEN DECLS TODO maybe other patterns
-        return element.getNextSibling().getNextSibling();
+        return (FregeWhereSection) findElementsWithinElement(binding, (elem -> elem instanceof FregeWhereSection))
+                .findFirst().orElse(null);
     }
 
     /**
@@ -135,4 +135,40 @@ public class FregePsiUtilImpl {
     public static boolean isInGlobalScope(@NotNull PsiElement element) {
         return isScopeGlobal(scopeOfElement(element));
     }
+
+    /**
+     * Searches for elements within the scope of the passed element that match the passed predicate.
+     */
+    public static @NotNull List<PsiElement> findElementsWithinScope(@NotNull PsiElement element,
+                                                                    @NotNull Predicate<PsiElement> predicate) {
+        List<FregeDecl> decls = declsFromScopeOfElement(element);
+        return decls.stream()
+                .flatMap(decl -> findElementsWithinElement(decl, predicate))
+                .collect(Collectors.toList());
+    }
+
+    private static @NotNull Stream<PsiElement> findElementsWithinElement(@Nullable PsiElement element,
+                                                                         @NotNull Predicate<PsiElement> predicate) {
+        if (element == null) {
+            return Stream.of();
+        }
+        if (predicate.test(element)) {
+            return Stream.of(element);
+        }
+        if (isScope(element)) {
+            return Stream.of();
+        }
+
+        return Arrays.stream(element.getChildren())
+                .flatMap(elem -> findElementsWithinElement(elem, predicate));
+    }
+
+    /**
+     * Returns the first parent which is {@link FregeBinding}.
+     */
+    public static @Nullable FregeBinding parentBinding(@Nullable PsiElement element) {
+        return PsiTreeUtil.getParentOfType(element, FregeBinding.class);
+    }
+
+//    public static @Nullable
 }
