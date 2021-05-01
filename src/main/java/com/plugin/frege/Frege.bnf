@@ -39,12 +39,13 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 weakVarid ::= VARID | weakIdentifier
 weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INLINE | INSTANCE | LET | MUTABLE |
                    NATIVE | OF | PURE | THEN | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
-qLexOp ::= QUALIFIER? QUALIFIER? lexOp
-qVarId ::= QUALIFIER? QUALIFIER? weakVarid {
+qLexOp ::= qualifier? qualifier? lexOp
+qVarId ::= qualifier? qualifier? weakVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeQVaridMixin"
 }
-qConId ::= QUALIFIER? QUALIFIER? dataNameUsage
+qualifier ::= CONID DOT
+qConId ::= qualifier? qualifier? dataNameUsage
 
 /* Literals */
 literal ::= boolLiteral
@@ -102,10 +103,10 @@ emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
 /* Primary Expression */
 primaryInner ::= term
-                    | QUALIFIER LEFT_BRACE weakVarid QUESTIONMARK RIGHT_BRACE
-                    | QUALIFIER LEFT_BRACE weakVarid EQUAL RIGHT_BRACE
-                    | QUALIFIER LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE
-                    | QUALIFIER LEFT_BRACE field (COMMA field)* RIGHT_BRACE
+                    | qualifier LEFT_BRACE weakVarid QUESTIONMARK RIGHT_BRACE
+                    | qualifier LEFT_BRACE weakVarid EQUAL RIGHT_BRACE
+                    | qualifier LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE
+                    | qualifier LEFT_BRACE field (COMMA field)* RIGHT_BRACE
                     | DO openSection dlcqual (endDecl dlcqual)* endSection
 
 primary ::= primaryInner (DOT (
@@ -315,10 +316,15 @@ rhs ::= (EQUAL expr | guardedExs) whereSection?
     { pin=1 }
 
 /* Native Declaration */
-nativeFun ::= PURE? NATIVE annoItem javaItem? DOUBLE_COLON sigma (VERT_BAR sigma)* throwsRule?
+nativeFun ::= PURE? NATIVE nativeAnnoItem javaItem? DOUBLE_COLON sigma (VERT_BAR sigma)* throwsRule?
     { pin=2 }
 javaItem ::= nativeName | unOp | symOp | STRING
 throwsRule ::= THROWS typeRule (COMMA typeRule)*
+nativeAnnoItem ::= nativeFunctionName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
+nativeFunctionName ::= weakVarid {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeNativeFunctionNameMixin"
+}
 
 /* Importing Packages */
 importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC_MODIFIER? importList?
