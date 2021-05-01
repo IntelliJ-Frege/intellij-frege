@@ -53,7 +53,11 @@ public class FregePsiUtilImpl {
         } else if (scope instanceof FregeDecls) {
             return ((FregeDecls) scope).getDeclList();
         } else if (scope instanceof FregeLetEx) {
-            return ((FregeLetEx) scope).getDecls().getDeclList();
+            FregeDecls decls = ((FregeLetEx) scope).getDecls();
+            if (decls == null) {
+                return List.of();
+            }
+            return decls.getDeclList();
         } else {
             throw new RuntimeException("Cannot get decls.");
         }
@@ -139,6 +143,19 @@ public class FregePsiUtilImpl {
     }
 
     /**
+     * Returns a global scope for the passed element or {@code null} if there is no scope.
+     */
+    public static @Nullable PsiElement globalScopeOfElement(@Nullable PsiElement element) {
+        if (element == null) {
+            return null;
+        } else if (isScope(element) && isScopeGlobal(element)) {
+            return element;
+        } else {
+            return globalScopeOfElement(element.getParent());
+        }
+    }
+
+    /**
      * Searches for elements within the scope of the passed element that match the passed predicate.
      */
     public static @NotNull List<PsiElement> findElementsWithinScope(@NotNull PsiElement element,
@@ -178,5 +195,21 @@ public class FregePsiUtilImpl {
      */
     public static @Nullable FregeBinding parentBinding(@Nullable PsiElement element) {
         return PsiTreeUtil.getParentOfType(element, FregeBinding.class);
+    }
+
+    public static @NotNull List<FregeDataDcl> findAvailableDataDecls(@NotNull PsiElement element) {
+        PsiElement globalScope = globalScopeOfElement(element);
+        if (globalScope == null) {
+            return List.of();
+        }
+        if (!(globalScope instanceof FregeBody)) {
+            throw new IllegalStateException("Global scope must be Frege body.");
+        }
+        FregeBody body = (FregeBody) globalScope;
+
+        return body.getTopDeclList().stream()
+                .map(FregeTopDecl::getDataDcl)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

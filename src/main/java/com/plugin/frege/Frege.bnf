@@ -44,7 +44,7 @@ qVarId ::= QUALIFIER? QUALIFIER? weakVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeQVaridMixin"
 }
-qConId ::= QUALIFIER? QUALIFIER? CONID
+qConId ::= QUALIFIER? QUALIFIER? dataNameUsage
 
 /* Literals */
 literal ::= boolLiteral
@@ -169,8 +169,8 @@ matcherPattern ::= pVar TILDA REGEX
                     | pconApp
 pconApp ::= strictPattern+
 strictPattern ::= EXLAMATION_MARK? pTerm
-pTerm ::= CONID
-            | CONID LEFT_BRACE patternFields? RIGHT_BRACE
+pTerm ::= dataNameUsage
+            | dataNameUsage LEFT_BRACE patternFields? RIGHT_BRACE
             | pVar
             | literal
             | unit
@@ -251,10 +251,19 @@ simpleKind ::= STAR
 dataDcl ::= (dataDclConstructors | dataDclNative) deriveDcl?
     { pin=1 }
 
-dataDclConstructors ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors whereSection?
+dataDclConstructors ::= ABSTRACT? DATA dataName tyVar* EQUAL constructors whereSection?
     { pin=6 }
-dataDclNative ::= DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName whereSection?
+dataDclNative ::= DATA dataName tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName whereSection?
     { pin=6 }
+
+dataName ::= CONID {
+    implements="com.plugin.frege.psi.FregeNamedElement"
+    mixin="com.plugin.frege.psi.mixin.FregeDataNameMixin"
+}
+dataNameUsage ::= CONID {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeDataNameUsageMixin"
+}
 
 nativeName ::= (weakVarid | CONID) (DOT (weakVarid | CONID))* {
     implements="com.plugin.frege.psi.FregeCompositeElement"
@@ -263,13 +272,13 @@ nativeName ::= (weakVarid | CONID) (DOT (weakVarid | CONID))* {
 
 constructors ::= constructor (VERT_BAR constructor)*
 
-constructor ::= PRIVATE? (EXLAMATION_MARK? CONID) (LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE | (simpleType | bracedConstructor)*)
+constructor ::= PRIVATE? (EXLAMATION_MARK? dataNameUsage) (LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE | (simpleType | bracedConstructor)*)
 bracedConstructor ::= LEFT_PAREN (bracedConstructor | constructor) RIGHT_PAREN
 
 labels ::= label (COMMA label)*
 label ::= EXLAMATION_MARK? weakVarid
 
-typeDcl ::= TYPE CONID (tyVar)* EQUAL sigma
+typeDcl ::= TYPE dataName (tyVar)* EQUAL sigma
     { pin=1 }
 
 /* Class Declarations */

@@ -2,7 +2,6 @@ package com.plugin.frege.psi.impl;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.java.stubs.index.JavaFullClassNameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.NotNull;
@@ -23,5 +22,4 @@ public class FregePsiClassUtilImpl {
                 .get(qualifiedName.hashCode(), project, GlobalSearchScope.everythingScope(project)).stream()
                 .filter(psiClass -> Objects.equals(psiClass.getQualifiedName(), qualifiedName)).collect(Collectors.toList());
     }
-
 }
