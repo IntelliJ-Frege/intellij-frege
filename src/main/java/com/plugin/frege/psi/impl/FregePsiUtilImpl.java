@@ -216,7 +216,7 @@ public class FregePsiUtilImpl {
     /**
      * @return the module name of psi, if presented, or null otherwise
      */
-    public static String getModuleName(PsiElement psi) {
+    public static @Nullable String getModuleName(PsiElement psi) {
         while (psi != null && !(psi instanceof FregeProgram)) {
             psi = psi.getParent();
         }
