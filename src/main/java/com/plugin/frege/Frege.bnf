@@ -39,7 +39,7 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 // Unary operators can not be qualified.
 qLexOp ::= QUALIFIER? QUALIFIER? lexOp
 qVarId ::= QUALIFIER? QUALIFIER? VARID {
-    implements="com.plugin.frege.psi.FregeNamedElement"
+    implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeQVaridMixin"
 }
 qConId ::= QUALIFIER? QUALIFIER? CONID
@@ -155,6 +155,11 @@ binEx ::= fExp (lexOp fExp)*
 fExp ::= primary+
 
 /* Patterns */
+param ::= VARID {
+    mixin="com.plugin.frege.psi.mixin.FregeParamMixin"
+    implements="com.plugin.frege.psi.FregeNamedElement"
+}
+
 pattern ::= atPattern (DOUBLE_COLON sigma)* // was left rec
     { pin=1 }
 
@@ -173,9 +178,9 @@ pTerm ::= CONID
             | emptyList
             | LEFT_BRACKET pattern (COMMA pattern)* RIGHT_BRACKET
             | LEFT_PAREN pattern (COMMA pattern)* RIGHT_PAREN
-pVar ::= VARID
+pVar ::= param
             | UNDERSCORE
-patternFields ::= VARID EQUAL pattern (COMMA VARID EQUAL pattern)*
+patternFields ::= param EQUAL pattern (COMMA param EQUAL pattern)*
 
 /* Declarations and Bindings */
 program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION?

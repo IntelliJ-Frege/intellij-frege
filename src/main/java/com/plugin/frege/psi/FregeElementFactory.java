@@ -20,11 +20,21 @@ public class FregeElementFactory {
         FregeFile file = createFile(project, text);
         return PsiTreeUtil.findChildrenOfType(file, elementClass).stream()
                 .findFirst().orElseThrow(() ->
-                        new IllegalStateException("Cannot create a function with a custom name."));
+                        new IllegalStateException("Cannot create an element with a custom name."));
     }
 
     public static @NotNull FregeFunctionName createFunctionName(Project project, String name) {
         String fakeFunction = fakeProgram + name + " = undefined";
         return createElement(project, fakeFunction, FregeFunctionName.class);
+    }
+
+    public static @NotNull FregeParam createParam(Project project, String name) {
+        String fakeParam = fakeProgram + "function " + name + " = undefined";
+        return createElement(project, fakeParam, FregeParam.class);
+    }
+
+    public static @NotNull FregeQVarId createVarId(Project project, String name) {
+        String fakeVarId = fakeProgram + "function = " + name;
+        return createElement(project, fakeVarId, FregeQVarId.class);
     }
 }

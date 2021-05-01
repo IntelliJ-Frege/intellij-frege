@@ -6,13 +6,13 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import com.plugin.frege.psi.FregeElementFactory;
-import com.plugin.frege.psi.FregeFunctionName;
+import com.plugin.frege.psi.FregeParam;
 import com.plugin.frege.psi.impl.FregeNamedElementImpl;
-import com.plugin.frege.resolve.FregeFunctionNameReference;
+import com.plugin.frege.resolve.FregeParamReference;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class FregeFunctionNameMixin extends FregeNamedElementImpl implements FregeFunctionName {
-    public FregeFunctionNameMixin(@NotNull ASTNode node) {
+public class FregeParamMixin extends FregeNamedElementImpl implements FregeParam {
+    public FregeParamMixin(@NotNull ASTNode node) {
         super(node);
     }
 
@@ -23,11 +23,11 @@ public abstract class FregeFunctionNameMixin extends FregeNamedElementImpl imple
 
     @Override
     public PsiElement setName(@NlsSafe @NotNull String name) throws IncorrectOperationException {
-        return getNameIdentifier().replace(FregeElementFactory.createFunctionName(getProject(), name));
+        return getNameIdentifier().replace(FregeElementFactory.createParam(getProject(), name));
     }
 
     @Override
     public PsiReference getReference() {
-        return new FregeFunctionNameReference(this);
+        return new FregeParamReference(this);
     }
 }

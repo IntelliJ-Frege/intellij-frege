@@ -2,10 +2,8 @@ package com.plugin.frege.resolve;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.plugin.frege.psi.FregeBinding;
-import com.plugin.frege.psi.FregeFunctionName;
-import com.plugin.frege.psi.FregePTerm;
-import com.plugin.frege.psi.FregeWhereSection;
+import com.intellij.util.IncorrectOperationException;
+import com.plugin.frege.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -17,7 +15,12 @@ public class FregeQVaridReference extends FregeReferenceBase {
         super(element, new TextRange(0, element.getTextLength()));
     }
 
-    // TODO take into account: qualified names and parameters of bindings.
+    @Override
+    public PsiElement handleElementRename(@NotNull String name) throws IncorrectOperationException {
+        return element.replace(FregeElementFactory.createVarId(element.getProject(), name));
+    }
+
+    // TODO take into account: qualified names
     @Override
     protected List<PsiElement> resolveInner(boolean incompleteCode) {
         List<PsiElement> functions = tryFindFunction();
@@ -69,7 +72,7 @@ public class FregeQVaridReference extends FregeReferenceBase {
         FregeBinding binding = parentBinding(element);
         while (binding != null) {
             List<PsiElement> params = findElementsWithinElement(binding,
-                    elem -> elem instanceof FregePTerm && elem.getText().equals(referenceText));
+                    elem -> elem instanceof FregeParam && elem.getText().equals(referenceText));
             if (!params.isEmpty()) {
                 return params;
             }
