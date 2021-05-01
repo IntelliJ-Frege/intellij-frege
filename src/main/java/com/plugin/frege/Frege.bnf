@@ -15,7 +15,7 @@
 
 fregeFile ::= !<<eof>> program
 
-private declRecover ::= !(VIRTUAL_END_DECL)
+private declRecover ::= !(endDecl)
 
 /* Operators */
 fixity ::= infixRule PRECEDENCE lexOp+
@@ -23,10 +23,9 @@ fixity ::= infixRule PRECEDENCE lexOp+
 
 infixRule ::= INFIX | INFIXL | INFIXR
 private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
-            DOT | STAR | AT | COLON | DOUBLE_COLON | DASH |
-            SLASH | BACK_SLASH | DOLLAR |
+            DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
             RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER) // TODO %&^
-private cannotAlone ::= EQUAL | VERT_BAR
+private cannotAlone ::= EQUAL | VERT_BAR | COLON | DOUBLE_COLON
 symOp ::= opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
             | cannotAlone (opCharsCanUseAlone | cannotAlone)+
 
@@ -37,15 +36,15 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 
 /* Imported operators */
 // Unary operators can not be qualified.
+weakVarid ::= VARID | weakIdentifier
+weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INLINE | INSTANCE | LET | MUTABLE |
+                   NATIVE | OF | PURE | THEN | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
 qLexOp ::= QUALIFIER? QUALIFIER? lexOp
-qVarId ::= QUALIFIER? QUALIFIER? VARID {
+qVarId ::= QUALIFIER? QUALIFIER? weakVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeQVaridMixin"
 }
 qConId ::= QUALIFIER? QUALIFIER? CONID
-
-/* fake rule for EQUAL */
-equalSign ::= EQUAL
 
 /* Literals */
 literal ::= boolLiteral
@@ -75,7 +74,7 @@ term ::= qVarId
 
 initFields ::= initField (COMMA initField)*
 
-initField ::= VARID (EQUAL expr)
+initField ::= weakVarid (EQUAL expr)
 
 /* Sections */
 section ::= LEFT_PAREN (binEx lexOp | lexOp expr) RIGHT_PAREN
@@ -97,30 +96,30 @@ list ::= emptyList
 
 dlcqual ::= pattern LEFT_ARROW expr
             | expr
-            | LET VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION
+            | LET openSection decls endSection
 
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
 /* Primary Expression */
 primaryInner ::= term
-                    | QUALIFIER LEFT_BRACE VARID QUESTIONMARK RIGHT_BRACE
-                    | QUALIFIER LEFT_BRACE VARID EQUAL RIGHT_BRACE
-                    | QUALIFIER LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE
+                    | QUALIFIER LEFT_BRACE weakVarid QUESTIONMARK RIGHT_BRACE
+                    | QUALIFIER LEFT_BRACE weakVarid EQUAL RIGHT_BRACE
+                    | QUALIFIER LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE
                     | QUALIFIER LEFT_BRACE field (COMMA field)* RIGHT_BRACE
-                    | DO VIRTUAL_OPEN_SECTION dlcqual (VIRTUAL_END_DECL dlcqual)* VIRTUAL_END_SECTION
+                    | DO openSection dlcqual (endDecl dlcqual)* endSection
 
 primary ::= primaryInner (DOT (
-                VARID | lexOp | unOp |
-                LEFT_BRACE VARID QUESTION_MARK RIGHT_BRACE |
-                LEFT_BRACE VARID EQUAL RIGHT_BRACE |
-                LEFT_BRACE VARID LEFT_ARROW RIGHT_BRACE |
+                weakVarid | lexOp | unOp |
+                LEFT_BRACE weakVarid QUESTION_MARK RIGHT_BRACE |
+                LEFT_BRACE weakVarid EQUAL RIGHT_BRACE |
+                LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE |
                 LEFT_BRACE field (COMMA field)* RIGHT_BRACE |
                 LEFT_BRACKET expr RIGHT_BRACKET
                     ))* // was left rec
 
-field ::= VARID EQUAL expr
-            | VARID LEFT_ARROW expr
-            | VARID
+field ::= weakVarid EQUAL expr
+            | weakVarid LEFT_ARROW expr
+            | weakVarid
 
 /* Lambda Expression */
 lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
@@ -129,11 +128,11 @@ lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 cond ::= IF expr THEN expr ELSE expr
 
 /* Let and Where Expressions */
-letEx ::= LET VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION IN expr
-whereSection ::= WHERE VIRTUAL_OPEN_SECTION decls VIRTUAL_END_SECTION
+letEx ::= LET (openSection decls endSection | decl) IN expr
+whereSection ::= WHERE openSection decls endSection
 
 /* Case Expression */
-casEx ::= CASE expr OF VIRTUAL_OPEN_SECTION alt (VIRTUAL_END_DECL alt)* VIRTUAL_END_SECTION
+caseEx ::= CASE expr OF openSection alt (endDecl alt)* endSection
 alt ::= pattern RIGHT_ARROW expr
         | pattern guardedExs
         | alt whereSection
@@ -142,7 +141,7 @@ guardedEx ::= VERT_BAR dlcqual (COMMA dlcqual)* EQUAL expr
 
 /* Annotated Expression */
 expr ::= topEx (DOUBLE_COLON sigma)?
-topEx ::= casEx // TODO add do
+topEx ::= caseEx // TODO add do
             | letEx
             | cond
             | lambda
@@ -155,7 +154,7 @@ binEx ::= fExp (lexOp fExp)*
 fExp ::= primary+
 
 /* Patterns */
-param ::= VARID {
+param ::= weakVarid {
     mixin="com.plugin.frege.psi.mixin.FregeParamMixin"
     implements="com.plugin.frege.psi.FregeNamedElement"
 }
@@ -183,7 +182,7 @@ pVar ::= param
 patternFields ::= param EQUAL pattern (COMMA param EQUAL pattern)*
 
 /* Declarations and Bindings */
-program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body VIRTUAL_END_SECTION?
+program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE openSection body endSection?
     { pin=1 }
 
 packageName ::= qConId
@@ -192,7 +191,7 @@ packageName ::= qConId
 
 inlineRule ::= INLINE LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN // TODO qName??
 
-body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
+body ::= topDecl (endDecl topDecl)* // was right rec
 
 topDecl ::= !<<eof>> (
               fixity
@@ -211,7 +210,7 @@ decl ::= annotation
             | binding
             | nativeFun
 
-decls ::= decl (VIRTUAL_END_DECL decl)*
+decls ::= decl (endDecl decl)*
 
 /* Syntax of Types */
 sigma ::= (FORALL tyVar (tyVar)* DOT)? chro
@@ -227,12 +226,12 @@ tyApp ::= simpleType+ // was left rec
 
 simpleType ::= tyVar
                 | tyCon
-                | LEFT_PAREN typeRule RIGHT_BRACE
+                | LEFT_PAREN typeRule RIGHT_PAREN
                 | LEFT_PAREN typeRule COMMA typeRule (COMMA typeRule)* RIGHT_PAREN
                 | LEFT_BRACKET typeRule RIGHT_BRACKET
                 | LEFT_PAREN typeRule VERT_BAR typeRule (VERT_BAR typeRule)* RIGHT_PAREN
-tyVar ::= VARID
-            | LEFT_PAREN VARID DOUBLE_COLON kind RIGHT_PAREN
+tyVar ::= weakVarid
+            | LEFT_PAREN weakVarid DOUBLE_COLON kind RIGHT_PAREN
 tvApp ::= tyVar
             | LEFT_PAREN tvApp tvApp* RIGHT_PAREN
 tyCon ::= qConId
@@ -249,17 +248,23 @@ simpleKind ::= STAR
 
 
 /* Algebraic Data type Declaration */
-dataDcl ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors whereSection?
-            | DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName whereSection? /* Native Datatype Declaration */
-    { pin(".*")=DATA }
+dataDcl ::= (dataDclConstructors | dataDclNative) deriveDcl?
+    { pin=1 }
 
-nativeName ::= (VARID | CONID) (DOT nativeName)?
+dataDclConstructors ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors whereSection?
+    { pin=6 }
+dataDclNative ::= DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName whereSection?
+    { pin=6 }
+
+nativeName ::= (weakVarid | CONID) (DOT nativeName)?
 
 constructors ::= constructor (VERT_BAR constructor)*
 
-constructor ::= PRIVATE? CONID (LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE | simpleType*)
+constructor ::= PRIVATE? (EXLAMATION_MARK? CONID) (LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE | (simpleType | bracedConstructor)*)
+bracedConstructor ::= LEFT_PAREN (bracedConstructor | constructor) RIGHT_PAREN
 
-labels ::= EXLAMATION_MARK? VARID (COMMA EXLAMATION_MARK? VARID)*
+labels ::= label (COMMA label)*
+label ::= EXLAMATION_MARK? weakVarid
 
 typeDcl ::= TYPE CONID (tyVar)* EQUAL sigma
     { pin=1 }
@@ -268,10 +273,10 @@ typeDcl ::= TYPE CONID (tyVar)* EQUAL sigma
 classDcl ::= (CLASS | INTERFACE) CONID (constraints DOUBLE_RIGHT_ARROW)? classVar whereSection?
     { pin=1 }
 
-classVar ::= VARID
+classVar ::= weakVarid
 
 /* Instance Declarations */
-instDcl ::= INSTANCE className (constraints DOUBLE_RIGHT_ARROW)? typeRule whereSection?
+instDcl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? className typeRule whereSection?
     { pin=1 }
 
 /* Derived Instances */
@@ -279,7 +284,7 @@ deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
     { pin=1 }
 
 /* fake function name rule for highlighting */
-functionName ::= VARID {
+functionName ::= weakVarid {
     mixin="com.plugin.frege.psi.mixin.FregeFunctionNameMixin"
     implements="com.plugin.frege.psi.FregeNamedElement"
 }
@@ -287,36 +292,38 @@ functionName ::= VARID {
 /*  Type Annotations */
 annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
     { pin=3 }
-annoItem ::= functionName | symOp | UNOP
+annoItem ::= functionName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
 
 /*  Function and Pattern Bindings */
 binding ::= lhs rhs
 lhs ::= funLhs | pattern
-funLhs ::= functionName pTerm*
-            | pconApp lexOp pconApp
-rhs ::= (equalSign expr | guardedExs) whereSection?
+funLhs ::= pconApp lexOp pconApp
+            | functionName pTerm*
+rhs ::= (EQUAL expr | guardedExs) whereSection?
     { pin=1 }
 
 /* Native Declaration */
-nativeFun ::= PURE? NATIVE annoItem javaItem? DOUBLE_COLON sigma throwsRule?
-    {pin=2}
+nativeFun ::= PURE? NATIVE annoItem javaItem? DOUBLE_COLON sigma (VERT_BAR sigma)* throwsRule?
+    { pin=2 }
 javaItem ::= nativeName | unOp | symOp | STRING
 throwsRule ::= THROWS typeRule (COMMA typeRule)*
 
 /* Importing Packages */
 importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC_MODIFIER? importList?
-    {pin=1}
+    { pin=1 }
 
 importList ::= HIDING? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
 importSpec ::= PUBLIC_MODIFIER? importItem alias?
-importItem ::= VARID
+importItem ::= weakVarid
                 | CONID members?
                 | symOp
-                | CONID DOT (VARID | CONID | symOp)
-alias ::= VARID | CONID | symOp
+                | LEFT_PAREN symOp RIGHT_PAREN
+                | BACK_QUOTE symOp BACK_QUOTE
+                | CONID DOT (weakVarid | CONID | symOp)
+alias ::= weakVarid | CONID | symOp
 members ::= LEFT_PAREN (memSpec (COMMA memSpec)*)? RIGHT_PAREN
 memSpec ::= PUBLIC_MODIFIER? member alias?
-member ::= VARID | symOp | CONID
+member ::= weakVarid | symOp | CONID
 nameSpace ::= CONID
 
 
@@ -325,6 +332,10 @@ dotDot ::= DOT DOT // TODO move to lexer?
 
 
 virtual ::= VIRTUAL_OPEN_SECTION | VIRTUAL_END_DECL | VIRTUAL_END_SECTION
+
+openSection ::= VIRTUAL_OPEN_SECTION
+endSection ::= VIRTUAL_END_SECTION
+endDecl ::= VIRTUAL_END_DECL
 
 
 todo ::= NEW_LINE | SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE

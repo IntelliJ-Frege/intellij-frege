@@ -190,6 +190,7 @@ regexQuote           = ´
       {at}                    { return FregeTypes.AT; }
       {tilda}                 { return FregeTypes.TILDA; }
       {hash}                  { return FregeTypes.HASH; }
+      {backQuote}             { return FregeTypes.BACK_QUOTE; }
       {dot}                   { return FregeTypes.DOT; }
       {plus}                  { return FregeTypes.PLUS; }
       {less}                  { return FregeTypes.LESS; }

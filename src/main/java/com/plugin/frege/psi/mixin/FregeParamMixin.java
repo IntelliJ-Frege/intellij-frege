@@ -6,12 +6,11 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import com.plugin.frege.psi.FregeElementFactory;
-import com.plugin.frege.psi.FregeParam;
 import com.plugin.frege.psi.impl.FregeNamedElementImpl;
 import com.plugin.frege.resolve.FregeParamReference;
 import org.jetbrains.annotations.NotNull;
 
-public class FregeParamMixin extends FregeNamedElementImpl implements FregeParam {
+public class FregeParamMixin extends FregeNamedElementImpl {
     public FregeParamMixin(@NotNull ASTNode node) {
         super(node);
     }
