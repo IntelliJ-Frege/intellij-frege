@@ -256,7 +256,10 @@ dataDclConstructors ::= ABSTRACT? DATA CONID tyVar* EQUAL constructors whereSect
 dataDclNative ::= DATA CONID tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName whereSection?
     { pin=6 }
 
-nativeName ::= (weakVarid | CONID) (DOT nativeName)?
+nativeName ::= (weakVarid | CONID) (DOT (weakVarid | CONID))* {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeNativeNameMixin"
+}
 
 constructors ::= constructor (VERT_BAR constructor)*
 

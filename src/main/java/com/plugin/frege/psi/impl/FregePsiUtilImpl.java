@@ -21,6 +21,8 @@ import java.util.stream.Stream;
  * </ul>
  */
 public class FregePsiUtilImpl {
+    private FregePsiUtilImpl() {}
+
     // TODO do-expr and lambdas
     private static final Class<?>[] scopeElementTypes = {
             FregeBody.class,
