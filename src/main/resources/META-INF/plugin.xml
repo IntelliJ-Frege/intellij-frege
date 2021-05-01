@@ -16,11 +16,6 @@
     <depends>org.jetbrains.plugins.gradle</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-
-        <moduleBuilder id="FREGE_MODULE_BUILDER" builderClass="com.plugin.frege.module.FregeModuleBuilder" order="first" />
-        <moduleType id="FREGE_MODULE_TYPE" implementationClass="com.plugin.frege.module.FregeModuleType"/>
-        <runConfigurationProducer implementation="com.plugin.frege.linemarker.FregeRunConfigurationProducer" />
-
         <fileType name="Frege File" implementationClass="com.plugin.frege.FregeFileType"
                   fieldName="INSTANCE" language="Frege" extensions="fr"/>
         <lang.parserDefinition language="Frege"
@@ -37,8 +32,6 @@
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
 
 
-<!--     not yet implemented-->
-<!--     <codeInsight.lineMarkerProvider language="Frege" implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerProvider" />-->
         <runLineMarkerContributor language="Frege" implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerContributor" />
 
     </extensions>
@@ -47,10 +40,8 @@
         <frameworkSupport implementation="com.plugin.frege.gradle.GradleFregeFrameworkSupportProvider" />
     </extensions>
     <actions>
-        <!-- Add your actions here -->
         <action id="com.plugin.frege.linemarker.FregeRunAction" class="com.plugin.frege.linemarker.FregeRunAction"
                 text="FregeRunAction" description="TMP TODO DELETE" icon="AllIcons.RunConfigurations.TestState.Run">
-<!--                icon="com.intellij.icons.AllIcons.RunConfigurations.TestState.Run"-->
 
             <add-to-group group-id="ExternalSystem.ProjectRefreshActionGroup" anchor="first"/>
         </action>
