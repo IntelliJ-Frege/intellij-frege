@@ -3,7 +3,9 @@ package com.plugin.frege.resolve;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.IncorrectOperationException;
 import com.plugin.frege.psi.FregeDataName;
+import com.plugin.frege.psi.FregeElementFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -26,5 +28,10 @@ public class FregeDataNameUsageReference extends FregeReferenceBase {
                 .map(Objects::requireNonNull)
                 .filter(keepWithText(referenceText))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public PsiElement handleElementRename(@NotNull String name) throws IncorrectOperationException {
+        return element.replace(FregeElementFactory.createDataNameUsage(element.getProject(), name));
     }
 }
