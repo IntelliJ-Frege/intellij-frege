@@ -9,7 +9,9 @@
 plugins {
     id "application" // implies java
 }
-mainClassName = "MyModule"
+
+// fregeRun without argument -Pclass_name="your class name here" will run mainClassName
+mainClassName = ""
 
 ext {
     javaTarget   = 1.8
@@ -116,7 +118,7 @@ fregeMainSourceDir,
 "-latin", 							//  make latin type variables
 project.hasProperty("frege_file") ? project.frege_file : fregeMainSourceDir //  set the file-to-compile via a -P option, if not given use "."
     ])
-    println commandLine // for debugging the build
+//    println commandLine // for debugging the build
 }
 // the generated *.java source files sit beside the *.class files. We
 // subsequently move them "back" into a java source dir to better play with the

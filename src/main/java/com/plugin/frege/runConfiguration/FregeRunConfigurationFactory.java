@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project;
 public class FregeRunConfigurationFactory extends ConfigurationFactory {
     private static final String FACTORY_NAME = "Frege configuration factory";
 
-    protected FregeRunConfigurationFactory(ConfigurationType type) {
+    public FregeRunConfigurationFactory(ConfigurationType type) {
         super(type);
     }
 
