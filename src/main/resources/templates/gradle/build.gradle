@@ -1,3 +1,6 @@
+// Created by: Dierk
+// Source: https://github.com/Dierk/HelloFrege/blob/sample_code/build.gradle
+// Modified by 23jura23
 
 // Compiles, tests, etc. any Frege code.
 // Any additional Java code will be processed afterwards and can depend on the Frege code.
