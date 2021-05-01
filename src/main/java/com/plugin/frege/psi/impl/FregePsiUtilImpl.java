@@ -212,4 +212,21 @@ public class FregePsiUtilImpl {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * @return the module name of psi, if presented, or null otherwise
+     */
+    public static @Nullable String getModuleName(PsiElement psi) {
+        while (psi != null && !(psi instanceof FregeProgram)) {
+            psi = psi.getParent();
+        }
+        if (psi == null)
+            throw new IllegalArgumentException("PsiElement is not a part of Frege program");
+        FregePackageName packageName = ((FregeProgram) psi).getPackageName();
+        if (packageName == null)
+            return null;
+        return packageName.getText();
+    }
+
+//    public static @Nullable
 }

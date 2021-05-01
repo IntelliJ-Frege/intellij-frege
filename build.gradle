@@ -6,6 +6,8 @@ plugins {
     id 'org.jetbrains.grammarkit' version '2020.3.2'
 }
 
+
+apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'org.jetbrains.grammarkit'
 
 group 'com.plugin.frege'
@@ -22,7 +24,9 @@ dependencies {
 
 intellij {
     version '2020.3'
-    plugins = ['java']
+//  version 'LATEST-EAP-SNAPSHOT'
+    plugins = ['java', 'gradle', 'gradle-java']
+    downloadSources true
 }
 
 task generateFregeLexer(type: GenerateLexer) {

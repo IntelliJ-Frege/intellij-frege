@@ -1,0 +1,269 @@
+// Created by: Dierk
+// Source: https://github.com/Dierk/HelloFrege/blob/sample_code/build.gradle
+// Modified by 23jura23
+
+// Compiles, tests, etc. any Frege code.
+// Any additional Java code will be processed afterwards and can depend on the Frege code.
+// Any Java code that Frege depends upon must be
+// - in a dependency (e.g. a Java project that this build depends on) or
+// - in a native module "inlined" in the Frege code.
+// Calling the usual java targets will also execute the respective Frege targets.
+
+plugins {
+    id "application" // implies java
+}
+
+// fregeRun without argument -Pclass_name="your class name here" will run mainClassName
+mainClassName = ""
+
+ext {
+    javaTarget   = 1.8
+    // CHANGE NEXT LINE BELOW IF YOU WANT TO USE A DIFFERENT COMPILER
+    // define your version and run "gradlew fregeInit" to download
+    fregeRelease = '3.25alpha'
+    fregeVersion = '3.25.84'
+    fregeDir     = "${rootProject.projectDir}/lib/org/frege-lang/frege/${fregeVersion}"
+    fregeJar     = "${fregeDir}/frege-${fregeVersion}.jar"
+    fregeMainSourceDir = "${projectDir}/src/main/frege"
+    fregeTestSourceDir = "${projectDir}/src/test/frege"
+    fregeMainJavaDir   = "${buildDir}/src/main/frege"   // where the frege-created *.java files go
+    fregeTestJavaDir   = "${buildDir}/src/test/frege"
+    fregeDocDir        = "${project.buildDir}/docs/fregedoc"
+    fregeCompilerUrl   = "https://github.com/Frege/frege/releases/download/${fregeRelease}/frege${fregeVersion}.jar"
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = javaTarget
+
+void downloadCompiler() {
+    // fetch frege distro from github releases and store locally
+    ant.mkdir(dir: fregeDir)
+    ant.get(src: fregeCompilerUrl,
+            dest: fregeJar,
+            skipexisting: 'true')
+}
+
+task fregeInit {
+    group "frege"
+    outputs.file(fregeJar)
+    doLast {
+        downloadCompiler()
+    }
+}
+
+repositories {
+    flatDir {
+        dirs fregeDir
+    }
+    mavenLocal() // not needed right now, only for later dependencies
+    jcenter()    // not needed right now, only for later dependenciesGradleBased02
+}
+
+// we manage dependencies as if it was a Java project
+dependencies {
+    // later dependencies go here
+}
+
+// standard library dependency
+// download sources, then add a dependency
+// this workaround is needed as stdlib is added as flatDir dependency
+configurations.implementation.defaultDependencies { deps ->
+    downloadCompiler()
+
+    deps.add(project.dependencies.create("org.frege-lang:frege:${fregeVersion}"))
+}
+
+
+task prepareCompileDirs { // prepare all the directories that the frege tasks rely upon
+    group "frege"
+    outputs.dir(sourceSets.main.java.outputDir).withPropertyName("compileOutputDir")
+    outputs.dir(sourceSets.test.java.outputDir).withPropertyName("testOutputDir")
+    doLast {
+        ant.mkdir(dir: sourceSets.main.java.outputDir)
+        ant.mkdir(dir: sourceSets.test.java.outputDir)
+    }
+}
+
+task fregeCompile(type: JavaExec) {      	// https://docs.gradle.org/6.5/dsl/org.gradle.api.tasks.JavaExec.html
+    dependsOn     prepareCompileDirs
+    group       = "frege"
+    description = "Compile the -Pfrege_file=."
+    classpath   = files fregeJar
+    args([
+//		"-help",
+//		"-version",
+//		"-Dfrege.javac=javac -J-Xmx512m", 	//   java compiler and options, default internal
+"-d", 								//  target directory for *.java and *.class files
+sourceSets.main.java.outputDir,
+"-fp", 								//  frege path: where to find imported frege packages
+sourceSets.main.compileClasspath.asPath,
+"-enc", "UTF-8", 					//  charset for source code files, standard is UTF-8
+//		"-enc DEFAULT", 					//  platform default charset for source code files
+"-target", javaTarget,	 			//  generate code for java version n.m, also passed to javac
+//		"-nocp", 							//  exclude java classpath from -fp
+"-hints", 							//  print more detailed error messages and warnings
+//		"-inline", 							//  inline functions where possible
+//		"-strict-pats", 					//  check patterns in multi-argument functions strictly from left to right
+//		"-comments", 						//  generate commented code
+//		"-explain", "i[-j]" 				//  print some debugging output from type checker
+//  regarding line(s) i (to j). May help to understand
+//  inexplicable type errors better.
+//		"-nowarn", 							//  don't print warnings (not recommended)
+//		"-v", 								//  verbose mode on
+"-make", 							//  build outdated or missing imports
+"-sp",		 						//  look for source files in srcpath, default is .
+fregeMainSourceDir,
+//		"-j", 								//  do not run the java compiler
+"-ascii", 							//  do not use →, ⇒, ∀ and ∷ when presenting types,
+//  and use ascii characters for java generics variables
+//		"-greek", 							//  make greek type variables
+//		"-fraktur", 						//  make 𝖋𝖗𝖆𝖐𝖙𝖚𝖗 type variables
+"-latin", 							//  make latin type variables
+project.hasProperty("frege_file") ? project.frege_file : fregeMainSourceDir //  set the file-to-compile via a -P option, if not given use "."
+    ])
+//    println commandLine // for debugging the build
+}
+// the generated *.java source files sit beside the *.class files. We
+// subsequently move them "back" into a java source dir to better play with the
+// standard tooling (e.g. the jar task and IDE assumptions).
+fregeCompile.doLast {
+    ant.move(toDir: fregeMainJavaDir) {
+        fileSet(dir: sourceSets.main.java.outputDir) {
+            include name:"**/*.java"
+        }
+    }
+}
+
+// you might want to start the repl as
+//   gradlew --console=plain --no-daemon fregeRepl
+// to see less confusing "build progress" output and have proper arrow key support
+
+task fregeRepl(type: JavaExec) {
+    // dependsOn     fregeCompile  // in case we always want to compile before
+    group         = "frege"
+    description   = "Frege REPL start via: gradlew --console=plain --no-daemon fregeRepl"
+    standardInput = System.in 								// this should run interactively, so we need stdin
+    classpath     = files sourceSets.main.java.outputDir, fregeJar // start with all compiled project classes
+    main          = "frege.repl.FregeRepl"
+}
+fregeRepl.doFirst {
+    ant.echo "Consider starting via: gradlew --console=plain --no-daemon fregeRepl"
+}
+
+task freplStartCommands {
+    group         = "frege"
+    doLast {
+        // remove the class file from output such that it does not shadow the file
+        File classFile = new File(''+
+                sourceSets.main.java.outputDir +
+                project.frege_file.replaceAll(/^.*\/frege/,'') - ".fr" + ".class")
+        if (classFile.exists()) {
+            classFile.delete()
+            println "deleted $classFile"
+        }
+        println "Copy the following 3 lines into the console: ------------"
+        println "./gradlew --console=plain --no-daemon fregeRepl"
+        println ":load ${project.frege_file}"
+        println ":browse ${project.class_name}"
+    }
+}
+
+task fregeRun(type: JavaExec) {
+    dependsOn     fregeCompile  // in case we always want to compile before running
+    group         = "frege"
+    description   = "Run -Pclass_name=${project.mainClassName}"
+    standardInput = System.in 								// this might run interactively, so we need stdin
+    classpath     = files sourceSets.main.runtimeClasspath.asPath
+    main          = project.hasProperty("class_name") ? project.class_name : project.mainClassName
+}
+
+
+task prepareFregeTestDir {
+    group "frege"
+    outputs.dir("${buildDir}/resources/main").withPropertyName("outputDir")
+    doLast {
+        ant.mkdir(dir: "${buildDir}/resources/main")
+    }
+}
+
+task fregeTestCompile(type: JavaExec) {
+    dependsOn   fregeCompile, prepareFregeTestDir
+    group       = "frege"
+    description = "Compile all Frege test files"
+    classpath   = files fregeJar
+    args([
+            "-d", 								//  target directory for *.java and *.class files
+            sourceSets.test.java.outputDir,
+            "-fp", 								//  frege path: where to find imported frege packages
+            sourceSets.test.compileClasspath.asPath,
+            "-target", javaTarget,	 			//  generate code for java version n.m, also passed to javac
+            "-hints", 							//  print more detailed error messages and warnings
+            "-make", 							//  build outdated or missing imports
+            "-sp",		 						//  look for source files in srcpath, default is .
+            fregeTestSourceDir,
+            "-ascii", 							//  do not use →, ⇒, ∀ and ∷ when presenting types,
+            "-latin", 							//  make latin type variables
+            fregeTestSourceDir 					//  compile all tests
+    ])
+}
+fregeTestCompile.doLast {
+    ant.move(toDir: fregeTestJavaDir) {
+        fileSet(dir: sourceSets.test.java.outputDir) {
+            include name:"**/*.java"
+        }
+    }
+}
+
+task fregeTest(type: JavaExec) {
+    dependsOn     fregeTestCompile  // in case we always want to compile before running
+    group         = "frege"
+    description   = "Test -Pclass_name=MainTest or all in test dir"
+    classpath     = files sourceSets.test.runtimeClasspath.asPath
+    main          = "frege.tools.Quick"
+    args([
+            "-v", 								//  verbose checks
+//		"-vv", 								//  most detailed output, use for a single check
+//		"-n", 								//  each check will be running num times, default 100
+//			"100",
+//		"-p", 								//  only check the named predicates
+//			"pred1,pred2",
+//		"-x", 								//  do not check the predicates listed
+//			"pred1,pred2",
+//		"-l", 	 							//  list predicates available, do not check them
+            //  module (i.e. class) name or all tests in dir
+            project.hasProperty("class_name") ? project.class_name : sourceSets.test.java.outputDir
+    ])
+}
+
+task prepareDocDir {
+    group "frege"
+    outputs.dir(fregeDocDir).withPropertyName("outputDir")
+    doLast {
+        ant.mkdir(dir: fregeDocDir)
+    }
+}
+
+task fregeDoc(type: JavaExec) {
+    dependsOn     prepareDocDir, jar
+    group         = "frege"
+    description   = "Generate the docs for all runtime classes from jar"
+    classpath     = files sourceSets.main.runtimeClasspath.asPath, fregeJar
+    main          = "frege.tools.Doc"
+    args([
+            "-v", 								//  print a message for each processed module
+            "-d", 								//  specify root directory for documentation
+            fregeDocDir,
+//		"-cp", 								//  (additional) class path where modules can be found
+//			sourceSets.test.runtimeClasspath.asPath,
+//		"-x", 								//  exclude modules whose name starts with 'mod1' or 'mod2'
+//			"mod1,mod2",
+//		sourceSets.main.java.outputDir      //  see https://github.com/Frege/frege/issues/392
+            jar.archiveFile.get()               //  temporary replacement: create docs from jar
+    ])
+}
+
+// the standard java jar task must first create the frege classes
+compileJava.dependsOn 		fregeCompile
+compileTestJava.dependsOn 	fregeTestCompile
+test.dependsOn 				fregeTest
+
