@@ -11,6 +11,7 @@
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="Frege File" implementationClass="com.plugin.frege.FregeFileType"
@@ -23,6 +24,8 @@
                            implementationClass="com.plugin.frege.highlighter.FregeBraceMatcher"/>
         <lang.commenter language="Frege"
                         implementationClass="com.plugin.frege.editor.FregeCommenter"/>
+        <lang.findUsagesProvider language="Frege"
+                                 implementationClass="com.plugin.frege.findusages.FregeFindUsagesProvider"/>
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
     </extensions>
