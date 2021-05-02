@@ -274,4 +274,13 @@ public class FregePsiUtilImpl {
         }
         return qualifiedName.charAt(qualifiedName.length() - qualifier.length() - 1) == '.';
     }
+
+    /**
+     * @return the first parent that inherits FregeDecl, or null if none found
+     */
+    public static @Nullable PsiElement getDeclType(@NotNull PsiElement element) {
+        PsiElement fregeDeclParent = PsiTreeUtil.findFirstParent(element, p -> p instanceof FregeDecl);
+        if (fregeDeclParent == null) return null;
+        return fregeDeclParent.getFirstChild();
+    }
 }
