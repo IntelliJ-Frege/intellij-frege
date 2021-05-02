@@ -11,6 +11,9 @@
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.gradle</depends>
+    <depends>org.jetbrains.plugins.gradle</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="Frege File" implementationClass="com.plugin.frege.FregeFileType"
@@ -23,11 +26,24 @@
                            implementationClass="com.plugin.frege.highlighter.FregeBraceMatcher"/>
         <lang.commenter language="Frege"
                         implementationClass="com.plugin.frege.editor.FregeCommenter"/>
+        <lang.findUsagesProvider language="Frege"
+                                 implementationClass="com.plugin.frege.findusages.FregeFindUsagesProvider"/>
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
+
+
+        <runLineMarkerContributor language="Frege" implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerContributor" />
+
     </extensions>
 
+    <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
+        <frameworkSupport implementation="com.plugin.frege.gradle.GradleFregeFrameworkSupportProvider" />
+    </extensions>
     <actions>
-        <!-- Add your actions here -->
+        <action id="com.plugin.frege.linemarker.FregeRunAction" class="com.plugin.frege.linemarker.FregeRunAction"
+                text="FregeRunAction" description="TMP TODO DELETE" icon="AllIcons.RunConfigurations.TestState.Run">
+
+            <add-to-group group-id="ExternalSystem.ProjectRefreshActionGroup" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>
