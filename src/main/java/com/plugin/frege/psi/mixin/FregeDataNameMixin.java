@@ -5,6 +5,7 @@ import com.intellij.openapi.util.NlsSafe;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
+import com.plugin.frege.psi.FregeElementFactory;
 import com.plugin.frege.psi.impl.FregeNamedElementImpl;
 import com.plugin.frege.resolve.FregeDataNameReference;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public class FregeDataNameMixin extends FregeNamedElementImpl {
 
     @Override
     public PsiElement setName(@NlsSafe @NotNull String name) throws IncorrectOperationException {
-        return null;
+        return getNameIdentifier().replace(FregeElementFactory.createDataName(getProject(), name));
     }
 
     @Override

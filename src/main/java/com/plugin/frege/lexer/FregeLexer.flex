@@ -66,7 +66,6 @@ blockComment         = {blockCommentStart}~{blockCommentEnd}
 /* identifiers */
 conid                = \p{Lu}(\d | {underscore} | \p{L})*
 varid                = \p{Ll}(\d | {underscore} | \p{L})*{quote}*
-qualifier            = {conid}{dot}
 
 /* operators */
 precedence           = [123456789] | 1[0123456]
@@ -201,7 +200,6 @@ regexQuote           = ´
       {wordop}                { return FregeTypes.WORD_OPERATOR; }
 
    /* identifiers */
-      {qualifier}             { return FregeTypes.QUALIFIER; }
       {conid}                 { return FregeTypes.CONID; }
       {varid}                 { return FregeTypes.VARID; }
 

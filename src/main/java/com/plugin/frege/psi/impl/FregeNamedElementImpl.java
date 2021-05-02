@@ -16,19 +16,19 @@ public abstract class FregeNamedElementImpl extends FregeCompositeElementImpl im
     public abstract @Nullable PsiElement getNameIdentifier();
 
     @Override
-    public final @Nullable String getName() {
+    public @Nullable String getName() {
         PsiElement nameIdentifier = getNameIdentifier();
         return nameIdentifier != null ? nameIdentifier.getText() : null;
     }
 
     @Override
-    public final @NotNull PsiElement getNavigationElement() {
+    public @NotNull PsiElement getNavigationElement() {
         PsiElement nameIdentifier = getNameIdentifier();
         return nameIdentifier != null ? nameIdentifier : this;
     }
 
     @Override
-    public final int getTextOffset() {
+    public int getTextOffset() {
         PsiElement nameIdentifier = getNameIdentifier();
         if (nameIdentifier != null && nameIdentifier != this) {
             return nameIdentifier.getTextOffset();

@@ -19,7 +19,7 @@ public class FregeElementFactory {
     private static <E extends PsiElement> @NotNull E createElement(Project project, String text, Class<E> elementClass) {
         FregeFile file = createFile(project, text);
         return PsiTreeUtil.findChildrenOfType(file, elementClass).stream()
-                .findFirst().orElseThrow(() ->
+                .reduce((fir, sec) -> sec).orElseThrow(() ->
                         new IllegalStateException("Cannot create an element with a custom name."));
     }
 
@@ -36,5 +36,20 @@ public class FregeElementFactory {
     public static @NotNull FregeQVarId createVarId(Project project, String name) {
         String fakeVarId = fakeProgram + "function = " + name;
         return createElement(project, fakeVarId, FregeQVarId.class);
+    }
+
+    public static @NotNull FregeNativeName createNativeName(Project project, String name) {
+        String fakeNativeName = fakeProgram + "pure native Dummy = " + name;
+        return createElement(project, fakeNativeName, FregeNativeName.class);
+    }
+
+    public static @NotNull FregeDataName createDataName(Project project, String name) {
+        String fakeDataName = fakeProgram + "data " + name + " = DummyConstructor";
+        return createElement(project, fakeDataName, FregeDataName.class);
+    }
+
+    public static @NotNull FregeDataNameUsage createDataNameUsage(Project project, String name) {
+        String fakeDataNameUsage = fakeProgram + "func :: " + name;
+        return createElement(project, fakeDataNameUsage, FregeDataNameUsage.class);
     }
 }
