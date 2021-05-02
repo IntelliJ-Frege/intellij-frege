@@ -124,7 +124,10 @@ public class FregeLayoutLexer extends LexerBase {
                     }
                     break;
                 case WAITING_FOR_SECTION_START:
-                    if (token.isCode() && token.column > indentStack.peek()) {
+                    if (token.isCode() && token.elementType.equals(LEFT_BRACE)) {
+                        state = State.NORMAL;
+                    }
+                    else if (token.isCode() && token.column > indentStack.peek()) {
                         tokens.add(i, createVirtualToken(VIRTUAL_OPEN_SECTION, tokens.get(i - 1)));
                         i++;
                         state = State.NORMAL;
@@ -152,6 +155,10 @@ public class FregeLayoutLexer extends LexerBase {
                                 indentStack.pop();
                             }
                         }
+                    } else if (isSingleLineLetIn(i)) {
+                        tokens.add(i, createVirtualToken(VIRTUAL_END_SECTION, tokens.get(i - 1)));
+                        i++;
+                        indentStack.pop();
                     }
                     break;
             }
@@ -187,6 +194,23 @@ public class FregeLayoutLexer extends LexerBase {
             }
         }
         return insertAt;
+    }
+
+    private boolean isSingleLineLetIn(int index) { // TODO
+        Token token = tokens.get(index);
+        if (token == null || token.elementType == null || !token.elementType.equals(IN)) {
+            return false;
+        }
+        for (int i = index - 1; i >= 0; i--) {
+            Token currentToken = tokens.get(i);
+            if (!currentToken.line.equals(token.line)) {
+                break;
+            }
+            if (currentToken.elementType.equals(LET)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private enum State {
