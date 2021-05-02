@@ -26,7 +26,7 @@ public class FregePsiUtilImpl {
     // TODO do-expr and lambdas
     private static final Class<?>[] scopeElementTypes = {
             FregeBody.class,
-            FregeDecls.class,
+//            FregeDecls.class,
             FregeLetEx.class
     };
 
@@ -50,14 +50,15 @@ public class FregePsiUtilImpl {
                     .map(FregeTopDecl::getDecl)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-        } else if (scope instanceof FregeDecls) {
-            return ((FregeDecls) scope).getDeclList();
+//        } else if (scope instanceof FregeDecls) {
+//            return ((FregeDecls) scope).getDeclList();
         } else if (scope instanceof FregeLetEx) {
-            FregeDecls decls = ((FregeLetEx) scope).getDecls();
-            if (decls == null) {
-                return List.of();
-            }
-            return decls.getDeclList();
+            return List.of(); // TODO
+//            FregeDecls decls = ((FregeLetEx) scope).getDecls();
+//            if (decls == null) {
+//                return List.of();
+//            }
+//            return decls.getDeclList();
         } else {
             throw new RuntimeException("Cannot get decls.");
         }

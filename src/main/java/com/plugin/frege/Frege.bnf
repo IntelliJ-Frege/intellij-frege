@@ -15,7 +15,7 @@
 
 fregeFile ::= !<<eof>> program
 
-private declRecover ::= !(endDecl)
+private declRecover ::= !(VIRTUAL_END_DECL)
 
 /* Operators */
 fixity ::= infixRule PRECEDENCE lexOp+
@@ -96,7 +96,7 @@ list ::= emptyList
 
 dlcqual ::= pattern LEFT_ARROW expr
             | expr
-            | LET openSection decls endSection
+            | letEx
 
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
@@ -106,7 +106,7 @@ primaryInner ::= term
                     | QUALIFIER LEFT_BRACE weakVarid EQUAL RIGHT_BRACE
                     | QUALIFIER LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE
                     | QUALIFIER LEFT_BRACE field (COMMA field)* RIGHT_BRACE
-                    | DO openSection dlcqual (endDecl dlcqual)* endSection
+                    | doEx
 
 primary ::= primaryInner (DOT (
                 weakVarid | lexOp | unOp |
@@ -127,12 +127,14 @@ lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 /* Conditional */
 cond ::= IF expr THEN expr ELSE expr
 
-/* Let and Where Expressions */
-letEx ::= LET (openSection decls endSection | decl) IN expr
-whereSection ::= WHERE openSection decls endSection
+/* Let, Where and Do Expressions */
+meta indentSection ::= VIRTUAL_OPEN_SECTION <<p>> (VIRTUAL_END_DECL <<p>>)* VIRTUAL_END_SECTION
+letEx ::= LET <<indentSection decl>> IN expr
+whereSection ::= WHERE <<indentSection decl>>
+doEx ::= DO <<indentSection dlcqual>>
 
 /* Case Expression */
-caseEx ::= CASE expr OF openSection alt (endDecl alt)* endSection
+caseEx ::= CASE expr OF <<indentSection alt>>
 alt ::= pattern RIGHT_ARROW expr
         | pattern guardedExs
         | alt whereSection
@@ -182,7 +184,7 @@ pVar ::= param
 patternFields ::= param EQUAL pattern (COMMA param EQUAL pattern)*
 
 /* Declarations and Bindings */
-program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE openSection body endSection?
+program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body
     { pin=1 }
 
 packageName ::= qConId
@@ -191,7 +193,7 @@ packageName ::= qConId
 
 inlineRule ::= INLINE LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN // TODO qName??
 
-body ::= topDecl (endDecl topDecl)* // was right rec
+body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
 
 topDecl ::= !<<eof>> (
               fixity
@@ -209,8 +211,6 @@ accessModifier ::= PUBLIC_MODIFIER | PROTECTED_MODIFIER | PRIVATE_MODIFIER
 decl ::= annotation
             | binding
             | nativeFun
-
-decls ::= decl (endDecl decl)*
 
 /* Syntax of Types */
 sigma ::= (FORALL tyVar (tyVar)* DOT)? chro
@@ -341,13 +341,6 @@ nameSpace ::= CONID
 
 
 dotDot ::= DOT DOT // TODO move to lexer?
-
-
-virtual ::= VIRTUAL_OPEN_SECTION | VIRTUAL_END_DECL | VIRTUAL_END_SECTION
-
-openSection ::= VIRTUAL_OPEN_SECTION
-endSection ::= VIRTUAL_END_SECTION
-endDecl ::= VIRTUAL_END_DECL
 
 
 todo ::= NEW_LINE | SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
