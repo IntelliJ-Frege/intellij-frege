@@ -35,6 +35,10 @@ public class FregeParsingTest extends ParsingTestCase {
         doTest(true);
     }
 
+    public void testList() {
+        doTest(true);
+    }
+
     @Override
     protected boolean skipSpaces() {
         return false;

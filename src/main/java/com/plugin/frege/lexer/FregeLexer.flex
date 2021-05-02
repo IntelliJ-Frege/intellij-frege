@@ -85,6 +85,7 @@ questionMark         = \?
 comma                = \,
 semicolon            = ;
 dot                  = \.
+doubleDot            = \.\.
 slash                = \/
 backSlash            = \\
 underscore           = _
@@ -154,6 +155,8 @@ regexQuote           = ´
       {lineComment}           { return FregeTypes.LINE_COMMENT; }
       {newline}               { return FregeTypes.NEW_LINE; }
       {whitespace}            { return TokenType.WHITE_SPACE; }
+
+      {doubleDot}             { return FregeTypes.DOUBLE_DOT; }
 
    /* literals */
       {integer}               { return FregeTypes.INTEGER; }
