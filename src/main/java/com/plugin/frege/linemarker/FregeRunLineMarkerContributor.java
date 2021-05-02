@@ -23,6 +23,10 @@ public class FregeRunLineMarkerContributor extends RunLineMarkerContributor {
             return null;
         }
 
+        if (!(FregePsiUtilImpl.getDeclType(element) instanceof FregeBinding)) {
+            return null; // we are annotation or something else
+        }
+
         final String moduleName = FregePsiUtilImpl.getModuleName(element);
         if (moduleName == null) return null;
 
