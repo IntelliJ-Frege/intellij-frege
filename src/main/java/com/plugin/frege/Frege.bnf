@@ -186,9 +186,12 @@ patternFields ::= param EQUAL pattern (COMMA param EQUAL pattern)*
 program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE openSection body endSection?
     { pin=1 }
 
-packageName ::= qConId
-                | qVarId DOT packageName
-                | qConId DOT packageName
+packageName ::= ((qVarId | qConId) DOT)* packageClassName
+
+packageClassName ::= qConId {
+    implements="com.intellij.psi.PsiIdentifier"
+    mixin="com.plugin.frege.psi.mixin.FregePackageClassNameMixin"
+}
 
 inlineRule ::= INLINE LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN // TODO qName??
 
