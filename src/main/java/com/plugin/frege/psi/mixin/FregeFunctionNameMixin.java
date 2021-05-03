@@ -5,7 +5,9 @@ import com.intellij.openapi.util.NlsSafe;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
+import com.plugin.frege.psi.FregeAnnoItem;
 import com.plugin.frege.psi.FregeElementFactory;
+import com.plugin.frege.psi.FregeFunLhs;
 import com.plugin.frege.psi.impl.FregeNamedElementImpl;
 import com.plugin.frege.resolve.FregeFunctionNameReference;
 import org.jetbrains.annotations.NotNull;
@@ -28,5 +30,13 @@ public abstract class FregeFunctionNameMixin extends FregeNamedElementImpl {
     @Override
     public PsiReference getReference() {
         return new FregeFunctionNameReference(this);
+    }
+
+    public boolean isFunctionBinding() {
+        return getParent() instanceof FregeFunLhs;
+    }
+
+    public boolean isFunctionAnnotation() {
+        return getParent() instanceof FregeAnnoItem;
     }
 }
