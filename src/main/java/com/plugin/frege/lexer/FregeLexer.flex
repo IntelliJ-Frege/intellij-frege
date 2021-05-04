@@ -59,7 +59,7 @@ regex                = {regexQuote}(\\{regexQuote}|[^\`])*{regexQuote}
 /* comments */
 lineCommentStart     = {dash}{dash}{dash}?
 lineComment          = {lineCommentStart}[^\n]*
-blockCommentStart    = {leftBrace}{dash}{dash}
+blockCommentStart    = {leftBrace}{dash}
 blockCommentEnd      = {dash}{rightBrace}
 blockComment         = {blockCommentStart}~{blockCommentEnd}
 
@@ -73,29 +73,31 @@ precedence           = [123456789] | 1[0123456]
 wordop               = {backQuote}\w+{backQuote}
 
 colon                = :
-doubleColon          = ::
-rightArrow           = ->
-leftArrow            = <-
-doubleRightArrow     = =>
+doubleColon          = :: | \u2237
+rightArrow           = -> | \u2192
+leftArrow            = <- | \u2190
+doubleRightArrow     = => | \u21D2
 vertBar              = \|
+ampersand            = \&
 equal                = =
 dash                 = -
 exlamationMark       = \!
 questionMark         = \?
 comma                = \,
 semicolon            = ;
-dot                  = \.
+dot                  = \. | \u2022 | \u00B7 | \u2218
 doubleDot            = \.\.
 slash                = \/
 backSlash            = \\
 underscore           = _
-star                 = \*
+star                 = \* | \u2605
 at                   = @
 tilda                = \~
 plus                 = \+
 less                 = <
 greater              = >
 dollar               = \$
+forall               = \u2200
 
 /* parentheses  */
 leftParen            = \(
@@ -180,6 +182,7 @@ regexQuote           = ´
       {leftArrow}             { return FregeTypes.LEFT_ARROW; }
       {doubleRightArrow}      { return FregeTypes.DOUBLE_RIGHT_ARROW; }
       {vertBar}               { return FregeTypes.VERT_BAR; }
+      {ampersand}             { return FregeTypes.AMPERSAND; }
       {equal}                 { return FregeTypes.EQUAL; }
       {dash}                  { return FregeTypes.DASH; }
       {exlamationMark}        { return FregeTypes.EXLAMATION_MARK; }
@@ -199,6 +202,7 @@ regexQuote           = ´
       {less}                  { return FregeTypes.LESS; }
       {greater}               { return FregeTypes.GREATER; }
       {dollar}                { return FregeTypes.DOLLAR; }
+      {forall}                { return FregeTypes.FORALL; }
 
    /* operators */
       {wordop}                { return FregeTypes.WORD_OPERATOR; }

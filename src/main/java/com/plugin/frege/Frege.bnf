@@ -24,7 +24,7 @@ fixity ::= infixRule PRECEDENCE lexOp+
 infixRule ::= INFIX | INFIXL | INFIXR
 private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
             DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
-            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON) // TODO %&^
+            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON | AMPERSAND) // TODO %^
 private cannotAlone ::= EQUAL | VERT_BAR | DOUBLE_COLON
 symOp ::= opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
             | cannotAlone (opCharsCanUseAlone | cannotAlone)+
