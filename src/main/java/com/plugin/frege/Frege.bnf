@@ -128,7 +128,7 @@ lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 cond ::= IF expr THEN expr ELSE expr
 
 /* Let, Where and Do Expressions */
-meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> SEMICOLON? (VIRTUAL_END_DECL <<rule>> SEMICOLON?)* VIRTUAL_END_SECTION
+meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)* VIRTUAL_END_SECTION
                         | LEFT_BRACE <<rule>> (SEMICOLON <<rule>>)* RIGHT_BRACE
 letEx ::= LET <<indentSection decl>> IN expr
 whereSection ::= WHERE <<indentSection decl>>

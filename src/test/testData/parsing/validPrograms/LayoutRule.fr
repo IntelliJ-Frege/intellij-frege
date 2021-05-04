@@ -10,7 +10,7 @@ f2 = x
 f3 = x where
     x = y
         where y = z
-            where z = 1
+                where z = 1
 f4 = x where x = 1
 f5 = x where {x = 1}
 f6 = x where {x = y; y = 1}
@@ -18,8 +18,7 @@ f7 = x where {
     x = y;
     y = 1}
 f8 = x where
-    x = y;
-    y = 1;
+    x = y; y = 1
 
 g1 = let
         x = 1
@@ -39,7 +38,6 @@ k1 = do
     y <- a
 k2 = do x <- y
 k3 = do {
-    x <- 1;
-    y <- 2;
+    x <- 1; y <- 2;
     y <- z
     }

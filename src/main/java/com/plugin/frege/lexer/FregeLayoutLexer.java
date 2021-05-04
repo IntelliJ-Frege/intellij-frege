@@ -140,7 +140,8 @@ public class FregeLayoutLexer extends LexerBase {
                 case NORMAL:
                     if (SECTION_CREATING_KEYWORDS.contains(token.elementType)) {
                         state = State.WAITING_FOR_SECTION_START;
-                    } else if (token.isFirstSignificantTokenOnLine()) {
+                    }
+                    if (token.isFirstSignificantTokenOnLine()) {
                         int insertAt = getInsertionPos(i);
                         Token precedingToken = tokens.get(insertAt - 1);
                         while (token.column <= indentStack.peek()) {
