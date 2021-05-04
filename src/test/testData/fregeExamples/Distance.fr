@@ -1,0 +1,83 @@
+--- Damerau Levenshtein Distance using arrays
+package examples.Distance where
+
+import  Compiler.common.Resolve as R()
+import Data.List
+
+--- main [-ua] filename
+-- result with -u runtime 15.508 wallclock seconds.
+-- result with -a runtime 12.886 wallclock seconds.
+main [] = return ()
+main [flag ~ ´-[uah]´, arg] = do
+    file <- openReader arg
+    lines <- file.getLines
+    let matched = fromMaybe "" (flag.group 0)
+        fun   = if matched == "-u" then (\a\b -> R.levenshtein (unpacked a) (unpacked b))
+                else if matched == "-h" then dlHask 
+                else dlDistance
+        words = (unique • filter ("" !=)) 
+                    (´[\d\W\s]+´.splitted (joined " " lines))
+        dists = map (fun (head words)) words
+        ds = sort (zip dists words)
+    print (head words)
+    print "  "
+    println (take 10 ds)
+main args = do
+    println (zip args (map (dlDistance (head args)) args))
+
+dlHask s1 s2 = levenshtein (unpacked s1) (unpacked s2)
+--- haskell code from rosettacode.org
+levenshtein :: [Char] -> [Char] -> Int
+levenshtein s1 s2 = last $ fold transform [0 .. length s1] s2
+  where transform (ns@n:ns') c = scanl calc (n+1) $ zip3 s1 ns ns'
+          where calc z (c', x, y) = minimum [y+1, z+1, x + fromEnum (c' /= c)]
+        transform [] c = [0]
+
+--- compute the Damerau-Levenshtein-Distance of two 'String's 
+--- (Optimal String Alignment Distance)
+dlDistance :: String -> String -> Int
+dlDistance src dst = ST.run it
+    where
+        !m = length src
+        !n = length dst
+        index i j = i*(n+1)+j
+        initI :: Mutable s (JArray Int) -> Int  -> STMutable s (JArray Int)
+        initI !arr i
+            | i <= m = do 
+                setElemAt arr (index i 0) i
+                initI arr (i+1)
+            | otherwise = return arr
+        initJ :: Mutable s (JArray Int) -> Int  -> STMutable s (JArray Int)
+        initJ !arr j
+            | j <= n = do 
+                setElemAt arr (index 0 j) n
+                initJ arr (n+1)
+            | otherwise = return arr
+        loop :: Mutable s (JArray Int) -> Int -> Int -> STMutable s (JArray Int)
+        loop !arr i !j
+            | i <= m, j <= n = do
+                du  <- getElemAt arr (index (i-1) j)
+                dl  <- getElemAt arr (index i (j-1))
+                dul <- getElemAt arr (index (i-1) (j-1))
+                let cost = if src.charAt  (i-1) == dst.charAt  (j-1) then 0 else 1
+                    dij  = min (dl + 1) (min (du + 1) (dul + cost))
+                dijx <- if i>1 && j>1 
+                            && src.charAt (i-1) == dst.charAt (j-2)
+                            && src.charAt (i-2) == dst.charAt (j-1)
+                        then do
+                            k <- getElemAt arr (index (i-2) (j-2))
+                            return (min dij k)
+                        else return dij
+                setElemAt arr (index i j) dijx 
+                loop arr  i (j+1)
+            | i < m, j > n = loop arr (i+1) 1
+            | otherwise = return arr
+
+        it :: ST s Int
+        it = do
+            arr <- newArray ((m+1)*(n+1))
+            arr <- initI arr 0
+            arr <- initJ arr 0
+            arr <- loop arr 1 1
+            getElemAt arr (index m n)
+            

@@ -1,0 +1,86 @@
+package examples.SwingExamples where
+
+import Java.Awt  (ActionListener)
+import Java.Swing
+
+
+main _ = do
+    rs <- mapM Runnable.new [helloWorldGUI, buttonDemoGUI, celsiusConverterGUI]
+    mapM_ invokeLater rs
+    println "Hit enter to end ...."
+    s <- getLine
+    return ()
+
+celsiusConverterGUI = do
+    tempTextField   <- JTextField.new()
+    celsiusLabel    <- JLabel.new ()
+    convertButton   <- JButton.new ()
+    fahrenheitLabel <- JLabel.new () 
+    frame           <- JFrame.new ()
+    frame.setDefaultCloseOperation JFrame.dispose_on_close
+    frame.setTitle "Celsius Converter"
+    tempTextField.setText  "0.000"
+    JLabel.setText celsiusLabel "Celsius"
+    AbstractButton.setText convertButton "Convert"
+    let convertButtonActionPerformed _ = do
+            celsius <- tempTextField.getText
+            case celsius.double of
+                Left _  -> JLabel.setText fahrenheitLabel ("not a valid number: " ++ celsius)
+                Right c -> JLabel.setText fahrenheitLabel (show (c*1.8 + 32.0).long ++ " Fahrenheit") 
+            return ()
+    ActionListener.new convertButtonActionPerformed >>= AbstractButton.addActionListener convertButton
+    JLabel.setText fahrenheitLabel "Fahrenheit"
+    contentPane <- JPanel.new ()
+    -- layout      <- GroupLayout.new contentPane
+    -- contentPane.setLayout layout
+    -- TODO continue
+    -- http://docs.oracle.com/javase/tutorial/displayCode.html?code=http://docs.oracle.com/javase/tutorial/uiswing/examples/learn/CelsiusConverterProject/src/learn/CelsiusConverterGUI.java
+    contentPane.add celsiusLabel
+    contentPane.add tempTextField
+    contentPane.add convertButton
+    contentPane.add fahrenheitLabel
+    contentPane.setOpaque true
+    frame.setContentPane contentPane
+    frame.pack
+    frame.setVisible true
+
+helloWorldGUI = do
+    frame <- JFrame.new "Hello World Frege"
+    frame.setDefaultCloseOperation(JFrame.dispose_on_close)
+    label <- JLabel.new "Hello World!"
+    cp <- frame.getContentPane
+    cp.add label
+    frame.pack
+    frame.setVisible true
+
+buttonDemoGUI = do
+    frame <- JFrame.new "Button Demo"
+    frame.setDefaultCloseOperation(JFrame.dispose_on_close)
+    newContentPane <- JPanel.new ()
+    b1 <- JButton.new "Disable middle button" :: IOMutable JButton
+    b1.setVerticalTextPosition   SwingConstants.center
+    b1.setHorizontalTextPosition SwingConstants.leading
+    b2 <- JButton.new "Middle button" :: IOMutable JButton
+    b2.setVerticalTextPosition   SwingConstants.center
+    b2.setHorizontalTextPosition SwingConstants.leading
+    b3 <- JButton.new "Enable middle button"  :: IOMutable JButton
+    b3.setVerticalTextPosition   SwingConstants.center
+    b3.setHorizontalTextPosition SwingConstants.leading
+    b3.setEnabled false
+    let action1 _ = do
+            b2.setEnabled false
+            b1.setEnabled false
+            b3.setEnabled true
+        action3 _ = do
+            b2.setEnabled true
+            b1.setEnabled true
+            b3.setEnabled false
+    ActionListener.new action1  >>= b1.addActionListener
+    ActionListener.new action3  >>= b3.addActionListener 
+    newContentPane.add b1
+    newContentPane.add b2
+    newContentPane.add b3
+    newContentPane.setOpaque true
+    frame.setContentPane newContentPane
+    frame.pack
+    frame.setVisible true

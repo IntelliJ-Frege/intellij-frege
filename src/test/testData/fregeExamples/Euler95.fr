@@ -1,0 +1,78 @@
+{--
+    The proper divisors of a number are all the divisors excluding the number itself. 
+    For example, the proper divisors of 28 are 1, 2, 4, 7, and 14. 
+    As the sum of these divisors is equal to 28, we call it a perfect number.
+
+    Interestingly the sum of the proper divisors of 220 is 284 
+    and the sum of the proper divisors of 284 is 220, forming a chain of two numbers. 
+    For this reason, 220 and 284 are called an amicable pair.
+
+    Perhaps less well known are longer chains. 
+    For example, starting with 12496, we form a chain of five numbers:
+
+    12496  14288  15472  14536  14264 ( 12496  ...)
+
+    Since this chain returns to its starting point, it is called an amicable chain.
+
+    Find the smallest member of the longest amicable chain with no element exceeding one million.
+-}
+
+-- Rank 229, Level 3, National Rank 367
+-- initial version runtime 3448.239 wallclock seconds.
+
+module examples.Euler95 where
+
+import examples.EulerLib
+import Data.List (maximumBy)
+
+--- all numbers and their successors
+cache = arrayFromList cacheNumbers where
+    cacheNumbers = map next [0..1_000_000]
+
+next :: Int -> Int
+next = summe • properDivisors
+
+--- successor in a chain
+successor n 
+    | n >= 0 && n < cache.length = elemAt cache n
+    | otherwise = error "must not happpen"
+    
+--- check chain starting at a certain number
+--- return the list of elements if it is an amicable chain with no element exceeding one million
+--- or otherwise the empty list
+chain n = chain [n]  (successor n) where
+    chain !elems !m
+        | m > 1_000_000 = []
+        | m == n    = {-reverse-} elems
+        | m `elem` elems = [] -- did not return to n
+        | otherwise = chain (m:elems) (successor m)
+    -- chain elems Nothing = Nothing  -- has an element > 1_000_000
+
+--- this solution, takes 40sec on slow machine
+main args = do
+    println $ next 777
+    println $ chain 12496
+    println $ minimum (maximumBy (comparing length) (map chain [1..1_000_000]))
+    println $ chain 14316
+    println $ chain 629072
+
+-- {-- 
+--     we can do better if, whenever we computed a chain, we remember that
+--     chain for all elements of the chain.
+--     ---}
+-- main = do
+--         chains <- newArray 1_000_001
+--         mapM_ (fillChain chains) [1..1_000_000]
+--         chs <- readonly _.toList chains
+--         println . minimum . maximumBy (comparing length)  $ chs
+--         return ()
+--     where
+--         fillChain chains n = do
+--             cached <- getAt chains n
+--             case cached of
+--                 Nothing -> do
+--                     let !chn = chain n
+--                     unless (null chn) do
+--                         mapM_ (\e -> setAt chains e (Just chn)) chn
+--                 Just _ -> return ()
+            

@@ -1,0 +1,199 @@
+--- Help people write point free definitions.
+module examples.PointFree where
+
+import Data.MicroParsec as M     -- needed for parsing
+import Data.Iterators(StringIterator SI)
+import Lib.PP()                 -- Wadlers pretty printing library.
+
+{--
+    The very small language that we support.
+    
+    > v
+    > x v
+    > \v -> x
+    
+    In addition, we will recognize binary operators, tuples, and lists.
+    Binary operators are assumed to be right associative, 
+    and all have the same precedence, to keep things simple.
+    Hence you must put parentheses to disambiguate:
+    
+    > a * b + c
+    
+    will be parsed as
+    
+    > a * (b+c)
+-}
+
+data Expr = 
+      Var String        --- variable
+    | Op String         --- operator (for nicer output)
+    | Nil               --- literal for empty list
+    | App Expr Expr     --- function application
+    | Lam String Expr   --- function abstraction
+
+
+
+main [] = forever aline `catch` eof
+    where eof (ex::IOException) = return ()
+
+main strings = process (joined " " strings)
+    
+aline = do 
+    print "Your expression: "
+    stdout.flush
+    getLine >>= process
+
+process s = case parser.run (SI.from s) of
+            (Left err, xs) -> println $ reporterror xs err 
+            (Right x, _) -> do
+                println x
+                println (unlambda elim x)
+                println (unlambda aris x)  
+
+parser = spaces *> (definition <* (spaces >> eos))
+    where
+        eq = symbol (expect '=')
+        definition = cond (name >> some name >> eq)  def lambda 
+        def = do
+            name -- irrelevant
+            names <- some name 
+            eq
+            x <- expr 
+            return (foldr Lam x names)
+
+-- elimination
+
+--- does variable a occur in expression?
+a `occurs` Var s = s == a
+a `occurs` (App f x) = a `occurs` f || a `occurs` x
+a `occurs` (Lam v x)
+    | v == a = false    -- a is shadowed
+    | otherwise = a `occurs` x
+a `occurs` _ = false
+
+--- destroy the lambdas in an expression using function
+unlambda :: (String -> Expr -> Expr) -> Expr -> Expr
+unlambda f (App a b)  = App (unlambda f a) (unlambda f b)
+unlambda f (Lam s x)  = unlambda f (s `f` Lam s x)
+unlambda _ x  = x
+
+--- eliminate _a_ in expression using SKI combinators <*>, pure and id
+a `elim` Var s
+    | a == s    = Var "id"
+    | otherwise = App (Var "pure") (Var s)
+a `elim` Lam b x
+    | a != b     = a `elim` (b `elim` x)
+    | otherwise  = b `elim` x
+a `elim` (App f (Var s))
+    | a == s && not (a `occurs`  f) = f
+a `elim` (ex@App f x)
+    | a `occurs` ex = App (App (Op "<*>") a') b' where
+                    a' = a `elim` f
+                    b' = a `elim` x
+a `elim` x = App (Var "pure") x 
+
+--- eliminate _a_ in expression using non cancellative combinators
+--- ('•'), 'flip' and 'id'
+--- (Falls back to SKI when not possible)
+aris :: String -> Expr -> Expr
+aris v (Var s) 
+    | v==s  = Var "id"               -- rule 1
+aris v (App f (Var s))
+    | v == s && not (v `occurs` f) = f  -- rule 2
+aris v (xy@App x y)
+    | v `occurs` xy = case (v `occurs` x, v `occurs` y) of
+        (true, true)  = App (App (Op "<*>") x') y'
+        (false, true) = App (App (Op ".") x) y'
+        (true, false) = App (App (Var "flip") x') y
+        _ = undefined   -- cannot happen, as v occured in xy
+    where
+        x' = v `aris` x
+        y' = v `aris` y 
+aris v (Lam s x)  = case (v != s, v `occurs` x, s `occurs` x) of
+    (true, true, true)   = v `aris` (s `aris` x)
+    (true, true, false)  = v `aris` (s `elim` x)
+    (true, false, true)  = v `elim` (s `aris` x)
+    (true, false, false) = v `elim` (s `elim` x)
+    (false, _, true)     = s `aris` x
+    (false, _, false)    = s `elim` x
+aris v _ = Var "wrong aristocratic expression" 
+
+-- lexical
+
+backslash = symbol (expect '\\')
+comma = symbol (expect ',')
+lpar = symbol (expect '(')
+rpar = symbol (expect ')')
+lbrc = symbol (expect '[')
+rbrc = symbol (expect ']')
+arrow = symbol (string "->" )
+name = label "identifier expected" (symbol . fmap _.match $ match ´^\w+´)
+oper = label "operator expected" (symbol . fmap _.match $ match ´^[^\s\d\w,()\\\[\]]+´)
+
+-- expressions
+
+instance Show Expr where
+    show  = PP.pretty 80 . annotate
+
+var = fmap Var name
+op  = fmap Op  oper
+
+lambda = do
+    backslash
+    v <- name
+    arrow
+    e <- expr
+    return (Lam v e)
+
+expr = lambda <|> binex
+binex = do
+    left <- app
+    other <- optional do
+        o <- op 
+        right <- binex
+        return (o, right)
+    case other of
+        Just (op, right) -> return $ App (App op left) right
+        Nothing -> return left
+app = fmap (foldl1 App) (some term)
+term = var <|> select [
+    (lpar, between lpar rpar (tuple <|> op)),
+    (lbrc, between lbrc rbrc (fmap list $ expr `sepBy` comma)),
+    ] (label "invalid term" pzero)
+term' = var 
+    <|> between lpar rpar (tuple <|> op)
+    <|> between lbrc rbrc (fmap list $ expr `sepBy` comma)
+
+tuple = fmap mktuple (expr `sepBy1` comma) where
+    mktuple [x] = x
+    mktuple xs = fold App (tupleop (length xs)) xs
+    tupleop n = Var $ "(" ++  packed (replicate (n-1) ',') ++ ")" 
+list = foldr cons Nil where cons  a = App (App (Op ":") a) 
+
+atomic (Var _) = true
+atomic (Op _) = true
+atomic Nil = true
+atomic _ = false
+
+appleft x
+    | Lam{} <- x = PP.bracket "(" (annotate x) ")"
+    | App (App (Op _) _) _  <- x = PP.bracket "(" (annotate x) ")"
+    | otherwise = annotate x
+
+subanno x
+    | atomic x  = annotate x
+    | otherwise = PP.bracket "(" (annotate x) ")" 
+
+-- pretty printing
+annotate Nil = PP.text "[]"
+annotate (Var v) = PP.text v
+annotate (Op  v) = PP.text "(" PP.<> PP.text v PP.<> PP.text ")"
+annotate (App (App (Op op) a) b) = appleft a 
+                                PP.<+> PP.text op 
+                                PP.<+> PP.nest 2 (appleft b)
+annotate (App a b) = appleft a PP.<+> PP.nest 2 (subanno b)
+annotate (Lam v x) = PP.text "\\" 
+                        PP.<> PP.text v 
+                        PP.<+> PP.text "->" 
+                        PP.<+> PP.nest 2 (annotate x)
+                        

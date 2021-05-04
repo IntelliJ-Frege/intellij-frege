@@ -1,0 +1,27 @@
+{-- 
+
+    Demonstration of dealing with tail calls in Frege
+
+    -}
+module examples.TailCalls
+        inline(odd) 
+    where
+
+-- hide the standard functions even and odd which work with bitmasks
+import frege.Prelude hiding(even, odd)
+
+--- Check evenness by downcounting
+--- To be sure, we would normally do this by checking the rightmost bit in O(1)
+--- This code is solely for demonstration purposes
+even :: Int -> Bool
+even 0 = true
+even 1 = false
+even n = odd (pred n)
+
+odd :: Int -> Bool
+odd  n = even (pred n)
+
+-- odd n = not (even (n-1))
+
+main [arg] = println . even . atoi $ arg
+main _ = println (even 123456789)
