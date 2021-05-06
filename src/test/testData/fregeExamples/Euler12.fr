@@ -1,0 +1,25 @@
+--- Solve 'http://projecteuler.net/index.php?section=problems&id=12 Euler problem 12' in less than a second.
+--- The original question asks for the first triangular number with at least 500 divisors.
+
+module examples.Euler12 where
+
+import examples.EulerLib
+import Data.List
+import frege.test.QuickCheck
+
+--- compute number of divisors from prime factors combinatorically
+nDivisors :: Long -> Int
+nDivisors  = prod . map ((1+) . length) . group . factors  
+
+--- check that 'nDivisors' works properly
+property_nDivisors = property law
+    where
+        -- law :: Long -> Property
+        law n = (classify (n==0) "trivial" $ 
+                    n == 0 || nDivisors (abs n) == length (divisors (abs  n)))
+
+
+main [arg] = println . head . dropUntil ((n<) . nDivisors) . scanl1 (+) $ [1..]
+    where
+        n = atoi arg
+main _ = main ["500"]

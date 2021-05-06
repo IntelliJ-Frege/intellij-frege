@@ -1,0 +1,153 @@
+module examples.Concurrent where
+
+import System.Random
+import Java.Net (URL)
+import Control.Concurrent as C
+
+main2 args = do
+    m <- newEmptyMVar
+    forkIO do
+        m.put 'x'
+        m.put 'y' 
+        m.put 'z'
+    replicateM_ 3 do
+        c <- m.take
+        print "got: "
+        println c  
+        
+            
+example1 = do
+    forkIO (replicateM_ 100000 (putChar 'a'))
+    replicateM_ 100000 (putChar 'b')
+
+example2 =  do
+    s <- getLine
+    case s.long of
+        Right n -> forkIO (setReminder n) >> example2
+        Left _  -> println ("exiting ...")
+    
+setReminder :: Long -> IO ()
+setReminder n = do
+        println ("Ok, I remind you in " ++ show n ++ " seconds")
+        Thread.sleep (1000L*n)
+        println (show n ++ " seconds is up!")
+
+            
+mainPhil _ = do
+    fork1 <- MVar.new 1
+    fork2 <- MVar.new 2
+    fork3 <- MVar.new 3
+    fork4 <- MVar.new 4
+    fork5 <- MVar.new 5
+     
+    forkOS (philosopher "Kant" fork5 fork1)
+    forkOS (philosopher "Locke" fork1 fork2)
+    forkOS (philosopher "Wittgenstein" fork2 fork3)
+    forkOS (philosopher "Nozick" fork3 fork4)
+    forkOS (philosopher "Mises" fork4 fork5)
+    
+    forever (Thread.sleep 5000)
+    return ()    
+
+philosopher :: String -> MVar Int -> MVar Int -> IO ()
+philosopher me left right = do
+    println (me ++ " starting.")
+    g <- Random.newStdGen
+    let phil g  = do
+            let (thursty,g0) = Random.randomR (false, true) g
+                (tT,g1) = Random.randomR (60L, 120L) g0
+                (eT,g2) = Random.randomR (80L, 160L) g1
+                thinkTime = 300L * tT
+                eatTime   = 300L * eT
+    
+            println(me ++ " is going to the dining room and takes his seat.") 
+            fl <- left.take            
+            println (me ++ " takes up left fork (" ++ show fl ++ ")")
+            rFork <- right.poll
+            case rFork of
+                Just fr -> do 
+                    println (me ++ " takes up right fork. (" ++ show fr ++ ")") 
+                    println (me ++ " is going to eat for " ++ show eatTime ++ "ms")
+                    Thread.sleep eatTime
+                    println (me ++ " finished eating.")
+                    right.put fr
+                    println (me ++ " takes down right fork. (" ++ show fr ++ ")")
+                    left.put fl
+                    println (me ++ " takes down left fork. (" ++ show fl ++ ")")
+                    println(me ++ " is going to think for " ++ show thinkTime ++ "ms.")
+                    Thread.sleep thinkTime
+                    phil g2
+                Nothing -> do
+                    println (me ++ " finds right fork is already in use.")
+                    left.put fl
+                    println (me ++ " takes down left fork again.")
+                    println (me ++ " is going to the bar to wait for dinner.")
+                    Thread.sleep thinkTime
+                    println (me ++ " is going to the table to try again.")
+                    phil g2
+            
+        inter :: InterruptedException -> IO ()
+        inter iex = stderr.println iex.getMessage >> return ()        
+    
+    phil g `catch` inter `finally` println (me ++ " ending")
+
+    
+getURL xx = do
+        url <- URL.new xx 
+        con <- url.openConnection
+        con.connect
+        is  <- con.getInputStream
+        typ <- con.getContentType
+        -- stderr.println ("content-type is " ++ show typ) 
+        ir  <- InputStreamReader.new is (fromMaybe "UTF-8" (charset typ))
+            `catch` unsupportedEncoding is 
+        br  <- BufferedReader.new ir
+        br.getLines
+    where
+        unsupportedEncoding :: MutableIO InputStream -> UnsupportedEncodingException -> IOMutable InputStreamReader
+        unsupportedEncoding is x = do
+            stderr.println x.caught
+            InputStreamReader.new is "UTF-8"
+            
+        charset ctyp = do
+            typ <- ctyp
+            case typ of
+                m~´charset=(\S+)´ -> m.group 1
+                _ -> Nothing
+
+    
+type SomeException = Throwable
+
+main ["dining"] = mainPhil []
+        
+main _ =  do
+    m1 <- MVar.newEmpty
+    m2 <- MVar.newEmpty
+    m3 <- MVar.newEmpty
+    
+    forkIO do
+        r <- (catchAll . getURL) "http://www.wikipedia.org/wiki/Haskell"
+        m1.put r
+    
+    forkIO do
+        -- the following line has a malformed URL to check the exception handling
+        r <- (catchAll . getURL) "htto://www.wikipedia.org/wiki/Java"
+        m2.put r
+    
+    forkIO do
+        r <- (catchAll . getURL) "http://www.wikipedia.org/wiki/Frege"
+        m3.put r
+    
+    r1 <- m1.take
+    r2 <- m2.take
+    r3 <- m3.take
+    println (result r1, result r2, result r3)
+    
+    -- with forkIO, we need to shutdown the Executor Service
+  where
+    result :: (SomeException|[String]) -> (String|Int)
+    result (Left x)  = Left x.getClass.getName
+    result (Right y) = (Right . sum . map length)  y
+    -- mapM_ putStrLn r2
+
+        

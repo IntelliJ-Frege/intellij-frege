@@ -1,0 +1,86 @@
+package examples.Brainfuck where
+
+import frege.Prelude hiding (uncons)
+import frege.data.List(lookup)
+
+data Tape = Tape { left :: [Int], cell :: Int, right :: [Int] }
+
+instance Show Tape where
+   show (Tape ls c rs) = show [reverse ls,[c],rs]  
+
+data Op = Plus | Minus | GoLeft | GoRight | Output | Input | Loop [Op]
+
+derive Eq Op
+derive Show Op
+
+-- the parser 
+
+removeComments :: [Char] -> [Char]
+removeComments xs = filter (`elem` (unpacked "+-<>.,[]")) xs
+
+ops = [('+', Plus),('-', Minus),('<',GoLeft),('>',GoRight),('.',Output),(',',Input)]
+
+parseOp :: [Char] -> Maybe (Op, [Char])
+parseOp ('[':cs) = case parseOps cs of
+  (prog, (']':cs')) -> Just (Loop prog, cs')
+  _ -> Nothing
+parseOp (c:cs) = fmap (flip (,) cs) $ lookup c ops
+parseOp [] = Nothing
+
+parseOps :: [Char] -> ([Op],[Char])
+parseOps cs = go cs [] where
+  go cs acc = case parseOp cs of
+    Nothing -> (reverse acc, cs)
+    Just (op, cs') -> go cs' (op:acc)
+
+parse :: String -> [Op]
+parse prog = case parseOps $ removeComments $ unpacked prog of
+   (ops, []) -> ops
+   (ops, rest) -> error $ "Parsed: " ++ show ops ++ ", Rest: " ++ packed rest
+
+-- the interpreter
+
+execute :: [Op] -> Tape -> IO Tape
+execute prog tape = foldM exec tape prog where
+  exec :: Tape -> Op -> IO Tape
+  exec tape Plus = return $ tape.{cell <- succ} 
+  exec tape Minus = return $ tape.{cell <- pred}
+  exec (Tape ls c rs) GoLeft = let (hd,tl) = uncons ls in return $ Tape tl hd (c:rs)
+  exec (Tape ls c rs) GoRight = let (hd,tl) = uncons rs in return $ Tape (c:ls) hd tl
+  exec tape Output = printAsChar tape.cell >> return tape
+  exec tape Input = do n <- getChar; return tape.{cell = ord n}
+  exec tape (again @ Loop loop) 
+    | tape.cell == 0 = return tape      
+    | otherwise = execute loop tape >>= flip exec again
+
+-- helper functions
+
+private uncons :: [Int] -> (Int,[Int])    
+private uncons [] = (0,[])
+private uncons (x:xs) = (x,xs)
+
+
+   
+private printAsChar :: Int -> IO ()
+private printAsChar i = print $ packed [Char.from i]   
+
+-- execution environment
+   
+run :: String -> IO Tape   
+run prog = execute (parse prog) (Tape [] 0 [])
+   
+main _ = do
+  tape <- run helloWorld
+  println ""
+  println tape
+  
+-- example programs
+
+helloWorld =
+  ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.[-]>++++++++" ++
+  "[<++++>-]<.>+++++++++++[<+++++>-]<.>++++++++[<+++>-]<.+++.------.--------." ++
+  "[-]>++++++++[<++++>-]<+.[-]++++++++++."
+
+nineToZero =
+  "++++++++++++++++++++++++++++++++[>+>+<<-]" ++
+  ">>+++++++++++++++++++++++++<<++++++++++[>>.-<.<-]"

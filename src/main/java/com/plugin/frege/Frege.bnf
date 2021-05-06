@@ -15,17 +15,18 @@
 
 fregeFile ::= !<<eof>> program
 
-private declRecover ::= !(endDecl)
+private declRecover ::= !(VIRTUAL_END_DECL)
 
 /* Operators */
-fixity ::= infixRule PRECEDENCE lexOp+
+precedence ::= INTEGER
+fixity ::= infixRule precedence lexOp+
     { pin=1 }
 
 infixRule ::= INFIX | INFIXL | INFIXR
 private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
             DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
-            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER) // TODO %&^
-private cannotAlone ::= EQUAL | VERT_BAR | COLON | DOUBLE_COLON
+            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON | AMPERSAND | DEGREE_SIGN) // TODO %^
+private cannotAlone ::= EQUAL | VERT_BAR | DOUBLE_COLON
 symOp ::= opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
             | cannotAlone (opCharsCanUseAlone | cannotAlone)+
 
@@ -37,14 +38,14 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 /* Imported operators */
 // Unary operators can not be qualified.
 private weakVarid ::= VARID | weakIdentifier
-private weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INLINE | INSTANCE | LET | MUTABLE |
-                   NATIVE | OF | PURE | THEN | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
+private weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INSTANCE | MUTABLE |
+                   NATIVE | PURE | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
+qualifier ::= CONID DOT
 qLexOp ::= qualifier? qualifier? lexOp
 qVarId ::= qualifier? qualifier? weakVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeQVaridMixin"
 }
-qualifier ::= CONID DOT
 qConId ::= qualifier? qualifier? dataNameUsage
 
 /* Literals */
@@ -92,12 +93,12 @@ strictNTuple ::= LEFT_PAREN expr SEMICOLON expr (SEMICOLON expr)* RIGHT_PAREN
 /* Lists */
 list ::= emptyList
             | LEFT_BRACKET expr (COMMA expr)* RIGHT_BRACKET
-            | LEFT_BRACKET (COMMA expr)? dotDot expr? RIGHT_BRACKET
+            | LEFT_BRACKET expr (COMMA expr)? DOUBLE_DOT expr? RIGHT_BRACKET
             | LEFT_BRACKET expr VERT_BAR dlcqual (COMMA dlcqual)? RIGHT_BRACKET
 
 dlcqual ::= pattern LEFT_ARROW expr
             | expr
-            | LET openSection decls endSection
+            | letExpression
 
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
@@ -107,7 +108,9 @@ primaryInner ::= term
                     | qualifier LEFT_BRACE weakVarid EQUAL RIGHT_BRACE
                     | qualifier LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE
                     | qualifier LEFT_BRACE field (COMMA field)* RIGHT_BRACE
-                    | DO openSection dlcqual (endDecl dlcqual)* endSection
+                    | doEx
+                    | cond // TODO I'm not sure about this
+                    | caseEx // TODO I'm not sure about this
 
 primary ::= primaryInner (DOT (
                 weakVarid | lexOp | unOp |
@@ -128,22 +131,24 @@ lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 /* Conditional */
 cond ::= IF expr THEN expr ELSE expr
 
-/* Let and Where Expressions */
-letEx ::= LET (openSection decls endSection | decl) IN expr
-whereSection ::= WHERE openSection decls endSection
+/* Let, Where and Do Expressions */
+meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)* VIRTUAL_END_SECTION
+                        | LEFT_BRACE <<rule>> (SEMICOLON <<rule>>)* RIGHT_BRACE
+letExpression ::= LET <<indentSection decl>>
+letInExpression ::= letExpression IN expr
+whereSection ::= WHERE <<indentSection decl>>
+doEx ::= DO <<indentSection dlcqual>>
 
 /* Case Expression */
-caseEx ::= CASE expr OF openSection alt (endDecl alt)* endSection
-alt ::= pattern RIGHT_ARROW expr
-        | pattern guardedExs
-        | alt whereSection
+caseEx ::= CASE expr OF <<indentSection alt>>
+alt ::= (pattern (RIGHT_ARROW expr | pattern guardedExs))+ whereSection?
 guardedExs ::= guardedEx+
 guardedEx ::= VERT_BAR dlcqual (COMMA dlcqual)* EQUAL expr
 
 /* Annotated Expression */
 expr ::= topEx (DOUBLE_COLON sigma)?
 topEx ::= caseEx // TODO add do
-            | letEx
+            | letInExpression
             | cond
             | lambda
             | binEx
@@ -183,7 +188,7 @@ pVar ::= param
 patternFields ::= param EQUAL pattern (COMMA param EQUAL pattern)*
 
 /* Declarations and Bindings */
-program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE openSection body endSection?
+program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body
     { pin=1 }
 
 packageName ::= ((qVarId | qConId) DOT)* packageClassName
@@ -193,9 +198,10 @@ packageClassName ::= qConId {
     mixin="com.plugin.frege.psi.mixin.FregePackageClassNameMixin"
 }
 
-inlineRule ::= INLINE LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN // TODO qName??
+qName ::= qVarId
+inlineRule ::= INLINE LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN
 
-body ::= topDecl (endDecl topDecl)* // was right rec
+body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
 
 topDecl ::= !<<eof>> (
               fixity
@@ -213,8 +219,6 @@ accessModifier ::= PUBLIC_MODIFIER | PROTECTED_MODIFIER | PRIVATE_MODIFIER
 decl ::= annotation
             | binding
             | nativeFun
-
-decls ::= decl (endDecl decl)*
 
 /* Syntax of Types */
 sigma ::= (FORALL tyVar (tyVar)* DOT)? chro
@@ -314,7 +318,7 @@ annoItem ::= functionName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
 binding ::= lhs rhs
 lhs ::= funLhs | pattern
 funLhs ::= pconApp lexOp pconApp
-            | functionName pTerm*
+            | (functionName | LEFT_PAREN symOp RIGHT_PAREN) strictPattern* // TODO UNOP?
 rhs ::= (EQUAL expr | guardedExs) whereSection?
     { pin=1 }
 
@@ -346,17 +350,6 @@ members ::= LEFT_PAREN (memSpec (COMMA memSpec)*)? RIGHT_PAREN
 memSpec ::= PUBLIC_MODIFIER? member alias?
 member ::= weakVarid | symOp | CONID
 nameSpace ::= CONID
-
-
-
-dotDot ::= DOT DOT // TODO move to lexer?
-
-
-virtual ::= VIRTUAL_OPEN_SECTION | VIRTUAL_END_DECL | VIRTUAL_END_SECTION
-
-openSection ::= VIRTUAL_OPEN_SECTION
-endSection ::= VIRTUAL_END_SECTION
-endDecl ::= VIRTUAL_END_DECL
 
 
 todo ::= NEW_LINE | SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE

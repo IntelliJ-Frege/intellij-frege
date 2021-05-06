@@ -42,7 +42,7 @@ public class FregeQVaridReference extends FregeReferenceBase {
         // check if this expression has `where` ans search there for definitions if it does.
         FregeWhereSection where = findWhereInExpression(element);
         if (where != null) {
-            List<PsiElement> whereFuncNames = findElementsWithinScope(where.getDecls(),
+            List<PsiElement> whereFuncNames = findElementsWithinScope(where.getIndentSection(),
                     element -> element instanceof FregeFunctionName && element.getText().equals(referenceText));
 
             if (!whereFuncNames.isEmpty()) {

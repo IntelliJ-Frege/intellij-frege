@@ -1,0 +1,30 @@
+package psi.Patterns where
+
+f 0 = 0
+f 1 = 1
+f (-1) = -1
+f x = x
+
+-- list
+head [] = undefined
+head (x:xs) = x
+
+tail [] = undefined
+tail (x:xs) = xs
+
+tail2 [] = undefined
+tail2 [x] = undefined
+tail2' (x:[]) = undefined
+tail2 (x:(y:ys)) = ys
+
+mid [x, y, z] = y
+
+-- tuple
+none () = ()
+fst (x, y) = x
+fst3 (x, y, z) = x
+
+
+-- strict
+f !x = x
+f !x !x = x

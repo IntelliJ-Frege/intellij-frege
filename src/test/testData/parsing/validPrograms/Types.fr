@@ -1,0 +1,16 @@
+package psi.Types where
+
+f0 :: a
+f1 :: a -> b
+f2 :: (a -> a) -> a
+f3 :: a -> (a -> a)
+f4 :: [a] -> [a]
+f5 :: [a] -> (a -> a)
+f6 :: [[a]] -> a
+f7 :: (a, b) -> a
+f8 :: (a, b, c, d) -> a
+f9 :: a -> a -> a -> a
+f10 :: IO () -> a
+f11 :: IO () -> IO ()
+f12 :: [Char] -> Maybe (Op, [Char])
+(==) :: a -> a -> Bool

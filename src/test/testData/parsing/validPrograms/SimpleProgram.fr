@@ -1,0 +1,7 @@
+package psi.SimpleProgram where
+
+f :: a -> a
+f x = x
+
+f :: b -> b
+g x = x

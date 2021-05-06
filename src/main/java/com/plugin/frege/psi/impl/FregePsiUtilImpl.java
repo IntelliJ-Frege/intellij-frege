@@ -6,6 +6,7 @@ import com.plugin.frege.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -17,18 +18,29 @@ import java.util.stream.Stream;
 /**
  * Definitions:
  * <ul>
- *     <li> Scope is a {@link PsiElement} that has a list of {@link FregeDecl}. </li>
+ *     <li> Scope is a {@link PsiElement} that has a list of subprograms. </li>
  * </ul>
  */
 public class FregePsiUtilImpl {
     private FregePsiUtilImpl() {}
 
-    // TODO do-expr and lambdas
+    // TODO do-expr and case of
     private static final Class<?>[] scopeElementTypes = {
             FregeBody.class,
-            FregeDecls.class,
-            FregeLetEx.class
+            FregeWhereSection.class,
+            FregeLetInExpression.class
     };
+
+    private static final Class<? extends PsiElement>[] indentSectionSubprogramsClass;
+
+    static {
+        //noinspection unchecked
+        indentSectionSubprogramsClass =
+                (Class<? extends PsiElement>[]) Array.newInstance(Class.class, 3);
+        indentSectionSubprogramsClass[0] = FregeDecl.class; // for let expressions and where sections
+        indentSectionSubprogramsClass[1] = FregeDlcqual.class; // for do expressions
+        indentSectionSubprogramsClass[2] = FregeAlt.class; // for case expressions
+    }
 
     private static boolean isScope(@Nullable PsiElement element) {
         if (element == null) {
@@ -40,7 +52,7 @@ public class FregePsiUtilImpl {
                 .anyMatch(type -> type.isAssignableFrom(elementClass));
     }
 
-    private static @NotNull List<FregeDecl> declsFromScope(@Nullable PsiElement scope) {
+    private static @NotNull List<PsiElement> subprogramsFromScope(@Nullable PsiElement scope) {
         if (!isScope(scope)) {
             return List.of();
         }
@@ -50,16 +62,14 @@ public class FregePsiUtilImpl {
                     .map(FregeTopDecl::getDecl)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-        } else if (scope instanceof FregeDecls) {
-            return ((FregeDecls) scope).getDeclList();
-        } else if (scope instanceof FregeLetEx) {
-            FregeDecls decls = ((FregeLetEx) scope).getDecls();
-            if (decls == null) {
-                return List.of();
-            }
-            return decls.getDeclList();
+        } else if (scope instanceof FregeWhereSection) {
+            FregeIndentSection indentSection = ((FregeWhereSection) scope).getIndentSection();
+            return PsiTreeUtil.getChildrenOfAnyType(indentSection, indentSectionSubprogramsClass);
+        } else if (scope instanceof FregeLetInExpression) {
+            FregeIndentSection indentSection = ((FregeLetInExpression) scope).getLetExpression().getIndentSection();
+            return PsiTreeUtil.getChildrenOfAnyType(indentSection, indentSectionSubprogramsClass);
         } else {
-            throw new RuntimeException("Cannot get decls.");
+            throw new RuntimeException("Cannot get subprograms.");
         }
     }
 
@@ -77,28 +87,28 @@ public class FregePsiUtilImpl {
     }
 
     /**
-     * Finds a scope of the passed element, gets a list of {@link FregeDecl}
-     * and applies the passed getter for each of {@link FregeDecl}.
+     * Finds a scope of the passed element, gets a list of {@link PsiElement}
+     * and applies the passed getter for each of {@link PsiElement}.
      * Also filters {@code nulls} in the resulting list.
      */
-    public static @NotNull <T extends PsiElement> List<T> declsFromScopeOfElement(@NotNull PsiElement element,
-                                                                    @NotNull Function<FregeDecl, T> getter) {
+    public static @NotNull <T extends PsiElement> List<T> subprogramsFromScopeOfElement(@NotNull PsiElement element,
+                                                                                        @NotNull Function<PsiElement, T> getter) {
         PsiElement scope = scopeOfElement(element);
         if (!isScope(scope)) {
             return List.of();
         }
 
-        return declsFromScope(scope).stream()
+        return subprogramsFromScope(scope).stream()
                 .map(getter)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Finds a scope of the passed element and gets a list of {@link FregeDecl}.
+     * Finds a scope of the passed element and gets a list of {@link PsiElement}.
      */
-    public static @NotNull List<FregeDecl> declsFromScopeOfElement(@NotNull PsiElement element) {
-        return declsFromScopeOfElement(element, (decl -> decl));
+    public static @NotNull List<PsiElement> subprogramsFromScopeOfElement(@NotNull PsiElement element) {
+        return subprogramsFromScopeOfElement(element, Function.identity());
     }
 
     /**
@@ -160,9 +170,9 @@ public class FregePsiUtilImpl {
      */
     public static @NotNull List<PsiElement> findElementsWithinScope(@NotNull PsiElement element,
                                                                     @NotNull Predicate<PsiElement> predicate) {
-        List<FregeDecl> decls = declsFromScopeOfElement(element);
-        return decls.stream()
-                .flatMap(decl -> findElementsWithinElementStream(decl, predicate))
+        List<PsiElement> subprograms = subprogramsFromScopeOfElement(element);
+        return subprograms.stream()
+                .flatMap(subprogram -> findElementsWithinElementStream(subprogram, predicate))
                 .collect(Collectors.toList());
     }
 
@@ -227,6 +237,4 @@ public class FregePsiUtilImpl {
             return null;
         return packageName.getText();
     }
-
-//    public static @Nullable
 }

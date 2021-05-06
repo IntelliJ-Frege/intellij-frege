@@ -1,0 +1,33 @@
+package psi.DoExpression where
+
+f1 x = do
+    a <- x
+    b <- m x
+
+f2 x = do
+    println a
+    println b
+
+f3 x = do
+    a <- x; b <- m x
+    println a
+
+f4 pack = do print "package "; print pack; println ""
+
+f5 pack = do print "package "; print pack; println ";"; println ""
+
+f6 pack = do
+            print "package "; print pack; println ";"; println ""
+            print "package "; print pack; println ";"; println ""
+            print "package "; print pack; println ";"; println ""
+
+main _ = do
+        print "Pell: ";  println (take 8 pell)
+        print "Dreiecke Pell: "; println pTriangles
+
+f7 args = do
+    m <- newEmptyMVar
+    forkIO do
+        m.put 'x'
+        m.put 'y'
+        m.put 'z'
