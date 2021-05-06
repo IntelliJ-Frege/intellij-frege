@@ -1,0 +1,30 @@
+package psi.CaseEx where
+
+f1 = case expression of pattern1 -> result1
+                        pattern2 -> result2
+                        pattern3 -> result3
+f2 x =
+  case x of
+    1 -> "1"
+    2 -> "2"
+    3 -> "3"
+    _   -> "I don't know"
+
+f3 m = case m of
+    Nothing    -> []
+    Just files -> files
+
+f4 kx ky = case compare kx ky of
+            LT -> balanceL ky y (go kx x l) r
+            GT -> balanceR ky y l (go kx x r)
+
+f5 = case (m s) of { (new_s, r) -> (new_s, f r) }
+
+describeList :: [a] -> String
+describeList xs = "The list is " ++ case xs of [] -> "empty."
+                                               [x] -> "a singleton list."
+                                               xs -> "a longer list."
+
+positively x = case x of
+  Just x | x > 0 -> Just x
+  _ -> Nothing

@@ -39,7 +39,7 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 // Unary operators can not be qualified.
 weakVarid ::= VARID | weakIdentifier
 weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INSTANCE | MUTABLE |
-                   NATIVE | OF | PURE | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
+                   NATIVE | PURE | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
 qualifier ::= CONID DOT
 qLexOp ::= qualifier? qualifier? lexOp
 qVarId ::= qualifier? qualifier? weakVarid {
@@ -109,6 +109,8 @@ primaryInner ::= term
                     | qualifier LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE
                     | qualifier LEFT_BRACE field (COMMA field)* RIGHT_BRACE
                     | doEx
+                    | cond // TODO I'm not sure about this
+                    | caseEx // TODO I'm not sure about this
 
 primary ::= primaryInner (DOT (
                 weakVarid | lexOp | unOp |
@@ -139,9 +141,7 @@ doEx ::= DO <<indentSection dlcqual>>
 
 /* Case Expression */
 caseEx ::= CASE expr OF <<indentSection alt>>
-alt ::= pattern RIGHT_ARROW expr
-        | pattern guardedExs
-        | alt whereSection
+alt ::= (pattern (RIGHT_ARROW expr | pattern guardedExs))+ whereSection?
 guardedExs ::= guardedEx+
 guardedEx ::= VERT_BAR dlcqual (COMMA dlcqual)* EQUAL expr
 
