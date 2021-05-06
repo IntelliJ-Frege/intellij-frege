@@ -39,12 +39,13 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 weakVarid ::= VARID | weakIdentifier
 weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INLINE | INSTANCE | MUTABLE |
                    NATIVE | OF | PURE | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
-qLexOp ::= QUALIFIER? QUALIFIER? lexOp
-qVarId ::= QUALIFIER? QUALIFIER? weakVarid {
+qualifier ::= CONID DOT
+qLexOp ::= qualifier? qualifier? lexOp
+qVarId ::= qualifier? qualifier? weakVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeQVaridMixin"
 }
-qConId ::= QUALIFIER? QUALIFIER? dataNameUsage
+qConId ::= qualifier? qualifier? dataNameUsage
 
 /* Literals */
 literal ::= boolLiteral
@@ -102,10 +103,10 @@ emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
 /* Primary Expression */
 primaryInner ::= term
-                    | QUALIFIER LEFT_BRACE weakVarid QUESTIONMARK RIGHT_BRACE
-                    | QUALIFIER LEFT_BRACE weakVarid EQUAL RIGHT_BRACE
-                    | QUALIFIER LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE
-                    | QUALIFIER LEFT_BRACE field (COMMA field)* RIGHT_BRACE
+                    | qualifier LEFT_BRACE weakVarid QUESTIONMARK RIGHT_BRACE
+                    | qualifier LEFT_BRACE weakVarid EQUAL RIGHT_BRACE
+                    | qualifier LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE
+                    | qualifier LEFT_BRACE field (COMMA field)* RIGHT_BRACE
                     | doEx
 
 primary ::= primaryInner (DOT (
