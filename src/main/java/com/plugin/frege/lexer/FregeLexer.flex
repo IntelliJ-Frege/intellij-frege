@@ -68,7 +68,6 @@ conid                = \p{Lu}(\d | {underscore} | \p{L})*
 varid                = \p{Ll}(\d | {underscore} | \p{L})*{quote}*
 
 /* operators */
-precedence           = [123456789] | 1[0123456]
 wordop               = {backQuote}\w+{backQuote}
 
 colon                = :
