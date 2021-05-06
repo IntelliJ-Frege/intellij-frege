@@ -36,8 +36,8 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 
 /* Imported operators */
 // Unary operators can not be qualified.
-weakVarid ::= VARID | weakIdentifier
-weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INLINE | INSTANCE | LET | MUTABLE |
+private weakVarid ::= VARID | weakIdentifier
+private weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INLINE | INSTANCE | LET | MUTABLE |
                    NATIVE | OF | PURE | THEN | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
 qLexOp ::= qualifier? qualifier? lexOp
 qVarId ::= qualifier? qualifier? weakVarid {

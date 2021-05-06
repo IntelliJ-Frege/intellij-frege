@@ -32,7 +32,8 @@
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
 
-
+        <codeInsight.lineMarkerProvider language="Frege"
+                                        implementationClass="com.plugin.frege.linemarker.related.FregeRelatedItemLineMarkerProvider"/>
         <runLineMarkerContributor language="Frege" implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerContributor" />
 
     </extensions>
