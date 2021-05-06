@@ -313,7 +313,7 @@ annoItem ::= functionName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
 binding ::= lhs rhs
 lhs ::= funLhs | pattern
 funLhs ::= pconApp lexOp pconApp
-            | functionName pTerm*
+            | functionName strictPattern*
 rhs ::= (EQUAL expr | guardedExs) whereSection?
     { pin=1 }
 

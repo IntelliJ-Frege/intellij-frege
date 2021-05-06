@@ -44,4 +44,8 @@ public class FregeSuccessfulParsingValidProgramsTest extends FregeParsingTestAbs
     public void testDoExpression() throws IOException {
         doSuccessfulParsingTest();
     }
+
+    public void testPatterns() throws IOException {
+        doSuccessfulParsingTest();
+    }
 }
