@@ -98,6 +98,7 @@ less                 = <
 greater              = >
 dollar               = \$
 forall               = \u2200
+degreeSign           = \u00B0
 
 /* parentheses  */
 leftParen            = \(
@@ -203,6 +204,7 @@ regexQuote           = ´
       {greater}               { return FregeTypes.GREATER; }
       {dollar}                { return FregeTypes.DOLLAR; }
       {forall}                { return FregeTypes.FORALL; }
+      {degreeSign}            { return FregeTypes.DEGREE_SIGN; }
 
    /* operators */
       {wordop}                { return FregeTypes.WORD_OPERATOR; }

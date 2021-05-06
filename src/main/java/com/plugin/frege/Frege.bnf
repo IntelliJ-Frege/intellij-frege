@@ -24,7 +24,7 @@ fixity ::= infixRule PRECEDENCE lexOp+
 infixRule ::= INFIX | INFIXL | INFIXR
 private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
             DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
-            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON | AMPERSAND) // TODO %^
+            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON | AMPERSAND | DEGREE_SIGN) // TODO %^
 private cannotAlone ::= EQUAL | VERT_BAR | DOUBLE_COLON
 symOp ::= opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
             | cannotAlone (opCharsCanUseAlone | cannotAlone)+
@@ -37,7 +37,7 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 /* Imported operators */
 // Unary operators can not be qualified.
 weakVarid ::= VARID | weakIdentifier
-weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INLINE | INSTANCE | LET | MUTABLE |
+weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INLINE | INSTANCE | MUTABLE |
                    NATIVE | OF | PURE | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
 qLexOp ::= QUALIFIER? QUALIFIER? lexOp
 qVarId ::= QUALIFIER? QUALIFIER? weakVarid {
@@ -96,7 +96,7 @@ list ::= emptyList
 
 dlcqual ::= pattern LEFT_ARROW expr
             | expr
-            | letEx
+            | letExpression
 
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
@@ -130,7 +130,8 @@ cond ::= IF expr THEN expr ELSE expr
 /* Let, Where and Do Expressions */
 meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)* VIRTUAL_END_SECTION
                         | LEFT_BRACE <<rule>> (SEMICOLON <<rule>>)* RIGHT_BRACE
-letEx ::= LET <<indentSection decl>> IN expr
+letExpression ::= LET <<indentSection decl>>
+letInExpression ::= letExpression IN expr
 whereSection ::= WHERE <<indentSection decl>>
 doEx ::= DO <<indentSection dlcqual>>
 
@@ -145,7 +146,7 @@ guardedEx ::= VERT_BAR dlcqual (COMMA dlcqual)* EQUAL expr
 /* Annotated Expression */
 expr ::= topEx (DOUBLE_COLON sigma)?
 topEx ::= caseEx // TODO add do
-            | letEx
+            | letInExpression
             | cond
             | lambda
             | binEx

@@ -28,7 +28,7 @@ public class FregePsiUtilImpl {
     private static final Class<?>[] scopeElementTypes = {
             FregeBody.class,
             FregeWhereSection.class,
-            FregeLetEx.class
+            FregeLetInExpression.class
     };
 
     private static final Class<? extends PsiElement>[] indentSectionSubprogramsClass;
@@ -65,8 +65,8 @@ public class FregePsiUtilImpl {
         } else if (scope instanceof FregeWhereSection) {
             FregeIndentSection indentSection = ((FregeWhereSection) scope).getIndentSection();
             return PsiTreeUtil.getChildrenOfAnyType(indentSection, indentSectionSubprogramsClass);
-        } else if (scope instanceof FregeLetEx) {
-            FregeIndentSection indentSection = ((FregeLetEx) scope).getIndentSection();
+        } else if (scope instanceof FregeLetInExpression) {
+            FregeIndentSection indentSection = ((FregeLetInExpression) scope).getLetExpression().getIndentSection();
             return PsiTreeUtil.getChildrenOfAnyType(indentSection, indentSectionSubprogramsClass);
         } else {
             throw new RuntimeException("Cannot get subprograms.");
