@@ -237,4 +237,11 @@ public class FregePsiUtilImpl {
             return null;
         return packageName.getText();
     }
+
+    /**
+     * Checks if the passed element is a leaf in the PSI tree.
+     */
+    public static boolean isLeaf(@NotNull PsiElement element) {
+        return element.getFirstChild() == null;
+    }
 }

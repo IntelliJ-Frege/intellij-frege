@@ -12,6 +12,8 @@ import com.plugin.frege.parser.FregeParserDefinition;
 import com.plugin.frege.psi.FregeTypes;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
 public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
@@ -38,6 +40,8 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("FREGE_LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
     public static final TextAttributesKey BLOCK_COMMENT =
             createTextAttributesKey("FREGE_BLOCK_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
+    public static final TextAttributesKey UNDEFINED =
+            createTextAttributesKey("FREGE_UNDEFINED", DefaultLanguageHighlighterColors.NUMBER);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("FREGE_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
@@ -53,6 +57,10 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] BLOCK_COMMENT_KEYS = new TextAttributesKey[]{BLOCK_COMMENT};
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
+
+    static {
+        UNDEFINED.getDefaultAttributes().setFontType(Font.ITALIC);
+    }
 
     @NotNull
     @Override
