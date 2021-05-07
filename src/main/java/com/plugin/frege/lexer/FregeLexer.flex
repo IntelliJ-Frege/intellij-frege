@@ -15,8 +15,6 @@ import com.plugin.frege.psi.FregeTypes;
 %eof{ return;
 %eof}
 
-%xstate LINE_COMMENT, BLOCK_COMMENT
-
 newline              = \r|\n|\r\n
 whitespace           = \s
 
@@ -126,10 +124,13 @@ backQuote            = \`
       "class"                 { return FregeTypes.CLASS; }
       "interface"             { return FregeTypes.INTERFACE; }
       "data"                  { return FregeTypes.DATA; }
+      "default"               { return FregeTypes.DEFAULT; }
       "derive"                { return FregeTypes.DERIVE; }
+      "deriving"              { return FregeTypes.DERIVING; }
       "do"                    { return FregeTypes.DO; }
       "else"                  { return FregeTypes.ELSE; }
       "false"                 { return FregeTypes.FALSE; }
+      "foreign"               { return FregeTypes.FOREIGN; }
       "forall"                { return FregeTypes.FORALL; }
       "hiding"                { return FregeTypes.HIDING; }
       "if"                    { return FregeTypes.IF; }
@@ -143,6 +144,7 @@ backQuote            = \`
       "let"                   { return FregeTypes.LET; }
       "mutable"               { return FregeTypes.MUTABLE; }
       "native"                { return FregeTypes.NATIVE; }
+      "newtype"               { return FregeTypes.NEWTYPE; }
       "of"                    { return FregeTypes.OF; }
       "package"               { return FregeTypes.PACKAGE; }
       "module"                { return FregeTypes.MODULE; }
