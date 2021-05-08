@@ -69,6 +69,15 @@ public class FregeQVaridReference extends FregeReferenceBase {
     private List<PsiElement> tryFindParameters() {
         String referenceText = element.getText();
 
+        FregeWhereSection where = findWhereInExpression(element);
+        if (where != null) {
+            List<PsiElement> params = findElementsWithinScope(where,
+                    elem -> elem instanceof FregeParam && elem.getText().equals(referenceText));
+            if (!params.isEmpty()) {
+                return params;
+            }
+        }
+
         FregeBinding binding = parentBinding(element);
         while (binding != null) {
             List<PsiElement> params = findElementsWithinElement(binding,
