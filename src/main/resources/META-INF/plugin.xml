@@ -39,7 +39,8 @@
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
-        <frameworkSupport implementation="com.plugin.frege.gradle.GradleFregeFrameworkSupportProvider" />
+        <frameworkSupport implementation="com.plugin.frege.gradle.GradleMinimalFregeFrameworkSupportProvider" />
+        <frameworkSupport implementation="com.plugin.frege.gradle.GradleFullFregeFrameworkSupportProvider" />
     </extensions>
     <actions>
         <action id="com.plugin.frege.linemarker.FregeRunAction" class="com.plugin.frege.linemarker.FregeRunAction"

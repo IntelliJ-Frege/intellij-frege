@@ -17,20 +17,20 @@ import java.io.IOException;
 
 import static com.intellij.util.ResourceUtil.getResourceAsStream;
 
-public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportProvider {
-    public static final String ID = "Frege";
+public class GradleFullFregeFrameworkSupportProvider extends GradleFrameworkSupportProvider {
+    public static final String ID = "Frege Full";
 
     @Override
     public @NotNull FrameworkTypeEx getFrameworkType() {
         return new FrameworkTypeEx(ID) {
             @Override
             public @NotNull FrameworkSupportInModuleProvider createProvider() {
-                return GradleFregeFrameworkSupportProvider.this;
+                return GradleFullFregeFrameworkSupportProvider.this;
             }
 
             @Override
             public @NotNull @Nls(capitalization = Nls.Capitalization.Title) String getPresentableName() {
-                return "Frege";
+                return "Frege Full";
             }
 
             @Override
@@ -48,8 +48,8 @@ public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportP
                            @NotNull BuildScriptDataBuilder buildScriptData) {
 
         try {
-            byte[] content = getResourceAsStream(GradleFregeFrameworkSupportProvider.class.getClassLoader(),
-                    "templates/gradle", "build.gradle").readAllBytes();
+            byte[] content = getResourceAsStream(GradleFullFregeFrameworkSupportProvider.class.getClassLoader(),
+                    "templates/gradle/full", "build.gradle").readAllBytes();
             buildScriptData.getBuildScriptFile().setBinaryContent(content);
         } catch (IOException e) {
             throw new RuntimeException(e);

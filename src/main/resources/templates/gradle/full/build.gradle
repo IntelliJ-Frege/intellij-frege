@@ -1,19 +1,27 @@
-// Created by: Dierk
-// Source: https://github.com/Dierk/HelloFrege/blob/sample_code/build.gradle
-// Modified by 23jura23
+/**
+ * Full version of build.gradle file
+ * Contain additional tasks, that are useful, but used rarely
+ * See minimal version for version with necessary tasks only
+ *
+ * Authored by: Dierk
+ * Origin: https://github.com/Dierk/HelloFrege/blob/sample_code/build.gradle
+ * Modified by 23jura23
+ */
 
-// Compiles, tests, etc. any Frege code.
-// Any additional Java code will be processed afterwards and can depend on the Frege code.
-// Any Java code that Frege depends upon must be
-// - in a dependency (e.g. a Java project that this build depends on) or
-// - in a native module "inlined" in the Frege code.
-// Calling the usual java targets will also execute the respective Frege targets.
+/**
+ * Compiles, tests, etc. any Frege code.
+ * Any additional Java code will be processed afterwards and can depend on the Frege code.
+ * Any Java code that Frege depends upon must be
+ * - in a dependency (e.g. a Java project that this build depends on) or
+ * - in a native module "inlined" in the Frege code.
+ * Calling the usual java targets will also execute the respective Frege targets.
+*/
 
 plugins {
     id "application" // implies java
 }
 
-// fregeRun without argument -Pclass_name="your class name here" will run mainClassName
+// fregeRun will run mainClassName, if no argument -Pclass_name="class name" was specified
 mainClassName = ""
 
 ext {
