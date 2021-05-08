@@ -26,5 +26,5 @@ describeList xs = "The list is " ++ case xs of [] -> "empty."
                                                xs -> "a longer list."
 
 positively x = case x of
-  Just x | x > 0 -> Just x
+  Just x | x > 0 = Just x
   _ -> Nothing
