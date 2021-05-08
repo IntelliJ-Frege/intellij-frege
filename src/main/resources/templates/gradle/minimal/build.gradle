@@ -1,0 +1,99 @@
+/**
+ * Minimal version of build.gradle file
+ * See full version for more comments and additional tasks
+ *
+ * Authored by: Dierk
+ * Origin: https://github.com/Dierk/HelloFrege/blob/sample_code/build.gradle
+ * Modified by 23jura23
+ */
+
+
+plugins {
+    id "application" // implies java
+}
+
+mainClassName = ""
+
+ext {
+    javaTarget   = '${javaTargetUserSettings}'
+    fregeRelease = '${fregeReleaseUserSettings}'
+    fregeVersion = '${fregeVersionUserSettings}'
+    fregeDir     = "${rootProject.projectDir}/lib/org/frege-lang/frege/${fregeVersion}"
+    fregeJar     = "${fregeDir}/frege-${fregeVersion}.jar"
+    fregeMainSourceDir = "${projectDir}/src/main/frege"
+    fregeMainJavaDir   = "${buildDir}/src/main/frege"
+    fregeCompilerUrl   = "https://github.com/Frege/frege/releases/download/${fregeRelease}/frege${fregeVersion}.jar"
+}
+
+void downloadCompiler() {
+    ant.mkdir(dir: fregeDir)
+    ant.get(src: fregeCompilerUrl,
+            dest: fregeJar,
+            skipexisting: 'true')
+}
+
+repositories {
+    flatDir {
+        dirs fregeDir
+    }
+}
+
+dependencies {
+    // later dependencies go here
+}
+
+configurations.implementation.defaultDependencies { deps ->
+    downloadCompiler()
+
+    deps.add(project.dependencies.create("org.frege-lang:frege:${fregeVersion}"))
+}
+
+
+task prepareCompileDirs { // prepare all the directories that the frege tasks rely upon
+    group "frege"
+    outputs.dir(sourceSets.main.java.outputDir).withPropertyName("compileOutputDir")
+    outputs.dir(sourceSets.test.java.outputDir).withPropertyName("testOutputDir")
+    doLast {
+        ant.mkdir(dir: sourceSets.main.java.outputDir)
+        ant.mkdir(dir: sourceSets.test.java.outputDir)
+    }
+}
+
+task fregeCompile(type: JavaExec) {      	// https://docs.gradle.org/6.5/dsl/org.gradle.api.tasks.JavaExec.html
+    dependsOn     prepareCompileDirs
+    group       = "frege"
+    description = "Compile the -Pfrege_file=."
+    classpath   = files fregeJar
+    args([
+        "-d", sourceSets.main.java.outputDir,
+        "-fp", sourceSets.main.compileClasspath.asPath,
+        "-enc", "UTF-8",
+        "-target", javaTarget,
+        "-hints",
+        "-make",
+        "-sp", fregeMainSourceDir,
+        "-ascii",
+        "-latin",
+        project.hasProperty("frege_file") ? project.frege_file : fregeMainSourceDir
+    ])
+}
+
+fregeCompile.doLast {
+    ant.move(toDir: fregeMainJavaDir) {
+        fileSet(dir: sourceSets.main.java.outputDir) {
+            include name:"**/*.java"
+        }
+    }
+}
+
+task fregeRun(type: JavaExec) {
+    dependsOn     fregeCompile  // in case we always want to compile before running
+    group         = "frege"
+    description   = "Run -Pclass_name=${project.mainClassName}"
+    standardInput = System.in 								// this might run interactively, so we need stdin
+    classpath     = files sourceSets.main.runtimeClasspath.asPath
+    main          = project.hasProperty("class_name") ? project.class_name : project.mainClassName
+}
+
+
+compileJava.dependsOn 		fregeCompile
