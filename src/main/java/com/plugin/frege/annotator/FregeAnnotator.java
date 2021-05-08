@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.psi.PsiElement;
 import com.plugin.frege.highlighter.FregeSyntaxHighlighter;
 import com.plugin.frege.psi.FregeFunctionName;
+import com.plugin.frege.psi.FregePackageName;
 import com.plugin.frege.psi.FregeStrongKeyword;
 import com.plugin.frege.psi.impl.FregePsiUtilImpl;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,8 @@ public class FregeAnnotator implements Annotator {
             annotateFunctionName((FregeFunctionName) element, holder);
         } else if (element instanceof FregeStrongKeyword) {
             annotateStrongKeyword((FregeStrongKeyword) element, holder);
+        } else if (element instanceof FregePackageName) {
+            annotatePackageVarid((FregePackageName) element, holder);
         } else if (FregePsiUtilImpl.isLeaf(element) && element.getText().equals(undefinedIdentifier)) {
             annotateUndefined(element, holder);
         }
@@ -36,6 +39,10 @@ public class FregeAnnotator implements Annotator {
 
     private void annotateUndefined(@NotNull PsiElement undefined, @NotNull AnnotationHolder holder) {
         annotateWithInfo(undefined, holder, FregeSyntaxHighlighter.UNDEFINED);
+    }
+
+    private void annotatePackageVarid(@NotNull FregePackageName packageVarid, @NotNull AnnotationHolder holder) {
+        annotateWithInfo(packageVarid, holder, FregeSyntaxHighlighter.CONSTRUCTOR);
     }
 
     private void annotateWithInfo(@NotNull PsiElement element, @NotNull AnnotationHolder holder,

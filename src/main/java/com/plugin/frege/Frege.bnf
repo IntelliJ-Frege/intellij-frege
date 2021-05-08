@@ -202,7 +202,8 @@ patternField ::= param (EQUAL pattern)? // TODO I'm not sure about this
 program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body
     { pin=1 }
 
-packageName ::= ((qVarId | qConId) DOT)* packageClassName
+packageName ::= ((packageVarid | qConId) DOT)* packageClassName
+private packageVarid ::= qualifier? qualifier? (weakVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
 
 packageClassName ::= qConId {
     implements="com.intellij.psi.PsiIdentifier"

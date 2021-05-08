@@ -41,7 +41,7 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey BLOCK_COMMENT =
             createTextAttributesKey("FREGE_BLOCK_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
     public static final TextAttributesKey UNDEFINED =
-            createTextAttributesKey("FREGE_UNDEFINED", DefaultLanguageHighlighterColors.NUMBER);
+            createTextAttributesKey("FREGE_UNDEFINED", DefaultLanguageHighlighterColors.NUMBER.getDefaultAttributes().clone());
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("FREGE_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
