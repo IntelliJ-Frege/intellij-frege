@@ -1,0 +1,6 @@
+package psi.DataRecord where
+
+data Point = Point {x::Double, y::Double}
+
+f1 = Point 0 0
+f2 = Point {x=0, y=0}
