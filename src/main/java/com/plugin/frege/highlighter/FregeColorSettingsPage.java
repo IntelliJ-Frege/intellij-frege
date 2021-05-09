@@ -26,6 +26,7 @@ public class FregeColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Function name", FregeSyntaxHighlighter.FUNCTION_NAME),
             new AttributesDescriptor("Line comment", FregeSyntaxHighlighter.LINE_COMMENT),
             new AttributesDescriptor("Block comment", FregeSyntaxHighlighter.BLOCK_COMMENT),
+            new AttributesDescriptor("Undefined", FregeSyntaxHighlighter.UNDEFINED),
             new AttributesDescriptor("Bad value", FregeSyntaxHighlighter.BAD_CHARACTER)
     };
 
@@ -63,6 +64,8 @@ public class FregeColorSettingsPage implements ColorSettingsPage {
                 "        badpat pse = do\n" +
                 "            stderr.println \"The regex is not valid.\"\n" +
                 "            stderr.println pse.getMessage        \n" +
+                "\n" +
+                "notImplemented = undefined" +
                 "\n" +
                 "run regex file = do\n" +
                 "        rdr <- openReader file\n" +

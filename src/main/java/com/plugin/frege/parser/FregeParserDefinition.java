@@ -23,7 +23,8 @@ public class FregeParserDefinition implements ParserDefinition {
     public static final TokenSet COMMENTS = TokenSet.create(FregeTypes.LINE_COMMENT, FregeTypes.BLOCK_COMMENT);
     public static final TokenSet STRING_LITERALS = TokenSet.create(FregeTypes.STRING, FregeTypes.CHAR);
     public static final TokenSet BRACKETS = TokenSet.create(FregeTypes.LEFT_BRACKET, FregeTypes.RIGHT_BRACKET);
-    public static final TokenSet IDENTIFIERS = TokenSet.create(FregeTypes.CONID, FregeTypes.VARID);
+    public static final TokenSet IDENTIFIERS = TokenSet.create(FregeTypes.CONID, FregeTypes.VARID, FregeTypes.AS,
+            FregeTypes.HIDING, FregeTypes.INLINE, FregeTypes.MUTABLE, FregeTypes.PURE);
 
     public static final TokenSet OPERATORS = TokenSet.create(FregeTypes.WORD_OPERATOR, FregeTypes.DOUBLE_COLON,
             FregeTypes.COLON, FregeTypes.DOLLAR, FregeTypes.RIGHT_ARROW, FregeTypes.LEFT_ARROW, FregeTypes.DOUBLE_RIGHT_ARROW,
@@ -32,12 +33,12 @@ public class FregeParserDefinition implements ParserDefinition {
             FregeTypes.BACK_SLASH, FregeTypes.STAR, FregeTypes.AT, FregeTypes.TILDA, FregeTypes.HASH,
             FregeTypes.LESS, FregeTypes.GREATER, FregeTypes.DEGREE_SIGN, FregeTypes.CARRET, FregeTypes.PERCENT);
 
-    public static final TokenSet KEYWORDS = TokenSet.create(FregeTypes.ABSTRACT, FregeTypes.AS, FregeTypes.CASE, FregeTypes.CLASS,
-            FregeTypes.INTERFACE, FregeTypes.DATA, FregeTypes.DERIVE, FregeTypes.DO, FregeTypes.ELSE,
-            FregeTypes.FALSE, FregeTypes.FORALL, FregeTypes.HIDING, FregeTypes.IF, FregeTypes.IMPORT, FregeTypes.IN, FregeTypes.INFIX,
-            FregeTypes.INFIXL, FregeTypes.INFIXR, FregeTypes.INLINE, FregeTypes.INSTANCE, FregeTypes.LET,
-            FregeTypes.MUTABLE, FregeTypes.NATIVE, FregeTypes.OF, FregeTypes.PACKAGE, FregeTypes.MODULE,
-            FregeTypes.PRIVATE_MODIFIER, FregeTypes.PROTECTED_MODIFIER, FregeTypes.PURE, FregeTypes.PUBLIC_MODIFIER, FregeTypes.THEN,
+    public static final TokenSet KEYWORDS = TokenSet.create(FregeTypes.ABSTRACT, FregeTypes.CASE, FregeTypes.CLASS,
+            FregeTypes.INTERFACE, FregeTypes.DATA, FregeTypes.DEFAULT, FregeTypes.DERIVING, FregeTypes.DERIVE, FregeTypes.DO, FregeTypes.ELSE,
+            FregeTypes.FALSE, FregeTypes.FOREIGN, FregeTypes.FORALL, FregeTypes.IF, FregeTypes.IMPORT, FregeTypes.IN, FregeTypes.INFIX,
+            FregeTypes.INFIXL, FregeTypes.INFIXR, FregeTypes.INSTANCE, FregeTypes.LET,
+            FregeTypes.NATIVE, FregeTypes.NEWTYPE, FregeTypes.OF, FregeTypes.PACKAGE, FregeTypes.MODULE,
+            FregeTypes.PRIVATE_MODIFIER, FregeTypes.PROTECTED_MODIFIER, FregeTypes.PUBLIC_MODIFIER, FregeTypes.THEN,
             FregeTypes.THROWS, FregeTypes.TRUE, FregeTypes.TYPE, FregeTypes.WHERE);
 
     public static final IFileElementType FILE = new IFileElementType(FregeLanguage.INSTANCE);

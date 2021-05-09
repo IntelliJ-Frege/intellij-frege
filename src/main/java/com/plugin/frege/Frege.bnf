@@ -38,9 +38,17 @@ unOp ::= EXLAMATION_MARK | QUESTION_MARK
 
 /* Imported operators */
 // Unary operators can not be qualified.
-private weakVarid ::= VARID | weakIdentifier
-private weakIdentifier ::= AS | DATA | DERIVE | HIDING | INFIX | INFIXL | INFIXR | INSTANCE | MUTABLE |
-                   NATIVE | PURE | TYPE // TODO list of weak identifiers is probably wrong; fix coloring
+private weakVarid ::= VARID | weakKeyword
+private weakKeyword ::= AS | HIDING | INLINE | MUTABLE | PURE
+
+/* for real usages of these pseudo-keywords (for highlighting) */
+meta strongKeyword ::= <<keyword>>
+private strongAs ::= <<strongKeyword AS>>
+private strongHiding ::= <<strongKeyword HIDING>>
+private strongInline ::= <<strongKeyword INLINE>>
+private strongMutable ::= <<strongKeyword MUTABLE>>
+private strongPure ::= <<strongKeyword PURE>>
+
 qualifier ::= CONID DOT
 qLexOp ::= qualifier? qualifier? lexOp
 qVarId ::= qualifier? qualifier? weakVarid {
@@ -194,7 +202,8 @@ patternField ::= param (EQUAL pattern)? // TODO I'm not sure about this
 program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body
     { pin=1 }
 
-packageName ::= ((qVarId | qConId) DOT)* packageClassName
+packageName ::= ((packageVarid | qConId) DOT)* packageClassName
+private packageVarid ::= qualifier? qualifier? (weakVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
 
 packageClassName ::= qConId {
     implements="com.intellij.psi.PsiIdentifier"
@@ -202,7 +211,7 @@ packageClassName ::= qConId {
 }
 
 qName ::= qVarId
-inlineRule ::= INLINE LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN
+inlineRule ::= strongInline LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN
 
 body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
 
@@ -262,7 +271,7 @@ dataDcl ::= (dataDclConstructors | dataDclNative) deriveDcl?
 
 dataDclConstructors ::= ABSTRACT? DATA dataName tyVar* EQUAL constructors whereSection?
     { pin=6 }
-dataDclNative ::= DATA dataName tyVar* EQUAL (MUTABLE|PURE)? NATIVE nativeName whereSection?
+dataDclNative ::= DATA dataName tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection?
     { pin=6 }
 
 dataName ::= CONID {
@@ -325,7 +334,7 @@ rhs ::= (EQUAL expr | guardedExs) whereSection?
     { pin=1 }
 
 /* Native Declaration */
-nativeFun ::= PURE? NATIVE nativeAnnoItem javaItem? DOUBLE_COLON sigma (VERT_BAR sigma)* throwsRule?
+nativeFun ::= strongPure? NATIVE nativeAnnoItem javaItem? DOUBLE_COLON sigma (VERT_BAR sigma)* throwsRule?
     { pin=2 }
 javaItem ::= nativeName | unOp | symOp | STRING
 throwsRule ::= THROWS typeRule (COMMA typeRule)*
@@ -336,10 +345,10 @@ nativeFunctionName ::= weakVarid {
 }
 
 /* Importing Packages */
-importDcl ::= IMPORT packageName (AS? nameSpace)? PUBLIC_MODIFIER? importList?
+importDcl ::= IMPORT packageName (strongAs? nameSpace)? PUBLIC_MODIFIER? importList?
     { pin=1 }
 
-importList ::= HIDING? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
+importList ::= strongHiding? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
 importSpec ::= PUBLIC_MODIFIER? importItem alias?
 importItem ::= weakVarid
                 | CONID members?
@@ -357,3 +366,4 @@ nameSpace ::= CONID
 todo ::= NEW_LINE | SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
             | CLASS | FALSE | INFIX | DERIVE | THROWS | NATIVE | INFIXL | INFIXR | IMPORT | MODULE | PUBLIC_MODIFIER | PLUS | LESS | GREATER
             | MUTABLE | INSTANCE | INTERFACE | PROTECTED_MODIFIER | OF | STRING | UNDERSCORE | QUESTION_MARK | DO | LEFT_ARROW | SLASH | LINE_COMMENT | BLOCK_COMMENT
+            | DEFAULT | FOREIGN | NEWTYPE | DERIVING
