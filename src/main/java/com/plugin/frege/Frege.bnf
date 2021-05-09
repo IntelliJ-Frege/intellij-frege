@@ -199,14 +199,17 @@ patternFields ::= patternField (COMMA patternField)*
 patternField ::= param (EQUAL pattern)? // TODO I'm not sure about this
 
 /* Declarations and Bindings */
-program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body
-    { pin=1 }
+program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body {
+    pin=1
+    implements="com.plugin.frege.psi.FregePsiClassHolder"
+    mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
+}
 
 packageName ::= ((packageVarid | qConId) DOT)* packageClassName
 private packageVarid ::= qualifier? qualifier? (weakVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
 
 packageClassName ::= qConId {
-    implements="com.intellij.psi.PsiIdentifier"
+    implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.FregePackageClassNameMixin"
 }
 
