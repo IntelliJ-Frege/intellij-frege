@@ -95,5 +95,5 @@ task fregeRun(type: JavaExec) {
     main          = project.hasProperty("class_name") ? project.class_name : project.mainClassName
 }
 
-
 compileJava.dependsOn 		fregeCompile
+sourceSets.main.compileClasspath = files (sourceSets.main.compileClasspath + sourceSets.main.java.outputDir)

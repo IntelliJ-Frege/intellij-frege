@@ -272,6 +272,10 @@ task fregeDoc(type: JavaExec) {
 
 // the standard java jar task must first create the frege classes
 compileJava.dependsOn 		fregeCompile
+// it also has to know, where to search for compiled frege .class files
+sourceSets.main.compileClasspath = files (sourceSets.main.compileClasspath + sourceSets.main.java.outputDir)
+
+sourceSets.test.compileClasspath = files (sourceSets.test.compileClasspath + sourceSets.test.java.outputDir)
 compileTestJava.dependsOn 	fregeTestCompile
 test.dependsOn 				fregeTest
 
