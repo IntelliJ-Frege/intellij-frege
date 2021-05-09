@@ -38,7 +38,10 @@ integer              = {int} | {intLong} | {intBig}
 exponentIndicator    = [eE]
 exponentPart         = {exponentIndicator}{signs}{digits}
 floatSuffix          = [fFdD]
-float                = {digits}{dot}{digits}?{exponentPart}?{floatSuffix}?
+float                = {digits}{dot}{whitespace}
+                       | {digits}{dot}{floatSuffix}
+                       | {digits}{dot}{exponentPart}{floatSuffix}?
+                       | {digits}{dot}{digits}{exponentPart}?{floatSuffix}?
                        | {digits}{exponentPart}{floatSuffix}?
                        | {digits}{exponentPart}?{floatSuffix}
 
@@ -51,10 +54,10 @@ escapeSequence       = {backSlash}b | {backSlash}t | {backSlash}n | {backSlash}f
 char                 = {quote}([^\'\\\n] | {escapeSequence}){quote}
 
 /* string literal */
-string               = {doubleQuote}([^\"] | {escapeSequence})*{doubleQuote}
+string               = {doubleQuote}([^\u0022] | {escapeSequence})*{doubleQuote}
 
 /* regex literal */
-regex                = {regexQuote}(\\{regexQuote}|[^\`])*{regexQuote}
+regex                = \u00B4(\\\u00B4 | [^\u00B4])*\u00B4
 
 /* comments */
 lineCommentStart     = {dash}{dash}{dash}?
@@ -95,6 +98,8 @@ plus                 = \+
 less                 = <
 greater              = >
 dollar               = \$
+carret               = \^
+percent              = %
 forall               = \u2200
 degreeSign           = \u00B0
 
@@ -111,7 +116,6 @@ quote                = \'
 doubleQuote          = \"
 hash                 = #
 backQuote            = \`
-regexQuote           = ´
 
 %%
 
@@ -201,6 +205,8 @@ regexQuote           = ´
       {less}                  { return FregeTypes.LESS; }
       {greater}               { return FregeTypes.GREATER; }
       {dollar}                { return FregeTypes.DOLLAR; }
+      {carret}                { return FregeTypes.CARRET; }
+      {percent}               { return FregeTypes.PERCENT; }
       {forall}                { return FregeTypes.FORALL; }
       {degreeSign}            { return FregeTypes.DEGREE_SIGN; }
 

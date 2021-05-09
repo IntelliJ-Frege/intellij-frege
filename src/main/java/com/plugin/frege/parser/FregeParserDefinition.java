@@ -26,11 +26,11 @@ public class FregeParserDefinition implements ParserDefinition {
     public static final TokenSet IDENTIFIERS = TokenSet.create(FregeTypes.CONID, FregeTypes.VARID);
 
     public static final TokenSet OPERATORS = TokenSet.create(FregeTypes.WORD_OPERATOR, FregeTypes.DOUBLE_COLON,
-            FregeTypes.COLON, FregeTypes.RIGHT_ARROW, FregeTypes.LEFT_ARROW, FregeTypes.DOUBLE_RIGHT_ARROW,
+            FregeTypes.COLON, FregeTypes.DOLLAR, FregeTypes.RIGHT_ARROW, FregeTypes.LEFT_ARROW, FregeTypes.DOUBLE_RIGHT_ARROW,
             FregeTypes.VERT_BAR, FregeTypes.EQUAL, FregeTypes.DASH, FregeTypes.EXLAMATION_MARK, FregeTypes.PLUS,
             FregeTypes.QUESTION_MARK, FregeTypes.COMMA, FregeTypes.SEMICOLON, FregeTypes.SLASH, FregeTypes.DOT,
             FregeTypes.BACK_SLASH, FregeTypes.STAR, FregeTypes.AT, FregeTypes.TILDA, FregeTypes.HASH,
-            FregeTypes.LESS, FregeTypes.GREATER);
+            FregeTypes.LESS, FregeTypes.GREATER, FregeTypes.DEGREE_SIGN, FregeTypes.CARRET, FregeTypes.PERCENT);
 
     public static final TokenSet KEYWORDS = TokenSet.create(FregeTypes.ABSTRACT, FregeTypes.AS, FregeTypes.CASE, FregeTypes.CLASS,
             FregeTypes.INTERFACE, FregeTypes.DATA, FregeTypes.DERIVE, FregeTypes.DO, FregeTypes.ELSE,
