@@ -120,7 +120,7 @@ sourceSets.main.compileClasspath.asPath,
 //		"-v", 								//  verbose mode on
 "-make", 							//  build outdated or missing imports
 "-sp",		 						//  look for source files in srcpath, default is .
-fregeMainSourceDir,
+sourceSets.main.java.srcDirs.join(':'),
 //		"-j", 								//  do not run the java compiler
 "-ascii", 							//  do not use →, ⇒, ∀ and ∷ when presenting types,
 //  and use ascii characters for java generics variables
@@ -208,7 +208,7 @@ task fregeTestCompile(type: JavaExec) {
             "-hints", 							//  print more detailed error messages and warnings
             "-make", 							//  build outdated or missing imports
             "-sp",		 						//  look for source files in srcpath, default is .
-            fregeTestSourceDir,
+            sourceSets.test.java.srcDirs.join(':'),
             "-ascii", 							//  do not use →, ⇒, ∀ and ∷ when presenting types,
             "-latin", 							//  make latin type variables
             fregeTestSourceDir 					//  compile all tests

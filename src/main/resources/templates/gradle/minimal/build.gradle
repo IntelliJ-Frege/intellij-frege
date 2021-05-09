@@ -71,7 +71,7 @@ task fregeCompile(type: JavaExec) {      	// https://docs.gradle.org/6.5/dsl/org
         "-target", javaTarget,
         "-hints",
         "-make",
-        "-sp", fregeMainSourceDir,
+        "-sp", sourceSets.main.java.srcDirs.join(':'),
         "-ascii",
         "-latin",
         project.hasProperty("frege_file") ? project.frege_file : fregeMainSourceDir
@@ -94,6 +94,7 @@ task fregeRun(type: JavaExec) {
     classpath     = files sourceSets.main.runtimeClasspath.asPath
     main          = project.hasProperty("class_name") ? project.class_name : project.mainClassName
 }
+
 
 compileJava.dependsOn 		fregeCompile
 sourceSets.main.compileClasspath = files (sourceSets.main.compileClasspath + sourceSets.main.java.outputDir)
