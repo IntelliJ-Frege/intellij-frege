@@ -1,0 +1,26 @@
+task fregeCompile(type: JavaExec) {      	// https://docs.gradle.org/6.5/dsl/org.gradle.api.tasks.JavaExec.html
+    dependsOn     prepareCompileDirs
+    group       = "frege"
+    description = "Compile the -Pfrege_file=."
+    classpath   = files fregeJar
+    args([
+            "-d", sourceSets.main.java.outputDir,
+            "-fp", sourceSets.main.compileClasspath.asPath,
+            "-enc", "UTF-8",
+            "-target", javaTarget,
+            "-hints",
+            "-make",
+            "-sp", sourceSets.main.java.srcDirs.join(':'),
+            "-ascii",
+            "-latin",
+            project.hasProperty("frege_file") ? project.frege_file : fregeMainSourceDir
+    ])
+}
+
+fregeCompile.doLast {
+    ant.move(toDir: fregeMainJavaDir) {
+        fileSet(dir: sourceSets.main.java.outputDir) {
+            include name:"**/*.java"
+        }
+    }
+}

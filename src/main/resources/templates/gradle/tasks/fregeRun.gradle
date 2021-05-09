@@ -1,0 +1,8 @@
+task fregeRun(type: JavaExec) {
+    dependsOn     fregeCompile  // in case we always want to compile before running
+    group         = "frege"
+    description   = "Run -Pclass_name=${project.mainClassName}"
+    standardInput = System.in 								// this might run interactively, so we need stdin
+    classpath     = files sourceSets.main.runtimeClasspath.asPath
+    main          = project.hasProperty("class_name") ? project.class_name : project.mainClassName
+}

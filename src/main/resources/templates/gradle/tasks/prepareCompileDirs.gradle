@@ -1,0 +1,9 @@
+task prepareCompileDirs { // prepare all the directories that the frege tasks rely upon
+    group "frege"
+    outputs.dir(sourceSets.main.java.outputDir).withPropertyName("compileOutputDir")
+    outputs.dir(sourceSets.test.java.outputDir).withPropertyName("testOutputDir")
+    doLast {
+        ant.mkdir(dir: sourceSets.main.java.outputDir)
+        ant.mkdir(dir: sourceSets.test.java.outputDir)
+    }
+}

@@ -130,14 +130,17 @@ public class GradleMinimalFregeFrameworkSupportProvider extends GradleFrameworkS
         }
 
         try {
-            byte[] contentBytes = getResourceAsStream(GradleMinimalFregeFrameworkSupportProvider.class.getClassLoader(),
-                    "templates/gradle/minimal", "build.gradle").readAllBytes();
+//            byte[] contentBytes = getResourceAsStream(GradleMinimalFregeFrameworkSupportProvider.class.getClassLoader(),
+//                    "templates/gradle/minimal", "build.gradle").readAllBytes();
 
-            byte[] preprocessedContent = substituteUserSettings(contentBytes, getUserSettingsMapping());
+            GradleFregeScriptBuilder gradleFregeScriptBuilder = new GradleFregeScriptBuilder(settingsForm);
+            byte[] contentBytes = gradleFregeScriptBuilder.build();
+
+//            byte[] preprocessedContent = substituteUserSettings(contentBytes, getUserSettingsMapping());
 
 //            String content = new String(contentBytes, StandardCharsets.UTF_8);
 
-            buildScriptData.getBuildScriptFile().setBinaryContent(preprocessedContent);
+            buildScriptData.getBuildScriptFile().setBinaryContent(contentBytes);
 //            buildScriptData.addOther("Java Target = " + settingsForm.getJavaTarget());
         } catch (IOException e) {
             throw new RuntimeException(e);
