@@ -2,19 +2,20 @@ package com.plugin.frege.psi.mixin;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.NlsSafe;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import com.plugin.frege.psi.FregePackageName;
-import com.plugin.frege.psi.FregeProgram;
+import com.plugin.frege.psi.*;
 import com.plugin.frege.psi.impl.FregePsiClassImpl;
+import com.plugin.frege.psi.impl.FregePsiUtilImpl;
 import com.plugin.frege.resolve.FregePackageClassNameReference;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 import static com.plugin.frege.psi.FregeTypes.PACKAGE_CLASS_NAME;
 
@@ -50,18 +51,27 @@ public class FregePackageClassNameMixin extends FregePsiClassImpl implements Psi
     }
 
     @Override
-    public @Nullable PsiElement getLBrace() {
-        return getScope();
-    }
+    public PsiMethod @NotNull [] getMethods() {
+        FregeProgram program = PsiTreeUtil.getParentOfType(this, FregeProgram.class);
+        if (program == null) {
+            throw new IllegalStateException("Package must have a program above.");
+        }
+        FregeBody body = program.getBody();
+        if (body == null) {
+            return PsiMethod.EMPTY_ARRAY;
+        }
 
-    @Override
-    public @Nullable PsiElement getRBrace() {
-        return getScope().getLastChild();
+        return FregePsiUtilImpl.subprogramsFromScopeOfElement(body, decl ->
+                    decl instanceof FregeDecl ? ((FregeDecl) decl).getBinding() : null).stream()
+                .map(FregeBinding::getLhs)
+                .map(FregeLhs::getFunLhs).filter(Objects::nonNull)
+                .map(FregeFunLhs::getFunctionName).filter(Objects::nonNull)
+                .toArray(PsiMethod[]::new);
     }
 
     @Override
     public PsiElement setName(@NlsSafe @NotNull String name) throws IncorrectOperationException {
-        return null;
+        return null; // TODO
     }
 
     @Override
@@ -70,12 +80,7 @@ public class FregePackageClassNameMixin extends FregePsiClassImpl implements Psi
     }
 
     @Override
-    public @Nullable PsiClass getContainingClass() {
-        return null;
-    }
-
-    @Override
-    public @Nullable PsiReference getReference() {
+    public @NotNull PsiReference getReference() {
         return new FregePackageClassNameReference(this);
     }
 
