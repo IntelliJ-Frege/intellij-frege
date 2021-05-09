@@ -317,7 +317,7 @@ deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
 /* fake function name rule for highlighting */
 functionName ::= weakVarid {
     mixin="com.plugin.frege.psi.mixin.FregeFunctionNameMixin"
-    implements="com.plugin.frege.psi.FregeNamedElement"
+    implements="com.plugin.frege.psi.FregePsiMethod"
 }
 
 /*  Type Annotations */
