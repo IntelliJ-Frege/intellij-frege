@@ -25,13 +25,6 @@ ext {
     fregeCompilerUrl   = "https://github.com/Frege/frege/releases/download/${fregeRelease}/frege${fregeVersion}.jar"
 }
 
-void downloadCompiler() {
-    ant.mkdir(dir: fregeDir)
-    ant.get(src: fregeCompilerUrl,
-            dest: fregeJar,
-            skipexisting: 'true')
-}
-
 repositories {
     flatDir {
         dirs fregeDir
@@ -42,8 +35,15 @@ dependencies {
     // later dependencies go here
 }
 
+    void downloadCompiler() {
+        ant.mkdir(dir: fregeDir)
+        ant.get(src: fregeCompilerUrl,
+                dest: fregeJar,
+                skipexisting: 'true')
+    }
+
 configurations.implementation.defaultDependencies { deps ->
-    downloadCompiler()
+        downloadCompiler()
 
     deps.add(project.dependencies.create("org.frege-lang:frege:${fregeVersion}"))
 }
