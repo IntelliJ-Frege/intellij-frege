@@ -7,7 +7,11 @@ import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.impl.java.stubs.index.JavaFullClassNameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.plugin.frege.psi.FregePsiClass;
+import com.plugin.frege.psi.FregePsiClassHolder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +31,9 @@ public class FregePsiClassUtilImpl {
                 .filter(psiClass -> Objects.equals(psiClass.getQualifiedName(), qualifiedName)).collect(Collectors.toList());
     }
 
+    /**
+     * Returns a list of methods and fields with the passed name in the passed class.
+     */
     public static @NotNull List<PsiElement> getMethodsAndFieldsByName(@NotNull PsiClass psiClass,
                                                                       @NotNull String name) {
         PsiMethod[] methods = psiClass.findMethodsByName(name, true);
@@ -40,5 +47,25 @@ public class FregePsiClassUtilImpl {
         } else {
             return List.of();
         }
+    }
+
+    /**
+     * Returns the nearest containing class of the passed element.
+     *
+     * See {@link FregePsiClassHolder}.
+     */
+    public static @Nullable FregePsiClass findContainingClass(@NotNull PsiElement element) {
+        FregePsiClassHolder holder = PsiTreeUtil.getParentOfType(element, FregePsiClassHolder.class);
+
+        if (holder == null) {
+            return null;
+        }
+
+        if (element instanceof FregePsiClass) { // in order not to return the same class
+            PsiElement parent = holder.getParent();
+            return parent == null ? null : findContainingClass(parent);
+        }
+
+        return holder.getHoldingClass();
     }
 }

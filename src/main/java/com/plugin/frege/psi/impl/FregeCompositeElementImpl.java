@@ -6,12 +6,14 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.NlsSafe;
 import com.intellij.psi.PsiReference;
 import com.intellij.usageView.UsageViewUtil;
+import com.plugin.frege.FregeIcons;
 import com.plugin.frege.psi.FregeCompositeElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+@SuppressWarnings("UnstableApiUsage")
 public abstract class FregeCompositeElementImpl extends ASTWrapperPsiElement implements FregeCompositeElement {
     public FregeCompositeElementImpl(@NotNull ASTNode node) {
         super(node);
@@ -44,5 +46,10 @@ public abstract class FregeCompositeElementImpl extends ASTWrapperPsiElement imp
                 return FregeCompositeElementImpl.this.getIcon(0);
             }
         };
+    }
+
+    @Override
+    public @Nullable Icon getIcon(int flags) {
+        return FregeIcons.FILE;
     }
 }
