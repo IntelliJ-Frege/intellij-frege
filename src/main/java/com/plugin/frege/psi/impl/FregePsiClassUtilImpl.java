@@ -84,15 +84,9 @@ public class FregePsiClassUtilImpl {
      */
     public static @NotNull List<@NotNull PsiMethod> getMethodsByQualifiedName(@NotNull Project project,
                                                                               @NotNull String qualifiedName) {
-        String qualifier;
-        String name;
-        if (qualifiedName.contains(".")) {
-            qualifier = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
-            if (qualifier.length() + 1 >= qualifiedName.length()) {
-                return List.of();
-            }
-            name = qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
-        } else {
+        String name = FregePsiUtilImpl.nameFromQualifiedName(qualifiedName);
+        String qualifier = FregePsiUtilImpl.qualifierFromQualifiedName(qualifiedName);
+        if (qualifier.isEmpty()) {
             return List.of();
         }
 

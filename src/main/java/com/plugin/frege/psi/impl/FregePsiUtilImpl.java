@@ -258,4 +258,24 @@ public class FregePsiUtilImpl {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Gets the last word after the last '.' in the passed qualified name.
+     */
+    public static @NotNull String nameFromQualifiedName(@NotNull String qualifiedName) {
+        if (!qualifiedName.contains(".")) {
+            return qualifiedName;
+        }
+        return qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
+    }
+
+    /**
+     * Gets the prefix before the last '.' in the passed qualified name.
+     */
+    public static @NotNull String qualifierFromQualifiedName(@NotNull String qualifiedName) {
+        if (!qualifiedName.contains(".")) {
+            return "";
+        }
+        return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+    }
 }
