@@ -36,6 +36,8 @@
                                         implementationClass="com.plugin.frege.linemarker.related.FregeRelatedItemLineMarkerProvider"/>
         <runLineMarkerContributor language="Frege" implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerContributor" />
 
+        <internalFileTemplate name="Frege Module" />
+        <internalFileTemplate name="Frege Empty File" />
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
@@ -43,10 +45,11 @@
         <frameworkSupport implementation="com.plugin.frege.gradle.GradleFullFregeFrameworkSupportProvider" />
     </extensions>
     <actions>
-        <action id="com.plugin.frege.linemarker.FregeRunAction" class="com.plugin.frege.linemarker.FregeRunAction"
-                text="FregeRunAction" description="TMP TODO DELETE" icon="AllIcons.RunConfigurations.TestState.Run">
-
-            <add-to-group group-id="ExternalSystem.ProjectRefreshActionGroup" anchor="first"/>
+        <action id="Frege.NewFregeFile"
+                class="com.plugin.frege.actions.FregeCreateFileAction"
+                text="Frege File"
+                description="Create new Frege file">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
     </actions>
 </idea-plugin>

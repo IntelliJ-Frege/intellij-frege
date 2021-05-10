@@ -1,0 +1,3 @@
+module #if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")${PACKAGE_NAME}.#end${NAME} where
+
+main = undefined
