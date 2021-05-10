@@ -244,4 +244,18 @@ public class FregePsiUtilImpl {
     public static boolean isLeaf(@NotNull PsiElement element) {
         return element.getFirstChild() == null;
     }
+
+    /**
+     * Finds all imports the element can access to. It doesn't return standard imports like frege.Prelude.
+     */
+    public static @NotNull List<@NotNull FregeImportDcl> findImportsForElement(@NotNull PsiElement element) {
+        FregeBody body = PsiTreeUtil.getParentOfType(element, FregeBody.class);
+        if (body == null) {
+            return List.of();
+        }
+        return body.getTopDeclList().stream()
+                .map(FregeTopDecl::getImportDcl)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
 }

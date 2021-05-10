@@ -60,7 +60,7 @@ public class FregePsiElementFinder extends PsiElementFinder {
             classes.addAll(PsiTreeUtil.findChildrenOfType(file, FregePsiClass.class).stream()
                     .filter(predicate).collect(Collectors.toList()));
 
-            return !classes.isEmpty();
+            return true;
         });
 
         return classes.toArray(PsiClass[]::new);
