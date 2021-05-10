@@ -23,13 +23,11 @@ import java.util.Objects;
 
 @SuppressWarnings("UnstableApiUsage")
 public abstract class FregePsiMethodImpl extends FregeNamedElementImpl implements FregePsiMethod {
-    protected final PsiType objectType;
-    protected final LightTypeElement typeElement;
+    static private PsiType objectType = null;
+    private LightTypeElement objectTypeElement = null;
 
     public FregePsiMethodImpl(@NotNull ASTNode node) {
         super(node);
-        objectType = PsiType.getJavaLangObject(getManager(), GlobalSearchScope.everythingScope(getProject()));
-        typeElement = new LightTypeElement(getManager(), getReturnType());
     }
 
     @Override
@@ -106,9 +104,10 @@ public abstract class FregePsiMethodImpl extends FregeNamedElementImpl implement
     public @NotNull PsiParameterList getParameterList() {
         LightParameterListBuilder list = new LightParameterListBuilder(getManager(), FregeLanguage.INSTANCE);
         int paramsNumber = getParamsNumber();
-        PsiElement scope = PsiTreeUtil.getParentOfType(this, FregeBinding.class);
+        PsiType object = Objects.requireNonNull(getObjectType());
+        PsiElement scope = Objects.requireNonNull(PsiTreeUtil.getParentOfType(this, FregeBinding.class));
         for (int i = 0; i < paramsNumber; i++) {
-            list.addParameter(new LightParameter("arg" + i, objectType, Objects.requireNonNull(scope)));
+            list.addParameter(new LightParameter("arg" + i, object, scope));
         }
 
         return list; // TODO a normal type system
@@ -130,4 +129,22 @@ public abstract class FregePsiMethodImpl extends FregeNamedElementImpl implement
     }
 
     protected abstract int getParamsNumber();
+
+    protected @Nullable  PsiType getObjectType() {
+        if (objectType == null) {
+            objectType = PsiMethodReferenceType.getJavaLangObject(getManager(),
+                    GlobalSearchScope.everythingScope(getProject()));
+        }
+        return objectType;
+    }
+
+    protected @Nullable PsiTypeElement getObjectTypeElement() {
+        if (objectTypeElement == null) {
+            PsiType object = getObjectType();
+            if (object != null) {
+                objectTypeElement = new LightTypeElement(getManager(), object);
+            }
+        }
+        return objectTypeElement;
+    }
 }

@@ -35,12 +35,12 @@ public class FregeFunctionNameMixin extends FregePsiMethodImpl implements PsiIde
 
     @Override
     public @NotNull PsiType getReturnType() {
-        return objectType;
+        return Objects.requireNonNull(getObjectType());
     }
 
     @Override
     public @Nullable PsiTypeElement getReturnTypeElement() {
-        return typeElement;
+        return getObjectTypeElement();
     }
 
     @Override
