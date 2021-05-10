@@ -1,16 +1,27 @@
 package com.plugin.frege.resolve;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiMethod;
 import com.intellij.util.IncorrectOperationException;
 import com.plugin.frege.psi.*;
+import com.plugin.frege.psi.impl.FregePsiClassUtilImpl;
+import com.plugin.frege.psi.impl.FregePsiUtilImpl;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.plugin.frege.psi.impl.FregePsiUtilImpl.*;
 
 public class FregeQVaridReference extends FregeReferenceBase {
+    private static final List<String> defaultImports = List.of(
+            "frege.Prelude"
+    );
+
     public FregeQVaridReference(@NotNull PsiElement element) {
         super(element, new TextRange(0, element.getTextLength()));
     }
@@ -31,6 +42,11 @@ public class FregeQVaridReference extends FregeReferenceBase {
         List<PsiElement> params = tryFindParameters();
         if (!params.isEmpty()) {
             return params;
+        }
+
+        List<PsiElement> methods = tryFindInMethodsOfOtherClasses();
+        if (!methods.isEmpty()) {
+            return methods;
         }
 
         return List.of();
@@ -87,6 +103,28 @@ public class FregeQVaridReference extends FregeReferenceBase {
             }
 
             binding = parentBinding(binding.getParent());
+        }
+
+        return List.of();
+    }
+
+    private List<PsiElement> tryFindInMethodsOfOtherClasses() {
+        String methodName = element.getText();
+        Project project = element.getProject();
+
+        List<String> imports = FregePsiUtilImpl.findImportsForElement(element).stream()
+                .map(FregeImportDcl::getImportPackageName)
+                .filter(Objects::nonNull)
+                .map(PsiElement::getText)
+                .collect(Collectors.toList());
+        imports.addAll(defaultImports);
+
+        for (String currentImport : imports) {
+            String qualifiedName = currentImport + "." + methodName;
+            List<PsiMethod> methods = FregePsiClassUtilImpl.getMethodsByQualifiedName(project, qualifiedName);
+            if (!methods.isEmpty()) {
+                return new ArrayList<>(methods);
+            }
         }
 
         return List.of();
