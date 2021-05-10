@@ -29,6 +29,7 @@
         <lang.findUsagesProvider language="Frege"
                                  implementationClass="com.plugin.frege.findusages.FregeFindUsagesProvider"/>
         <java.elementFinder implementation="com.plugin.frege.psi.FregePsiElementFinder"/>
+        <jvm.elementProvider implementation="com.plugin.frege.psi.FregeJvmElementProviderFromLibraries"/>
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
 
