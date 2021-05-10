@@ -13,7 +13,7 @@ Plugin is currently under development and is not yet loaded to JetBrains plugin 
 
 ## Current progress
 
-The project is currently under development. 
+The project is currently under active development. 
 
 Features implemented partially or completely:
 - Frege lexer
@@ -21,18 +21,20 @@ Features implemented partially or completely:
 - Syntax highlighting
     - Color settings
 - Frege build system
+- Frege nagivation (from Frege to Java, from Java to Frege, from Frege to Frege)
+- Find usages
+- Rename
+- File templates
 
 Features desired:
-- Code navigation
 - Code completion
-- Find usages
 - Structure view
 - Formatter
 - Quick fixes
 - View quick documentation
 - Refactor
-- Debugger
-- other
+- Type system
+- and more
 
 
 ## Contributors
