@@ -205,7 +205,8 @@ program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTIO
     mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
 }
 
-packageName ::= ((packageVarid | qConId) DOT)* packageClassName
+packagePrefix ::= ((packageVarid | qConId) DOT)*
+packageName ::= packagePrefix packageClassName
 private packageVarid ::= qualifier? qualifier? (weakVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
 
 packageClassName ::= qConId {
@@ -348,9 +349,11 @@ nativeFunctionName ::= weakVarid {
 }
 
 /* Importing Packages */
-importDcl ::= IMPORT packageName (strongAs? nameSpace)? PUBLIC_MODIFIER? importList?
+importDcl ::= IMPORT importPackageName (strongAs? nameSpace)? PUBLIC_MODIFIER? importList?
     { pin=1 }
 
+importPackageName ::= packagePrefix importName
+importName ::= qConId
 importList ::= strongHiding? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
 importSpec ::= PUBLIC_MODIFIER? importItem alias?
 importItem ::= weakVarid
