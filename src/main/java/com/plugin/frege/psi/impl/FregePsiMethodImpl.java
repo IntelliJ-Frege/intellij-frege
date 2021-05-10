@@ -84,7 +84,7 @@ public abstract class FregePsiMethodImpl extends FregeNamedElementImpl implement
 
     @Override
     public @Nullable PsiClass getContainingClass() {
-        return FregePsiClassUtilImpl.findContainingClass(this);
+        return FregePsiClassUtilImpl.findContainingFregeClass(this);
     }
 
     @Override

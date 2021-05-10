@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.plugin.frege.psi.impl.FregePsiClassUtilImpl;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FregeNativeNameReference extends FregeReferenceBase {
@@ -14,6 +15,6 @@ public class FregeNativeNameReference extends FregeReferenceBase {
 
     @Override
     protected List<PsiElement> resolveInner(boolean incompleteCode) {
-        return FregePsiClassUtilImpl.getClassesByQualifiedName(element.getProject(), element.getText());
+        return new ArrayList<>(FregePsiClassUtilImpl.getClassesByQualifiedName(element.getProject(), element.getText()));
     }
 }
