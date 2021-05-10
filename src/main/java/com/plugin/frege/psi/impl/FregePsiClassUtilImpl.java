@@ -1,16 +1,24 @@
 package com.plugin.frege.psi.impl;
 
 import com.intellij.openapi.module.impl.scopes.LibraryScope;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ContentIterator;
+import com.intellij.openapi.roots.ProjectFileIndex;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileFilter;
 import com.intellij.psi.*;
+import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.plugin.frege.FregeFileType;
 import com.plugin.frege.psi.FregePsiClass;
 import com.plugin.frege.psi.FregePsiClassHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,5 +101,30 @@ public class FregePsiClassUtilImpl {
         return getClassesByQualifiedName(project, qualifier).
                 stream().flatMap(clazz -> Arrays.stream(clazz.findMethodsByName(name, true))).
                 collect(Collectors.toList());
+    }
+
+    /**
+     * Iterates over all the Frege files in the passed scope and filters with the passed filter.
+     * After that applies the passed processor.
+     */
+    public static void iterateFregeFiles(@NotNull ContentIterator processor, @NotNull GlobalSearchScope scope,
+                                         @NotNull VirtualFileFilter filter, boolean includingLibraries) {
+        Project project = scope.getProject();
+        if (project == null) {
+            return;
+        }
+
+        DumbService.getInstance(project).runReadActionInSmartMode(() -> {
+            if (includingLibraries) {
+                Collection<VirtualFile> files = FileTypeIndex.getFiles(FregeFileType.INSTANCE, scope);
+                for (VirtualFile virtualFile : files) {
+                    if (filter.accept(virtualFile) && !processor.processFile(virtualFile)) {
+                        break;
+                    }
+                }
+            } else {
+                ProjectFileIndex.getInstance(project).iterateContent(processor, filter);
+            }
+        });
     }
 }
