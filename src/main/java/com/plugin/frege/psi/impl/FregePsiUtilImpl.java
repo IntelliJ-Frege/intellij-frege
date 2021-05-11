@@ -31,6 +31,10 @@ public class FregePsiUtilImpl {
             FregeLetInExpression.class
     };
 
+    private static final List<String> defaultImports = List.of(
+            "frege.Prelude" // TODO
+    );
+
     private static final Class<? extends PsiElement>[] indentSectionSubprogramsClass;
 
     static {
@@ -246,7 +250,8 @@ public class FregePsiUtilImpl {
     }
 
     /**
-     * Finds all imports the element can access to. It doesn't return standard imports like frege.Prelude.
+     * Returns all the imports the element can access to.
+     * It doesn't return default imports such as 'frege.Prelude'.
      */
     public static @NotNull List<@NotNull FregeImportDcl> findImportsForElement(@NotNull PsiElement element) {
         FregeBody body = PsiTreeUtil.getParentOfType(element, FregeBody.class);
@@ -257,6 +262,24 @@ public class FregePsiUtilImpl {
                 .map(FregeTopDecl::getImportDcl)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns import names from the file the passed element contains in.
+     * If the passed boolean is {@code true}, it includes default imports such as 'frege.Prelude'.
+     */
+    public static @NotNull List<@NotNull String> findImportsNamesForElement(@NotNull PsiElement element,
+                                                                            boolean includingDefault) {
+        List<String> imports = FregePsiUtilImpl.findImportsForElement(element).stream()
+                .map(FregeImportDcl::getImportPackageName)
+                .filter(Objects::nonNull)
+                .map(PsiElement::getText)
+                .collect(Collectors.toList());
+        if (includingDefault) {
+            imports.addAll(defaultImports);
+        }
+
+        return imports;
     }
 
     /**
