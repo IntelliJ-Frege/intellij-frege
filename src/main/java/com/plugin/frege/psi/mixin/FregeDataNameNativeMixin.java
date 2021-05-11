@@ -7,11 +7,11 @@ import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import com.plugin.frege.psi.FregeElementFactory;
 import com.plugin.frege.psi.impl.FregeNamedElementImpl;
-import com.plugin.frege.resolve.FregeDataNameReference;
+import com.plugin.frege.resolve.FregeDataNameNativeReference;
 import org.jetbrains.annotations.NotNull;
 
-public class FregeDataNameMixin extends FregeNamedElementImpl {
-    public FregeDataNameMixin(@NotNull ASTNode node) {
+public class FregeDataNameNativeMixin extends FregeNamedElementImpl {
+    public FregeDataNameNativeMixin(@NotNull ASTNode node) {
         super(node);
     }
 
@@ -22,11 +22,11 @@ public class FregeDataNameMixin extends FregeNamedElementImpl {
 
     @Override
     public PsiElement setName(@NlsSafe @NotNull String name) throws IncorrectOperationException {
-        return getNameIdentifier().replace(FregeElementFactory.createDataName(getProject(), name));
+        return getNameIdentifier().replace(FregeElementFactory.createDataNameNative(getProject(), name));
     }
 
     @Override
     public PsiReference getReference() {
-        return new FregeDataNameReference(this);
+        return new FregeDataNameNativeReference(this);
     }
 }
