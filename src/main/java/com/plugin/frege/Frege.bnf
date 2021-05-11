@@ -26,7 +26,7 @@ infixRule ::= INFIX | INFIXL | INFIXR
 private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
             DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
             RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON |
-            AMPERSAND | DEGREE_SIGN | CARRET | PERCENT)
+            AMPERSAND | DEGREE_SIGN | CARRET | PERCENT | UNKNOWN_SYMBOL)
 private cannotAlone ::= EQUAL | VERT_BAR | DOUBLE_COLON
 symOp ::= opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
             | cannotAlone (opCharsCanUseAlone | cannotAlone)+
@@ -71,7 +71,7 @@ floatLiteral ::= FLOAT
 
 /* Terms */
 term ::= qVarId
-         | qConId LEFT_BRACE initFields RIGHT_BRACE
+         | qConId LEFT_BRACE initFields? RIGHT_BRACE
          | qConId
          | literal
          | LEFT_PAREN expr RIGHT_PAREN
@@ -103,42 +103,30 @@ strictNTuple ::= LEFT_PAREN expr SEMICOLON expr (SEMICOLON expr)* RIGHT_PAREN
 list ::= emptyList
             | LEFT_BRACKET expr (COMMA expr)* COMMA? RIGHT_BRACKET
             | LEFT_BRACKET expr (COMMA expr)? DOUBLE_DOT expr? RIGHT_BRACKET
-            | LEFT_BRACKET expr VERT_BAR dlcqual (COMMA dlcqual)* COMMA? RIGHT_BRACKET
-
-dlcqual ::= pattern LEFT_ARROW expr
-            | expr
-            | letExpression
+            | LEFT_BRACKET expr VERT_BAR lcquals RIGHT_BRACKET
+lcquals ::= lcqual (COMMA lcqual)* COMMA?
+lcqual ::= letExpression
+         | expr ((LEFT_ARROW | EQUAL) expr)?
 
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
 /* Primary Expression */
-primaryInner ::= term
-                    | qualifier LEFT_BRACE weakVarid QUESTIONMARK RIGHT_BRACE
-                    | qualifier LEFT_BRACE weakVarid EQUAL RIGHT_BRACE
-                    | qualifier LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE
-                    | qualifier LEFT_BRACE field (COMMA field)* RIGHT_BRACE
-                    | doEx
-                    | cond // TODO I'm not sure about this
-                    | caseEx // TODO I'm not sure about this
+primary ::= (term | doEx) (DOT (
+                VARID
+              | qLexOp
+              | EXLAMATION_MARK
+              | QUESTION_MARK
+              | LEFT_BRACE (getFields | weakVarid (QUESTION_MARK | EQUAL | LEFT_ARROW)) RIGHT_BRACE
+              | LEFT_BRACKET expr RIGHT_BRACKET))*
 
-primary ::= primaryInner (DOT (
-                weakVarid | lexOp | unOp |
-                LEFT_BRACE weakVarid QUESTION_MARK RIGHT_BRACE |
-                LEFT_BRACE weakVarid EQUAL RIGHT_BRACE |
-                LEFT_BRACE weakVarid LEFT_ARROW RIGHT_BRACE |
-                LEFT_BRACE field (COMMA field)* RIGHT_BRACE |
-                LEFT_BRACKET expr RIGHT_BRACKET
-                    ))* // was left rec
-
-field ::= weakVarid EQUAL expr
-            | weakVarid LEFT_ARROW expr
-            | weakVarid
+getFields ::= getField (COMMA getFields)* COMMA?
+getField ::= weakVarid ((LEFT_ARROW | EQUAL) expr)?
 
 /* Lambda Expression */
 lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 
 /* Conditional */
-cond ::= IF expr THEN expr ELSE expr
+cond ::= IF expr (VIRTUAL_END_DECL | SEMICOLON)? THEN expr (VIRTUAL_END_DECL | SEMICOLON)? ELSE expr
 
 /* Let, Where and Do Expressions */
 meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)* VIRTUAL_END_SECTION
@@ -147,27 +135,25 @@ meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICO
 letExpression ::= LET <<indentSection decl>>
 letInExpression ::= letExpression IN expr
 whereSection ::= WHERE <<indentSection decl>>
-doEx ::= DO <<indentSection dlcqual>>
+doEx ::= DO <<indentSection (lcqual | qConId LEFT_BRACE (getFields | weakVarid (QUESTION_MARK | EQUAL | LEFT_ARROW)) RIGHT_BRACE)>>
 
 /* Case Expression */
 caseEx ::= CASE expr OF <<indentSection alt>>
-alt ::= (pattern ((RIGHT_ARROW | EQUAL) expr | guardedExs))+ whereSection?
+alt ::= pattern ((RIGHT_ARROW | EQUAL) expr | guardedExs) whereSection?
 guardedExs ::= guardedEx+
-guardedEx ::= VERT_BAR dlcqual (COMMA dlcqual)* EQUAL expr
+guardedEx ::= VERT_BAR gquals (RIGHT_ARROW | EQUAL) expr
+gquals ::= gqual (COMMA gqual)* COMMA?
+gqual ::= expr (LEFT_ARROW expr)?
 
 /* Annotated Expression */
-expr ::= topEx (DOUBLE_COLON sigma)?
-topEx ::= caseEx // TODO add do
-            | letInExpression
-            | cond
-            | lambda
-            | binEx
-
+expr ::= binEx (DOUBLE_COLON (FORALL | rho))?
+topEx ::= cond
+        | letInExpression
+        | caseEx
+        | lambda
+        | ((EXLAMATION_MARK | QUESTION_MARK)* primary)+
 /* Binary application */
-binEx ::= fExp (qLexOp fExp)* // TODO or lexOp instead of qLexOp and use primary
-
-/* Function application */
-fExp ::= primary+
+binEx ::= topEx (qLexOp topEx)*
 
 /* Patterns */
 param ::= weakVarid {
@@ -214,7 +200,7 @@ packageClassName ::= qConId {
     mixin="com.plugin.frege.psi.mixin.FregePackageClassNameMixin"
 }
 
-qName ::= qVarId
+qName ::= qVarId | qLexOp
 inlineRule ::= strongInline LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN
 
 body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
@@ -241,7 +227,7 @@ rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
         | tyApp RIGHT_ARROW rho
         | tyApp
 constraints ::= constraint
-                | LEFT_PAREN constraint (COMMA constraint)* RIGHT_PAREN
+                | LEFT_PAREN constraint (COMMA constraint)* COMMA? RIGHT_PAREN
 constraint ::= className tyApp+
 typeRule ::= tyApp (RIGHT_ARROW typeRule)* // was left rec
 tyApp ::= simpleType+ // was left rec
@@ -254,8 +240,6 @@ simpleType ::= tyVar
                 | LEFT_PAREN typeRule VERT_BAR typeRule (VERT_BAR typeRule)* RIGHT_PAREN
 tyVar ::= weakVarid
             | LEFT_PAREN weakVarid DOUBLE_COLON kind RIGHT_PAREN
-tvApp ::= tyVar
-            | LEFT_PAREN tvApp tvApp* RIGHT_PAREN
 tyCon ::= qConId
             | emptyList
             | unit
@@ -304,11 +288,10 @@ typeDcl ::= TYPE dataName (tyVar)* EQUAL sigma
     { pin=1 }
 
 /* Class Declarations */
-classDcl ::= (CLASS | INTERFACE) classNameAndConstraints classVar whereSection?
+classDcl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW CONID classVar)?  whereSection?
     { pin=1 }
-classNameAndConstraints ::= CONID (constraints DOUBLE_RIGHT_ARROW)? | constraints DOUBLE_RIGHT_ARROW CONID
 
-classVar ::= weakVarid
+classVar ::= tyVar
 
 /* Instance Declarations */
 instDcl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? className typeRule whereSection?

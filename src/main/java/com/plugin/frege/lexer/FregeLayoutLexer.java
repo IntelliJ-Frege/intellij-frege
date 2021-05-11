@@ -136,6 +136,9 @@ public class FregeLayoutLexer extends LexerBase {
                         state = State.NORMAL;
                         i--;
                     }
+                    if (state == State.NORMAL && SECTION_CREATING_KEYWORDS.contains(token.elementType)) {
+                        state = State.WAITING_FOR_SECTION_START;
+                    }
                     break;
                 case NORMAL:
                     if (SECTION_CREATING_KEYWORDS.contains(token.elementType)) {
