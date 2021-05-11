@@ -257,14 +257,16 @@ simpleKind ::= STAR
 dataDcl ::= (dataDclConstructors | dataDclNative) deriveDcl?
     { pin=1 }
 
-dataDclConstructors ::= ABSTRACT? DATA dataName tyVar* EQUAL constructors whereSection?
+dataDclConstructors ::= ABSTRACT? DATA dataNameConstructor tyVar* EQUAL constructors whereSection?
     { pin=6 }
-dataDclNative ::= DATA dataName tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection?
+dataDclNative ::= DATA dataNameNative tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection?
     { pin=6 }
 
-dataName ::= CONID {
+dataNameConstructor ::= CONID
+
+dataNameNative ::= CONID {
     implements="com.plugin.frege.psi.FregeNamedElement"
-    mixin="com.plugin.frege.psi.mixin.FregeDataNameMixin"
+    mixin="com.plugin.frege.psi.mixin.FregeDataNameNativeMixin"
 }
 dataNameUsage ::= CONID {
     implements="com.plugin.frege.psi.FregeCompositeElement"
@@ -284,8 +286,10 @@ bracedConstructor ::= LEFT_PAREN (bracedConstructor | constructor) RIGHT_PAREN
 labels ::= label (COMMA label)*
 label ::= EXLAMATION_MARK? weakVarid
 
-typeDcl ::= TYPE dataName (tyVar)* EQUAL sigma
+typeDcl ::= TYPE dataNameType (tyVar)* EQUAL sigma
     { pin=1 }
+
+dataNameType ::= CONID
 
 /* Class Declarations */
 classDcl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW CONID classVar)?  whereSection?

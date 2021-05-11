@@ -2,7 +2,6 @@ package com.plugin.frege.resolve;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.plugin.frege.psi.*;
@@ -56,8 +55,7 @@ public class FregeNativeFunctionNameReference extends FregeReferenceBase {
         Project project = element.getProject();
         return nativeNames.stream()
                 .flatMap(name -> getClassesByQualifiedName(project, name).stream())
-                .filter(elem -> elem instanceof PsiClass)
-                .map(elem -> (PsiClass) elem)
+                .filter(Objects::nonNull)
                 .flatMap(psiClass -> getMethodsAndFieldsByName(psiClass, methodName).stream())
                 .collect(Collectors.toList());
     }
@@ -82,7 +80,7 @@ public class FregeNativeFunctionNameReference extends FregeReferenceBase {
     }
 
     private @Nullable FregeNativeName getNativeNameFromData(@NotNull PsiElement dataName) {
-        if (!(dataName instanceof FregeDataName)) {
+        if (!(dataName instanceof FregeDataNameNative)) {
             return null;
         }
         FregeDataDclNative dataNative = PsiTreeUtil.getParentOfType(dataName, FregeDataDclNative.class);

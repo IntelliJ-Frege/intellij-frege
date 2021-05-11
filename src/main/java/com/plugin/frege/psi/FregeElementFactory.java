@@ -43,9 +43,9 @@ public class FregeElementFactory {
         return createElement(project, fakeNativeName, FregeNativeName.class);
     }
 
-    public static @NotNull FregeDataName createDataName(Project project, String name) {
+    public static @NotNull FregeDataNameNative createDataNameNative(Project project, String name) {
         String fakeDataName = fakeProgram + "data " + name + " = DummyConstructor";
-        return createElement(project, fakeDataName, FregeDataName.class);
+        return createElement(project, fakeDataName, FregeDataNameNative.class);
     }
 
     public static @NotNull FregeDataNameUsage createDataNameUsage(Project project, String name) {

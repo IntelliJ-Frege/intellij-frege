@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class FregeDataNameReference extends FregeReferenceBase {
-    public FregeDataNameReference(@NotNull PsiElement element) {
+public class FregeDataNameNativeReference extends FregeReferenceBase {
+    public FregeDataNameNativeReference(@NotNull PsiElement element) {
         super(element, element.getTextRange());
     }
 
