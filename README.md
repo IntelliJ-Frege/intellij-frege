@@ -1,5 +1,8 @@
 # IntelliJ IDEA plugin for Frege language
 
+## Attention
+The plugin is under development and is unstable. According to our estimates, the first stable version with the declared features will be available not earlier than 2-3 months (end of July).
+
 ## What is Frege
 
 Frege is a Haskell for the JVM. It is functional, has strong static type system and lazy evaluations, 
