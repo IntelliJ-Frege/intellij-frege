@@ -219,4 +219,4 @@ backQuote            = \`
       {conid}                 { return FregeTypes.CONID; }
       {varid}                 { return FregeTypes.VARID; }
 
-      [^]                     { return TokenType.BAD_CHARACTER; }
+      [^]                     { return FregeTypes.UNKNOWN_SYMBOL; }

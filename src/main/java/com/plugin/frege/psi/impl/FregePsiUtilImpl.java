@@ -38,7 +38,7 @@ public class FregePsiUtilImpl {
         indentSectionSubprogramsClass =
                 (Class<? extends PsiElement>[]) Array.newInstance(Class.class, 3);
         indentSectionSubprogramsClass[0] = FregeDecl.class; // for let expressions and where sections
-        indentSectionSubprogramsClass[1] = FregeDlcqual.class; // for do expressions
+        indentSectionSubprogramsClass[1] = FregeLcqual.class; // for do expressions
         indentSectionSubprogramsClass[2] = FregeAlt.class; // for case expressions
     }
 
