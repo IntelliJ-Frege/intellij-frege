@@ -12,16 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.plugin.frege.psi.impl.FregePsiUtilImpl.*;
 
 public class FregeQVaridReference extends FregeReferenceBase {
-    private static final List<String> defaultImports = List.of(
-            "frege.Prelude"
-    );
-
     public FregeQVaridReference(@NotNull PsiElement element) {
         super(element, new TextRange(0, element.getTextLength()));
     }
@@ -112,12 +106,7 @@ public class FregeQVaridReference extends FregeReferenceBase {
         String methodName = element.getText();
         Project project = element.getProject();
 
-        List<String> imports = FregePsiUtilImpl.findImportsForElement(element).stream()
-                .map(FregeImportDcl::getImportPackageName)
-                .filter(Objects::nonNull)
-                .map(PsiElement::getText)
-                .collect(Collectors.toList());
-        imports.addAll(defaultImports);
+        List<String> imports = FregePsiUtilImpl.findImportsNamesForElement(element, true);
 
         for (String currentImport : imports) {
             String qualifiedName = FregePsiUtilImpl.mergeQualifiedNames(currentImport, methodName);
