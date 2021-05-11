@@ -9,7 +9,6 @@ import com.plugin.frege.psi.*;
 import com.plugin.frege.psi.impl.FregePsiClassUtilImpl;
 import com.plugin.frege.psi.impl.FregePsiUtilImpl;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +120,7 @@ public class FregeQVaridReference extends FregeReferenceBase {
         imports.addAll(defaultImports);
 
         for (String currentImport : imports) {
-            String qualifiedName = mergeQualifiedClassNameWithQualifiedMethodName(currentImport, methodName);
+            String qualifiedName = FregePsiUtilImpl.mergeQualifiedNames(currentImport, methodName);
             if (qualifiedName == null) {
                 continue;
             }
@@ -133,16 +132,5 @@ public class FregeQVaridReference extends FregeReferenceBase {
         }
 
         return List.of();
-    }
-
-    private @Nullable String mergeQualifiedClassNameWithQualifiedMethodName(@NotNull String clazz, @NotNull String method) {
-        String clazzName = FregePsiUtilImpl.nameFromQualifiedName(clazz);
-        String methodName = FregePsiUtilImpl.nameFromQualifiedName(method);
-        String methodClazz = FregePsiUtilImpl.qualifierFromQualifiedName(method);
-        if (methodClazz.isEmpty() || methodClazz.equals(clazzName)) {
-            return clazz + "." + methodName;
-        } else {
-            return null;
-        }
     }
 }

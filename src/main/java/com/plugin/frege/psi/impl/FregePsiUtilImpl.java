@@ -278,4 +278,29 @@ public class FregePsiUtilImpl {
         }
         return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
     }
+
+    /**
+     * Merges full qualified name of class with name (qualified or not) of method or qualified data name.
+     * Returns {@code null} if cannot merge.
+     * Example: 'frege.prelude.PreludeBase' merges with 'PreludeBase.Int' -> 'frege.prelude.PreludeBase.Int'.
+     */
+    public static @Nullable String mergeQualifiedNames(@NotNull String first, @NotNull String second) {
+        String secondName = nameFromQualifiedName(second);
+        String secondQualifier = qualifierFromQualifiedName(second);
+        if (secondQualifier.isEmpty() || qualifiedNameEndsWithQualifier(first, secondQualifier)) {
+            return first + "." + secondName; // TODO
+        } else {
+            return null;
+        }
+    }
+
+    private static boolean qualifiedNameEndsWithQualifier(@NotNull String qualifiedName, @NotNull String qualifier) {
+        if (!qualifiedName.endsWith(qualifier)) {
+            return false;
+        }
+        if (qualifiedName.equals(qualifier)) {
+            return true;
+        }
+        return qualifiedName.charAt(qualifiedName.length() - qualifier.length() - 1) == '.';
+    }
 }
