@@ -185,7 +185,8 @@ patternFields ::= patternField (COMMA patternField)*
 patternField ::= param (EQUAL pattern)? // TODO I'm not sure about this
 
 /* Declarations and Bindings */
-program ::= (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body {
+// TODO modifiers
+program ::= PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body {
     pin=1
     implements="com.plugin.frege.psi.FregePsiClassHolder"
     mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
@@ -259,13 +260,16 @@ dataDcl ::= (dataDclConstructors | dataDclNative) deriveDcl?
 
 dataDclConstructors ::= ABSTRACT? DATA dataNameConstructor tyVar* EQUAL constructors whereSection?
     { pin=6 }
-dataDclNative ::= DATA dataNameNative tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection?
-    { pin=6 }
+dataDclNative ::= DATA dataNameNative tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection? {
+    pin=6
+    implements="com.plugin.frege.psi.FregePsiClassHolder"
+    mixin="com.plugin.frege.psi.mixin.FregeDataDclNativeMixin"
+}
 
 dataNameConstructor ::= CONID
 
 dataNameNative ::= CONID {
-    implements="com.plugin.frege.psi.FregeNamedElement"
+    implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.FregeDataNameNativeMixin"
 }
 dataNameUsage ::= CONID {
