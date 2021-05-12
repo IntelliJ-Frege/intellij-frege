@@ -8,6 +8,9 @@ public class GradleFregeForm {
     private JPanel panel;
 
     public GradleFregeForm() {
+        javaTarget.setText("11");
+        fregeRelease.setText("3.25alpha");
+        fregeVersion.setText("3.25.84");
         autoDownloadTheCompilerCheckBox.addItemListener(e -> {
             int state = e.getStateChange();
             switch (state) {
