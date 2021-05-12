@@ -1,0 +1,4 @@
+task fregeInit {
+    group "frege"
+    ant.mkdir(dir: fregeMainSourceDir)
+}
