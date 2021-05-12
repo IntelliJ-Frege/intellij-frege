@@ -15,22 +15,25 @@ import org.jetbrains.plugins.gradle.frameworkSupport.GradleFrameworkSupportProvi
 import javax.swing.*;
 import java.io.IOException;
 
-import static com.intellij.util.ResourceUtil.getResourceAsStream;
+public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportProvider {
+    public static final String ID = "Frege";
+    private final GradleMinimalFregeForm settingsForm;
 
-public class GradleFullFregeFrameworkSupportProvider extends GradleFrameworkSupportProvider {
-    public static final String ID = "Frege Full";
+    public GradleFregeFrameworkSupportProvider() {
+        this.settingsForm = new GradleMinimalFregeForm();
+    }
 
     @Override
     public @NotNull FrameworkTypeEx getFrameworkType() {
         return new FrameworkTypeEx(ID) {
             @Override
             public @NotNull FrameworkSupportInModuleProvider createProvider() {
-                return GradleFullFregeFrameworkSupportProvider.this;
+                return GradleFregeFrameworkSupportProvider.this;
             }
 
             @Override
             public @NotNull @Nls(capitalization = Nls.Capitalization.Title) String getPresentableName() {
-                return "Frege Full";
+                return "Frege";
             }
 
             @Override
@@ -41,16 +44,22 @@ public class GradleFullFregeFrameworkSupportProvider extends GradleFrameworkSupp
     }
 
     @Override
+    public JComponent createComponent() {
+        return settingsForm.getPanel();
+    }
+
+
+    @Override
     public void addSupport(@NotNull ProjectId projectId,
                            @NotNull Module module,
                            @NotNull ModifiableRootModel rootModel,
                            @NotNull ModifiableModelsProvider modifiableModelsProvider,
                            @NotNull BuildScriptDataBuilder buildScriptData) {
-
         try {
-            byte[] content = getResourceAsStream(GradleFullFregeFrameworkSupportProvider.class.getClassLoader(),
-                    "templates/gradle/full", "build.gradle").readAllBytes();
-            buildScriptData.getBuildScriptFile().setBinaryContent(content);
+            GradleFregeScriptBuilder gradleFregeScriptBuilder = new GradleFregeScriptBuilder(settingsForm);
+            byte[] contentBytes = gradleFregeScriptBuilder.build();
+
+            buildScriptData.getBuildScriptFile().setBinaryContent(contentBytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
