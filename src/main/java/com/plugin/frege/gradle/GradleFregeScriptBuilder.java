@@ -58,6 +58,7 @@ public class GradleFregeScriptBuilder {
     private void addPlugins() {
         lines.add("plugins {");
         addPlugin("application");
+        addPlugin("idea");
         lines.add("}");
         addNewline();
     }
@@ -83,6 +84,15 @@ public class GradleFregeScriptBuilder {
         }
         addProjectProperty("fregeMainSourceDir", "${projectDir}/src/main/frege");
         addProjectProperty("fregeMainJavaDir", "${buildDir}/src/main/frege");
+        lines.add("}");
+        addNewline();
+    }
+
+    private void addIdeaSupport() {
+        lines.add("idea {");
+        lines.add("    module {");
+        lines.add("        sourceDirs += file(fregeMainSourceDir)");
+        lines.add("    }");
         lines.add("}");
         addNewline();
     }
@@ -113,6 +123,10 @@ public class GradleFregeScriptBuilder {
             lines.add("    downloadCompiler()");
             lines.add("    deps.add(project.dependencies.create(\"org.frege-lang:frege:${fregeVersion}\"))");
             lines.add("}");
+            lines.add("");
+
+            lines.add("dependencies {");
+            lines.add("}");
         } else {
             lines.add("dependencies {");
             lines.add(String.format("    implementation name: \"%s\"", getFregeName(settings)));
@@ -127,6 +141,7 @@ public class GradleFregeScriptBuilder {
     }
 
     private void addTasks() throws IOException {
+        addTemplate("tasks/fregeInit.gradle");
         addTemplate("tasks/prepareCompileDirs.gradle");
         addTemplate("tasks/fregeCompile.gradle");
         addTemplate("tasks/fregeRun.gradle");
@@ -136,6 +151,7 @@ public class GradleFregeScriptBuilder {
         addDisclaimer();
         addPlugins();
         addProjectProperties();
+        addIdeaSupport();
         addRepositories();
         addDependencies();
         addTasks();
