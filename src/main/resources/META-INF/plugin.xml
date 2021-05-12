@@ -41,8 +41,7 @@
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
-        <frameworkSupport implementation="com.plugin.frege.gradle.GradleMinimalFregeFrameworkSupportProvider" />
-        <frameworkSupport implementation="com.plugin.frege.gradle.GradleFullFregeFrameworkSupportProvider" />
+        <frameworkSupport implementation="com.plugin.frege.gradle.GradleFregeFrameworkSupportProvider" />
     </extensions>
     <actions>
         <action id="Frege.NewFregeFile"
