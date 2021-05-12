@@ -4,24 +4,21 @@ import javax.swing.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class GradleMinimalFregeForm {
+public class GradleFregeForm {
     private JPanel panel;
 
-    public GradleMinimalFregeForm() {
-        autoDownloadTheCompilerCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                int state = e.getStateChange();
-                switch (state) {
-                    case ItemEvent.SELECTED:
-                        fregeCompilerPathLabel.setVisible(false);
-                        fregeCompilerPath.setVisible(false);
-                        break;
-                    case ItemEvent.DESELECTED:
-                        fregeCompilerPathLabel.setVisible(true);
-                        fregeCompilerPath.setVisible(true);
-                        break;
-                }
+    public GradleFregeForm() {
+        autoDownloadTheCompilerCheckBox.addItemListener(e -> {
+            int state = e.getStateChange();
+            switch (state) {
+                case ItemEvent.SELECTED:
+                    fregeCompilerPathLabel.setVisible(false);
+                    fregeCompilerPath.setVisible(false);
+                    break;
+                case ItemEvent.DESELECTED:
+                    fregeCompilerPathLabel.setVisible(true);
+                    fregeCompilerPath.setVisible(true);
+                    break;
             }
         });
     }
