@@ -1,122 +1,113 @@
 package com.plugin.frege.lexer;
 
-import com.intellij.lexer.LexerBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Queue;
 import java.util.Stack;
 
 import static com.plugin.frege.psi.FregeTypes.*;
 
-public class FregeLayoutLexer extends LexerBase {
-    private static final TokenSet SECTION_CREATING_KEYWORDS;
-    private static final TokenSet NON_CODE_TOKENS;
+public class FregeLayoutLexer {
+    private static final TokenSet SECTION_CREATING_KEYWORDS = TokenSet.create(WHERE, LET, OF, DO);
+    private static final TokenSet NON_CODE_TOKENS = TokenSet.create(TokenType.WHITE_SPACE, NEW_LINE, LINE_COMMENT, BLOCK_COMMENT);
 
-    static {
-        SECTION_CREATING_KEYWORDS = TokenSet.create(WHERE, LET, OF, DO);
-        NON_CODE_TOKENS = TokenSet.create(TokenType.WHITE_SPACE, NEW_LINE, LINE_COMMENT, BLOCK_COMMENT);
+    private final @NotNull FregeLexerAdapter lexer;
+    private final @NotNull Deque<@NotNull Token> processedTokens = new ArrayDeque<>();
+    private final @NotNull Queue<@NotNull Token> virtualPrefix = new ArrayDeque<>();
+    private final @NotNull Stack<@NotNull Integer> indentStack = new Stack<>();
+    private @Nullable Token newlineStickyToken = null;
+    private @NotNull State state = State.START;
+    private @NotNull Token.Line currentLine = new Token.Line();
+    private int currentColumn = 0;
+
+
+    public FregeLayoutLexer(@NotNull FregeLexerAdapter lexer) {
+        this.lexer = lexer;
+        indentStack.push(-1); // top-level section
     }
 
-    private final FregeLexerAdapter lexer = new FregeLexerAdapter();
-    private int currentTokenIndex = 0;
-    private ArrayList<Token> tokens = new ArrayList<>();
-
-    private Token getCurrentToken() {
-        return tokens.get(currentTokenIndex);
+    private static @NotNull Token createVirtualToken(IElementType elementType, Token precedesToken) {
+        return new Token(elementType, precedesToken.start,
+                precedesToken.end, precedesToken.column, "", precedesToken.line);
     }
 
-    @Override
-    public void start(@NotNull CharSequence buffer, int startOffset, int endOffset, int initialState) {
-        if (startOffset != 0) {
-            throw new RuntimeException("Does not support incremental lexing: startOffset must be 0");
+    public @NotNull Token getCurrentToken() {
+        if (virtualPrefix.isEmpty() && processedTokens.isEmpty()) {
+            processMoreTokens();
         }
-        if (initialState != 0) {
-            throw new RuntimeException("Does not support incremental lexing: initialState must be 0");
+        if (!virtualPrefix.isEmpty()) {
+            return virtualPrefix.element();
+        } else {
+            return processedTokens.getFirst();
         }
-        lexer.start(buffer, startOffset, endOffset, initialState);
-
-        getTokens();
-        layoutTokens();
-        currentTokenIndex = 0;
     }
 
-    @Override
-    public int getState() {
-        return lexer.getState();
-    }
-
-    @Override
-    public @Nullable IElementType getTokenType() {
-        return getCurrentToken().elementType;
-    }
-
-    @Override
-    public int getTokenStart() {
-        return getCurrentToken().start;
-    }
-
-    @Override
-    public int getTokenEnd() {
-        return getCurrentToken().end;
-    }
-
-    @Override
     public void advance() {
         if (!getCurrentToken().isEof()) {
-            currentTokenIndex++;
+            if (!virtualPrefix.isEmpty()) {
+                virtualPrefix.remove();
+            } else {
+                processedTokens.removeFirst();
+            }
         }
     }
 
-    @Override
-    public @NotNull CharSequence getBufferSequence() {
-        return lexer.getBufferSequence();
+    private @NotNull Token findPrecedesForCurrentToken() {
+        if (processedTokens.isEmpty()) {
+            if (newlineStickyToken == null) {
+                throw new FregeLayoutLexerException("Cannot find precedes token");
+            }
+            return newlineStickyToken;
+        } else {
+            return processedTokens.getLast();
+        }
     }
 
-    @Override
-    public int getBufferEnd() {
-        return 0;
-    }
-
-    private Token createVirtualToken(IElementType elementType, Token precedesToken) {
-        return new Token(elementType, precedesToken.start,
-                precedesToken.end, precedesToken.column, precedesToken.line);
-    }
-
-    private void getTokens() {
-        tokens = new ArrayList<>();
-        Token.Line line = new Token.Line();
-        int currentColumn = 0;
+    /**
+     * We can't lex Frege incrementally because we have to create virtual tokens to follow the layout rule,
+     * but we can lex it lazily, giving tokens part by part. This function gets the next part of tokens from lexer and processes them
+     * adding new tokens to {@link FregeLayoutLexer#processedTokens} and {@link FregeLayoutLexer#virtualPrefix}.
+     * If it's possible we want to create virtual tokens right after the newline tokens, but it is likely that
+     * there are a lot of consecutive newline tokens, so we have to create virtual tokens right after the first one.
+     *
+     * {@link FregeLayoutLexer#virtualPrefix} contains the tokens that we need first. They end the last
+     * processed part. Then we use {@link FregeLayoutLexer#processedTokens} which consists of initial tokens and virtual open section tokens.
+     * The only exception is one-line let-in expression, then we have to create a virtual end section token in the same line.
+     *
+     * @see <a href="https://www.haskell.org/onlinereport/haskell2010/haskellch2.html#x7-210002.7">Haskell layout rule</a>
+     */
+    private void processMoreTokens() {
+        boolean wasCodeTokenInBlock = false;
+        boolean wasLetTokenInBlock = false;
         while (true) {
-            Token token = new Token(lexer.getTokenType(),
-                    lexer.getTokenStart(),
-                    lexer.getTokenEnd(),
-                    currentColumn,
-                    line);
-            tokens.add(token);
-            if (line.columnWhereCodeStarts == null && token.isCode()) {
-                line.columnWhereCodeStarts = currentColumn;
-            }
-            currentColumn += token.end - token.start;
-            if (token.isEof()) {
-                break;
-            } else if (token.elementType == NEW_LINE) {
-                line = new Token.Line();
-                currentColumn = 0;
-            }
+            Token token = getTokenFromLexer();
             lexer.advance();
-        }
-    }
-
-    private void layoutTokens() {
-        State state = State.START;
-        Stack<Integer> indentStack = new Stack<>();
-        indentStack.push(-1); // top-level section
-        for (int i = 0; i < tokens.size(); i++) {
-            Token token = tokens.get(i);
+            if (token.elementType == NEW_LINE && wasCodeTokenInBlock) {
+                processedTokens.addLast(token);
+                newlineStickyToken = token;
+                break;
+            }
+            if (token.isEof()) {
+                Token precedes = findPrecedesForCurrentToken();
+                for (int i = 2; i < indentStack.size(); i++) {
+                    processedTokens.addLast(createVirtualToken(VIRTUAL_END_SECTION, precedes));
+                }
+                processedTokens.addLast(token);
+                break;
+            }
+            if (!token.isCode()) {
+                processedTokens.addLast(token);
+                continue;
+            }
+            if (LET.equals(token.elementType)) {
+                wasLetTokenInBlock = true;
+            }
             switch (state) {
                 case START:
                     if (token.isCode() && token.column == 0) {
@@ -124,97 +115,60 @@ public class FregeLayoutLexer extends LexerBase {
                     }
                     break;
                 case WAITING_FOR_SECTION_START:
-                    if (token.isCode() && token.elementType.equals(LEFT_BRACE)) {
+                    if (token.isCode() && LEFT_BRACE.equals(token.elementType)) {
                         state = State.NORMAL;
-                    }
-                    else if (token.isCode() && token.column > indentStack.peek()) {
-                        tokens.add(i, createVirtualToken(VIRTUAL_OPEN_SECTION, tokens.get(i - 1)));
-                        i++;
+                    } else if (token.isCode() && token.column > indentStack.peek()) {
+                        processedTokens.addLast(createVirtualToken(VIRTUAL_OPEN_SECTION, findPrecedesForCurrentToken()));
                         state = State.NORMAL;
                         indentStack.push(token.column);
-                    } else if (token.isFirstSignificantTokenOnLine() && token.column <= indentStack.peek()) {
+                    } else if (token.isFirstSignificantTokenOnLine() && token.column <= indentStack.peek()) { // TODO
                         state = State.NORMAL;
-                        i--;
-                    }
-                    if (state == State.NORMAL && SECTION_CREATING_KEYWORDS.contains(token.elementType)) {
-                        state = State.WAITING_FOR_SECTION_START;
                     }
                     break;
                 case NORMAL:
-                    if (SECTION_CREATING_KEYWORDS.contains(token.elementType)) {
-                        state = State.WAITING_FOR_SECTION_START;
-                    }
                     if (token.isFirstSignificantTokenOnLine()) {
-                        int insertAt = getInsertionPos(i);
-                        Token precedingToken = tokens.get(insertAt - 1);
+                        if (newlineStickyToken == null) {
+                            throw new FregeLayoutLexerException("Cannot find sticky newline token");
+                        }
                         while (token.column <= indentStack.peek()) {
                             if (token.column == indentStack.peek()) {
-                                tokens.add(insertAt, createVirtualToken(VIRTUAL_END_DECL, precedingToken));
-                                i++;
+                                virtualPrefix.add(createVirtualToken(VIRTUAL_END_DECL, newlineStickyToken));
                                 break;
                             } else if (token.column < indentStack.peek()) {
-                                tokens.add(insertAt, createVirtualToken(VIRTUAL_END_SECTION, precedingToken));
-                                i++;
-                                insertAt++;
+                                virtualPrefix.add(createVirtualToken(VIRTUAL_END_SECTION, newlineStickyToken));
                                 indentStack.pop();
                             }
                         }
-                    } else if (isSingleLineLetIn(i)) {
-                        tokens.add(i, createVirtualToken(VIRTUAL_END_SECTION, tokens.get(i - 1)));
-                        i++;
+                    } else if (IN.equals(token.elementType) && wasLetTokenInBlock) {
+                        processedTokens.addLast(createVirtualToken(VIRTUAL_END_SECTION, findPrecedesForCurrentToken()));
                         indentStack.pop();
                     }
                     break;
             }
-        }
-        if (indentStack.size() > 2) {
-            int insertAt = getInsertionPos(tokens.size() - 1);
-            Token precedingToken = tokens.get(insertAt - 1);
-            for (int j = 0; j < indentStack.size() - 2; j++) {
-                tokens.add(insertAt, createVirtualToken(VIRTUAL_END_SECTION, precedingToken));
-                insertAt++;
+            processedTokens.addLast(token);
+            if (SECTION_CREATING_KEYWORDS.contains(token.elementType)) {
+                state = State.WAITING_FOR_SECTION_START;
             }
+            wasCodeTokenInBlock = true;
         }
     }
 
-    private int getInsertionPos(int i) {
-        if (i == tokens.size() - 1) {
-            return i;
+    private @NotNull Token getTokenFromLexer() {
+        Token token = new Token(lexer.getTokenType(),
+                lexer.getTokenStart(),
+                lexer.getTokenEnd(),
+                currentColumn,
+                lexer.getTokenText(),
+                currentLine);
+        if (currentLine.columnWhereCodeStarts == null && token.isCode()) {
+            currentLine.columnWhereCodeStarts = currentColumn;
         }
-        int insertAt = i;
-        boolean findInsertPos = false;
-        for (int k = i - 1; k > 0; k--) {
-            if (tokens.get(k).isCode()) {
-                for (int m = k + 1; m <= i; m++) {
-                    if (tokens.get(m).elementType == NEW_LINE) {
-                        insertAt = m + 1;
-                        findInsertPos = true;
-                        break;
-                    }
-                }
-                if (findInsertPos) {
-                    break;
-                }
-            }
+        currentColumn += token.end - token.start;
+        if (token.elementType == NEW_LINE) {
+            currentLine = new Token.Line();
+            currentColumn = 0;
         }
-        return insertAt;
-    }
-
-    private boolean isSingleLineLetIn(int index) { // TODO
-        Token token = tokens.get(index);
-        if (token == null || token.elementType == null || !token.elementType.equals(IN)) {
-            return false;
-        }
-        for (int i = index - 1; i >= 0; i--) {
-            Token currentToken = tokens.get(i);
-            if (!currentToken.line.equals(token.line)) {
-                break;
-            }
-            if (currentToken.elementType.equals(LET)) {
-                return true;
-            }
-        }
-        return false;
+        return token;
     }
 
     private enum State {
@@ -223,40 +177,44 @@ public class FregeLayoutLexer extends LexerBase {
         NORMAL
     }
 
-    private static class Token {
-        private final IElementType elementType;
-        private final int start;
-        private final int end;
-        private final int column;
-        private final Line line;
+    public static class Token {
+        public final @Nullable IElementType elementType;
+        public final int start;
+        public final int end;
+        public final int column;
+        public final @NotNull String tokenText;
+        public final @NotNull Line line;
 
-        public Token(IElementType elementType, int start, int end, int column, Line line) {
+        public Token(@Nullable IElementType elementType, int start, int end, int column, @NotNull String tokenText, @NotNull Line line) {
             this.elementType = elementType;
             this.start = start;
             this.end = end;
             this.column = column;
+            this.tokenText = tokenText;
             this.line = line;
         }
 
         @Override
         public String toString() {
-            return elementType.toString() + "(" + start + ", " + end + ")";
+            return elementType == null ? "EOF" : elementType.toString() + "(" + start + ", " + end + ")";
         }
 
-        boolean isEof() {
+        public boolean isEof() {
             return elementType == null;
         }
 
-        boolean isCode() {
+        public boolean isCode() {
             return !NON_CODE_TOKENS.contains(elementType) && !isEof();
         }
 
-        boolean isFirstSignificantTokenOnLine() {
-            return isCode() && column == line.columnWhereCodeStarts;
+        public boolean isFirstSignificantTokenOnLine() {
+            return isCode() &&
+                    line.columnWhereCodeStarts != null &&
+                    line.columnWhereCodeStarts == column;
         }
 
-        private static class Line {
-            private Integer columnWhereCodeStarts;
+        public static class Line {
+            public @Nullable Integer columnWhereCodeStarts;
         }
     }
 }
