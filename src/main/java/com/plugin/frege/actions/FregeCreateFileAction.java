@@ -12,7 +12,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class FregeCreateFileAction extends CreateFileFromTemplateAction implements DumbAware {
 
-    public static final String CAPTION = "Frege File";
+    private static final String CAPTION = "Frege File";
+
+    private static final String FREGE_MODULE = "Frege Module";
+    private static final String FREGE_MODULE_TEMPLATE_NAME = "Frege Module";
+
+    private static final String EMPTY_FILE = "Empty File";
+    public static final String EMPTY_FILE_TEMPLATE_NAME = "Frege Empty File";
 
     public FregeCreateFileAction() {
         super(CAPTION, "", FregeIcons.FILE);
@@ -20,8 +26,8 @@ public class FregeCreateFileAction extends CreateFileFromTemplateAction implemen
 
     @Override
     protected void buildDialog(@NotNull Project project, @NotNull PsiDirectory directory, CreateFileFromTemplateDialog.@NotNull Builder builder) {
-        builder.setTitle(CAPTION).addKind("Frege Module", FregeIcons.FILE, "Frege Module")
-                .addKind("Empty File", FregeIcons.FILE, "Frege Empty File");
+        builder.setTitle(CAPTION).addKind(FREGE_MODULE, FregeIcons.FILE, FREGE_MODULE_TEMPLATE_NAME)
+                .addKind(EMPTY_FILE, FregeIcons.FILE, EMPTY_FILE_TEMPLATE_NAME);
     }
 
     @Override

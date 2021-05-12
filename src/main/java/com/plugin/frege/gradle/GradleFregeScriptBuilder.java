@@ -10,25 +10,25 @@ import java.util.StringJoiner;
 import static com.intellij.util.ResourceUtil.getResourceAsStream;
 
 /**
- * Similiar to {@link BuildScriptDataBuilder BuildScriptDataBuilder}
- * by its purpose, but does not inherit it, because {@link BuildScriptDataBuilder BuildScriptDataBuilder} is not convenient enough
+ * Similiar to {@link BuildScriptDataBuilder}
+ * by its purpose, but does not inherit it, because {@link BuildScriptDataBuilder} is not convenient enough
  */
 public class GradleFregeScriptBuilder {
     private static final String RESOURCES_PATH = "templates/gradle";
     private static final String DISCLAIMER_PATH = "disclaimer.gradle";
 
-    private final GradleMinimalFregeForm settings;
+    private final GradleFregeForm settings;
     private final StringJoiner lines = new StringJoiner("\n");
 
-    public GradleFregeScriptBuilder(GradleMinimalFregeForm settings) {
+    public GradleFregeScriptBuilder(GradleFregeForm settings) {
         this.settings = settings;
     }
 
-    private static String getFregeDir(GradleMinimalFregeForm settings) {
+    private static String getFregeDir(GradleFregeForm settings) {
         return Path.of(settings.getFregeCompilerPath()).getParent().toString();
     }
 
-    private static String getFregeName(GradleMinimalFregeForm settings) {
+    private static String getFregeName(GradleFregeForm settings) {
         Path pathToCompiler = Path.of(settings.getFregeCompilerPath());
         String fileName = pathToCompiler.getFileName().toString();
         if (!fileName.endsWith(".jar"))
@@ -52,7 +52,7 @@ public class GradleFregeScriptBuilder {
     }
 
     private void addPlugin(String pluginName) {
-        lines.add(String.format("    id \"%s\"", pluginName));
+        lines.add(String.format("\tid \"%s\"", pluginName));
     }
 
     private void addPlugins() {
@@ -64,7 +64,7 @@ public class GradleFregeScriptBuilder {
     }
 
     private void addProjectProperty(String name, String value) {
-        lines.add(String.format("    %s = \"%s\"", name, value));
+        lines.add(String.format("\t%s = \"%s\"", name, value));
     }
 
     private void addProjectProperties() {
@@ -90,28 +90,28 @@ public class GradleFregeScriptBuilder {
 
     private void addIdeaSupport() {
         lines.add("idea {");
-        lines.add("    module {");
-        lines.add("        sourceDirs += file(fregeMainSourceDir)");
-        lines.add("    }");
+        lines.add("\tmodule {");
+        lines.add("\t\tsourceDirs += file(fregeMainSourceDir)");
+        lines.add("\t}");
         lines.add("}");
         addNewline();
     }
 
     private void addRepositories() {
         lines.add("repositories {");
-        lines.add("    flatDir {");
-        lines.add("        dirs fregeDir");
-        lines.add("    }");
+        lines.add("\tflatDir {");
+        lines.add("\t\tdirs fregeDir");
+        lines.add("\t}");
         lines.add("}");
         addNewline();
     }
 
     private void addDownloadCompilerFunction() {
         lines.add("void downloadCompiler() {");
-        lines.add("    ant.mkdir(dir: fregeDir)");
-        lines.add("    ant.get(src: fregeCompilerUrl,");
-        lines.add("            dest: fregeJar,");
-        lines.add("            skipexisting: 'true')");
+        lines.add("\tant.mkdir(dir: fregeDir)");
+        lines.add("\tant.get(src: fregeCompilerUrl,");
+        lines.add("\t\t\tdest: fregeJar,");
+        lines.add("\t\t\tskipexisting: 'true')");
         lines.add("}");
         addNewline();
     }
@@ -120,8 +120,8 @@ public class GradleFregeScriptBuilder {
         if (settings.isCompilerAutoDownloaded()) {
             addDownloadCompilerFunction();
             lines.add("configurations.implementation.defaultDependencies { deps ->");
-            lines.add("    downloadCompiler()");
-            lines.add("    deps.add(project.dependencies.create(\"org.frege-lang:frege:${fregeVersion}\"))");
+            lines.add("\tdownloadCompiler()");
+            lines.add("\tdeps.add(project.dependencies.create(\"org.frege-lang:frege:${fregeVersion}\"))");
             lines.add("}");
             lines.add("");
 
@@ -129,7 +129,7 @@ public class GradleFregeScriptBuilder {
             lines.add("}");
         } else {
             lines.add("dependencies {");
-            lines.add(String.format("    implementation name: \"%s\"", getFregeName(settings)));
+            lines.add(String.format("\timplementation name: \"%s\"", getFregeName(settings)));
             lines.add("}");
         }
         addNewline();

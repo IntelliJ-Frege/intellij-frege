@@ -16,11 +16,10 @@ import javax.swing.*;
 import java.io.IOException;
 
 public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportProvider {
-    public static final String ID = "Frege";
-    private final GradleMinimalFregeForm settingsForm;
+    private static final String ID = "Frege";
+    private final GradleFregeForm settingsForm = new GradleFregeForm();
 
     public GradleFregeFrameworkSupportProvider() {
-        this.settingsForm = new GradleMinimalFregeForm();
     }
 
     @Override
@@ -33,7 +32,7 @@ public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportP
 
             @Override
             public @NotNull @Nls(capitalization = Nls.Capitalization.Title) String getPresentableName() {
-                return "Frege";
+                return ID;
             }
 
             @Override
