@@ -105,8 +105,9 @@ list ::= emptyList
             | LEFT_BRACKET expr (COMMA expr)? DOUBLE_DOT expr? RIGHT_BRACKET
             | LEFT_BRACKET expr VERT_BAR lcquals RIGHT_BRACKET
 lcquals ::= lcqual (COMMA lcqual)* COMMA?
-lcqual ::= letExpression
-         | expr ((LEFT_ARROW | EQUAL) expr)?
+lcqual ::= letExpression | expr ((LEFT_ARROW | EQUAL) expr)? {
+    implements="com.plugin.frege.psi.FregeSubprogramsHolder"
+}
 
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
@@ -133,13 +134,21 @@ meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICO
                         | LEFT_BRACE <<rule>> (SEMICOLON <<rule>>)* RIGHT_BRACE
                         | <<rule>>
 letExpression ::= LET <<indentSection decl>>
-letInExpression ::= letExpression IN expr
-whereSection ::= WHERE <<indentSection decl>>
+letInExpression ::= letExpression IN expr {
+    implements="com.plugin.frege.psi.FregeScopeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeLetInExpressionMixin"
+}
+whereSection ::= WHERE <<indentSection decl>> {
+    implements="com.plugin.frege.psi.FregeScopeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeWhereSectionMixin"
+}
 doEx ::= DO <<indentSection (lcqual | qConId LEFT_BRACE (getFields | weakVarid (QUESTION_MARK | EQUAL | LEFT_ARROW)) RIGHT_BRACE)>>
 
 /* Case Expression */
 caseEx ::= CASE expr OF <<indentSection alt>>
-alt ::= pattern ((RIGHT_ARROW | EQUAL) expr | guardedExs) whereSection?
+alt ::= pattern ((RIGHT_ARROW | EQUAL) expr | guardedExs) whereSection? {
+    implements="com.plugin.frege.psi.FregeSubprogramsHolder"
+}
 guardedExs ::= guardedEx+
 guardedEx ::= VERT_BAR gquals (RIGHT_ARROW | EQUAL) expr
 gquals ::= gqual (COMMA gqual)* COMMA?
@@ -204,7 +213,10 @@ packageClassName ::= qConId {
 qName ::= qVarId | qLexOp
 inlineRule ::= strongInline LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN
 
-body ::= topDecl (VIRTUAL_END_DECL topDecl)* // was right rec
+body ::= topDecl (VIRTUAL_END_DECL topDecl)* {
+    implements="com.plugin.frege.psi.FregeScopeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeBodyMixin"
+}
 
 topDecl ::= !<<eof>> (
               fixity
@@ -219,7 +231,9 @@ topDecl ::= !<<eof>> (
 
 accessModifier ::= PUBLIC_MODIFIER | PROTECTED_MODIFIER | PRIVATE_MODIFIER
 
-decl ::= accessModifier? (annotation | binding | nativeFun)
+decl ::= accessModifier? (annotation | binding | nativeFun) {
+    implements="com.plugin.frege.psi.FregeSubprogramsHolder"
+}
 
 /* Syntax of Types */
 sigma ::= (FORALL tyVar (tyVar)* DOT)? chro

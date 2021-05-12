@@ -6,7 +6,6 @@ import com.plugin.frege.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -15,66 +14,15 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Definitions:
- * <ul>
- *     <li> Scope is a {@link PsiElement} that has a list of subprograms. </li>
- * </ul>
- */
 public class FregePsiUtilImpl {
     private FregePsiUtilImpl() {}
-
-    // TODO do-expr and case of
-    private static final Class<?>[] scopeElementTypes = {
-            FregeBody.class,
-            FregeWhereSection.class,
-            FregeLetInExpression.class
-    };
 
     private static final List<String> defaultImports = List.of(
             "frege.Prelude" // TODO
     );
 
-    private static final Class<? extends PsiElement>[] indentSectionSubprogramsClass;
-
-    static {
-        //noinspection unchecked
-        indentSectionSubprogramsClass =
-                (Class<? extends PsiElement>[]) Array.newInstance(Class.class, 3);
-        indentSectionSubprogramsClass[0] = FregeDecl.class; // for let expressions and where sections
-        indentSectionSubprogramsClass[1] = FregeLcqual.class; // for do expressions
-        indentSectionSubprogramsClass[2] = FregeAlt.class; // for case expressions
-    }
-
     private static boolean isScope(@Nullable PsiElement element) {
-        if (element == null) {
-            return false;
-        }
-
-        Class<? extends PsiElement> elementClass = element.getClass();
-        return Arrays.stream(scopeElementTypes)
-                .anyMatch(type -> type.isAssignableFrom(elementClass));
-    }
-
-    private static @NotNull List<PsiElement> subprogramsFromScope(@Nullable PsiElement scope) {
-        if (!isScope(scope)) {
-            return List.of();
-        }
-
-        if (scope instanceof FregeBody) {
-            return ((FregeBody) scope).getTopDeclList().stream()
-                    .map(FregeTopDecl::getDecl)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        } else if (scope instanceof FregeWhereSection) {
-            FregeIndentSection indentSection = ((FregeWhereSection) scope).getIndentSection();
-            return PsiTreeUtil.getChildrenOfAnyType(indentSection, indentSectionSubprogramsClass);
-        } else if (scope instanceof FregeLetInExpression) {
-            FregeIndentSection indentSection = ((FregeLetInExpression) scope).getLetExpression().getIndentSection();
-            return PsiTreeUtil.getChildrenOfAnyType(indentSection, indentSectionSubprogramsClass);
-        } else {
-            throw new RuntimeException("Cannot get subprograms.");
-        }
+        return element instanceof FregeScopeElement;
     }
 
     /**
@@ -82,12 +30,12 @@ public class FregePsiUtilImpl {
      * Returns the passed element, if it is a scope.
      * Returns {@code null} if there is no a scope for the element.
      */
-    public static @Nullable PsiElement scopeOfElement(@NotNull PsiElement element) {
+    public static @Nullable FregeScopeElement scopeOfElement(@NotNull PsiElement element) {
         while (element != null && !isScope(element)) {
             element = element.getParent();
         }
 
-        return element;
+        return (FregeScopeElement) element;
     }
 
     /**
@@ -97,12 +45,12 @@ public class FregePsiUtilImpl {
      */
     public static @NotNull <T extends PsiElement> List<T> subprogramsFromScopeOfElement(@NotNull PsiElement element,
                                                                                         @NotNull Function<PsiElement, T> getter) {
-        PsiElement scope = scopeOfElement(element);
+        FregeScopeElement scope = scopeOfElement(element);
         if (!isScope(scope)) {
             return List.of();
         }
 
-        return subprogramsFromScope(scope).stream()
+        return scope.getSubprogramsFromScope().stream()
                 .map(getter)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
