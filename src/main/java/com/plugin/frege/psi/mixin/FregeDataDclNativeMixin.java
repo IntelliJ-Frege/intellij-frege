@@ -7,8 +7,7 @@ import com.plugin.frege.psi.FregePsiClass;
 import com.plugin.frege.psi.FregePsiClassHolder;
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
+import org.jetbrains.annotations.Nullable;
 
 public class FregeDataDclNativeMixin extends FregeCompositeElementImpl implements FregePsiClassHolder {
     public FregeDataDclNativeMixin(@NotNull ASTNode node) {
@@ -19,8 +18,8 @@ public class FregeDataDclNativeMixin extends FregeCompositeElementImpl implement
     }
 
     @Override
-    public @NotNull FregePsiClass getHoldingClass() {
-        return Objects.requireNonNull(((FregeDataDclNative) this).getDataNameNative());
+    public @Nullable FregePsiClass getHoldingClass() {
+        return ((FregeDataDclNative) this).getDataNameNative();
     }
 
     @Override

@@ -2,13 +2,13 @@ package com.plugin.frege.psi.mixin;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiReference;
+import com.plugin.frege.psi.FregePackageName;
 import com.plugin.frege.psi.FregeProgram;
 import com.plugin.frege.psi.FregePsiClass;
 import com.plugin.frege.psi.FregePsiClassHolder;
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
+import org.jetbrains.annotations.Nullable;
 
 public class FregeProgramMixin extends FregeCompositeElementImpl implements FregePsiClassHolder {
     public FregeProgramMixin(@NotNull ASTNode node) {
@@ -19,8 +19,9 @@ public class FregeProgramMixin extends FregeCompositeElementImpl implements Freg
     }
 
     @Override
-    public @NotNull FregePsiClass getHoldingClass() {
-        return Objects.requireNonNull(((FregeProgram) this).getPackageName()).getPackageClassName();
+    public @Nullable FregePsiClass getHoldingClass() {
+        FregePackageName packageName = ((FregeProgram) this).getPackageName();
+        return packageName == null ? null : packageName.getPackageClassName();
     }
 
     @Override

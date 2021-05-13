@@ -105,7 +105,11 @@ public abstract class FregePsiMethodImpl extends FregeNamedElementImpl implement
         LightParameterListBuilder list = new LightParameterListBuilder(getManager(), FregeLanguage.INSTANCE);
         int paramsNumber = getParamsNumber();
         PsiType object = Objects.requireNonNull(getObjectType());
-        PsiElement scope = Objects.requireNonNull(PsiTreeUtil.getParentOfType(this, FregeBinding.class));
+        PsiElement scope = PsiTreeUtil.getParentOfType(this, FregeBinding.class);
+        if (scope == null) {
+            return list;
+        }
+
         for (int i = 0; i < paramsNumber; i++) {
             list.addParameter(new LightParameter("arg" + i, object, scope));
         }
