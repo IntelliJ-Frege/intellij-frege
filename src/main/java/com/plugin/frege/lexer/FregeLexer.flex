@@ -46,16 +46,14 @@ float                = {digits}{dot}{whitespace}
 /* char literal */
 octalEscape          = {backSlash}{octalChar} | {backSlash}{octalChar}{octalChar}
                        | {backSlash}[0-3]{octalChar}{octalChar}
-escapeSequence       = {backSlash}b | {backSlash}t | {backSlash}n | {backSlash}f {backSlash}r
-                       | {backSlash}{doubleQuote} | {backSlash}{quote} | {backSlash}{backSlash}
-                       | {octalEscape}
+escapeSequence       = {backSlash}\S
 char                 = {quote}([^\'\\\n] | {escapeSequence}){quote}
 
 /* string literal */
-string               = {doubleQuote}([^\u0022] | {escapeSequence})*{doubleQuote}
+string               = {doubleQuote}([^\"\\] | {escapeSequence})*{doubleQuote}
 
 /* regex literal */
-regex                = \u00B4(\\\u00B4 | [^\u00B4])*\u00B4
+regex                = \u00B4([^\u00B4\\] | {escapeSequence})*\u00B4
 
 /* comments */
 lineCommentStart     = {dash}{dash}{dash}?
