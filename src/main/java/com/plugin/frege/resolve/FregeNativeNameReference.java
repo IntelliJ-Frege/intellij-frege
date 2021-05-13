@@ -15,6 +15,6 @@ public class FregeNativeNameReference extends FregeReferenceBase {
 
     @Override
     protected List<PsiElement> resolveInner(boolean incompleteCode) {
-        return new ArrayList<>(FregePsiClassUtilImpl.getClassesByQualifiedName(element.getProject(), element.getText()));
+        return new ArrayList<>(FregePsiClassUtilImpl.getClassesByQualifiedName(element.getProject(), element.getText())); // TODO support incomplete code
     }
 }

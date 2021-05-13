@@ -27,12 +27,12 @@ public class FregeDataNameUsageReference extends FregeReferenceBase {
 
     @Override
     protected List<PsiElement> resolveInner(boolean incompleteCode) {
-        List<PsiElement> currentFileData = tryFindDataInCurrentFile();
+        List<PsiElement> currentFileData = tryFindDataInCurrentFile(incompleteCode);
         if (!currentFileData.isEmpty()) {
             return currentFileData;
         }
 
-        return tryFindDataByImports();
+        return tryFindDataByImports(); // TODO support incomplete code
     }
 
     @Override
@@ -40,13 +40,16 @@ public class FregeDataNameUsageReference extends FregeReferenceBase {
         return element.replace(FregeElementFactory.createDataNameUsage(element.getProject(), name));
     }
 
-    private List<PsiElement> tryFindDataInCurrentFile() {
+    private List<PsiElement> tryFindDataInCurrentFile(boolean incompleteCode) {
         String referenceText = element.getText();
-        return findAvailableDataDecls(element).stream()
+        List<PsiElement> dataInCurrentFile = findAvailableDataDecls(element).stream()
                 .map(decl -> PsiTreeUtil.findChildOfType(decl, FregeDataNameNative.class))
                 .map(Objects::requireNonNull)
-                .filter(keepWithText(referenceText))
                 .collect(Collectors.toList());
+        if (!incompleteCode) {
+            dataInCurrentFile.removeIf(keepWithText(referenceText).negate());
+        }
+        return dataInCurrentFile;
     }
 
     private List<PsiElement> tryFindDataByImports() {

@@ -72,6 +72,21 @@ public class FregePsiUtilImpl {
     }
 
     /**
+     * @return a predicate, accepting only instance of clazz
+     * for which {@link PsiElement#getText()} equals the element {@link PsiElement#getText()} if
+     * incompleteCode is false.
+     */
+    public static @NotNull <T extends PsiElement> Predicate<PsiElement> getByTypePredicateCheckingText(
+            @NotNull Class<? extends PsiElement> clazz, @NotNull T element, boolean incompleteCode) {
+        Predicate<PsiElement> predicate = clazz::isInstance;
+        if (!incompleteCode) {
+            predicate = predicate.and(elem -> elem != null &&
+                    elem.getText().equals(element.getText()));
+        }
+        return predicate;
+    }
+
+    /**
      * Searches for the first binding and if it contains {@link FregeWhereSection}, returns it.
      * Otherwise {@code null} is returned.
      */

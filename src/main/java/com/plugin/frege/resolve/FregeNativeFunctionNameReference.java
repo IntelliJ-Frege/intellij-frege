@@ -22,7 +22,7 @@ public class FregeNativeFunctionNameReference extends FregeReferenceBase {
 
     // TODO take into account: signatures
     @Override
-    protected List<PsiElement> resolveInner(boolean incompleteCode) {
+    protected List<PsiElement> resolveInner(boolean incompleteCode) { // TODO support incomplete code
         FregeNativeFun nativeFunction = PsiTreeUtil.getParentOfType(element, FregeNativeFun.class);
         if (nativeFunction == null) {
             return List.of();
