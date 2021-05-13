@@ -112,6 +112,9 @@ public class FregeLayoutLexer {
                 case START:
                     if (token.isCode() && token.column == 0) {
                         state = State.NORMAL;
+                        if (token.elementType != PACKAGE && token.elementType != MODULE) {
+                            indentStack.push(0);
+                        }
                     }
                     break;
                 case WAITING_FOR_SECTION_START:
