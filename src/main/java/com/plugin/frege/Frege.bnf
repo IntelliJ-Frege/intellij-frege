@@ -195,7 +195,7 @@ patternField ::= param (EQUAL pattern)? // TODO I'm not sure about this
 
 /* Declarations and Bindings */
 // TODO modifiers
-program ::= PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION body {
+program ::= (PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION)? body {
     pin=1
     implements="com.plugin.frege.psi.FregePsiClassHolder"
     mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
