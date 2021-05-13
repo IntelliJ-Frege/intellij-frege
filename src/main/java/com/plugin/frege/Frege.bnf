@@ -26,7 +26,7 @@ infixRule ::= INFIX | INFIXL | INFIXR
 private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
             DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
             RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON |
-            AMPERSAND | DEGREE_SIGN | CARRET | PERCENT | UNKNOWN_SYMBOL)
+            AMPERSAND | DEGREE_SIGN | CARRET | PERCENT | SUPER_OR_SUBSCRIPT | UNKNOWN_SYMBOL)
 private cannotAlone ::= EQUAL | VERT_BAR | DOUBLE_COLON
 symOp ::= opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
             | cannotAlone (opCharsCanUseAlone | cannotAlone)+
@@ -85,7 +85,7 @@ term ::= qVarId
 
 initFields ::= initField (COMMA initField)*
 
-initField ::= weakVarid (EQUAL expr)
+initField ::= weakVarid (EQUAL expr)?
 
 /* Sections */
 section ::= LEFT_PAREN (binEx lexOp | lexOp expr) RIGHT_PAREN
@@ -187,6 +187,7 @@ pTerm ::= dataNameUsage LEFT_BRACE patternFields? RIGHT_BRACE
             | unit
             | emptyList
             | LEFT_BRACKET pattern (COMMA pattern)* RIGHT_BRACKET
+            | LEFT_PAREN pVar SUPER_OR_SUBSCRIPT RIGHT_PAREN
             | LEFT_PAREN pattern (COMMA pattern)* RIGHT_PAREN
 pVar ::= param
             | UNDERSCORE

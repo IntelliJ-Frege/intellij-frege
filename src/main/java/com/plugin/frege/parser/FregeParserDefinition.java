@@ -40,7 +40,7 @@ public class FregeParserDefinition implements ParserDefinition {
             FregeTypes.INFIXL, FregeTypes.INFIXR, FregeTypes.INSTANCE, FregeTypes.LET,
             FregeTypes.NATIVE, FregeTypes.NEWTYPE, FregeTypes.OF, FregeTypes.PACKAGE, FregeTypes.MODULE,
             FregeTypes.PRIVATE_MODIFIER, FregeTypes.PROTECTED_MODIFIER, FregeTypes.PUBLIC_MODIFIER, FregeTypes.THEN,
-            FregeTypes.THROWS, FregeTypes.TRUE, FregeTypes.TYPE, FregeTypes.WHERE);
+            FregeTypes.THROWS, FregeTypes.TRUE, FregeTypes.TYPE, FregeTypes.WHERE, FregeTypes.SUPER_OR_SUBSCRIPT);
 
     public static final IFileElementType FILE = new IFileElementType(FregeLanguage.INSTANCE);
 

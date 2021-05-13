@@ -32,6 +32,7 @@ int                  = {decimal} | {hex} | {octal}
 intLong              = {int}[lL]
 intBig               = {digit}+({underscore}{digit}{digit}{digit})*[nN]
 integer              = {int} | {intLong} | {intBig}
+superOrSubscript     = \u00B2 | \u00B3 | \u00B9 | \u2070 | \u2071 | [\u2074-\u209C]
 
 exponentIndicator    = [eE]
 exponentPart         = {exponentIndicator}{signs}{digits}
@@ -209,6 +210,7 @@ backQuote            = \`
       {percent}               { return FregeTypes.PERCENT; }
       {forall}                { return FregeTypes.FORALL; }
       {degreeSign}            { return FregeTypes.DEGREE_SIGN; }
+      {superOrSubscript}      { return FregeTypes.SUPER_OR_SUBSCRIPT; }
 
    /* operators */
       {wordop}                { return FregeTypes.WORD_OPERATOR; }
