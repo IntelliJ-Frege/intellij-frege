@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static com.plugin.frege.psi.impl.FregePsiUtilImpl.*;
 
@@ -28,17 +29,17 @@ public class FregeQVaridReference extends FregeReferenceBase {
     // TODO take into account: qualified names
     @Override
     protected List<PsiElement> resolveInner(boolean incompleteCode) {
-        List<PsiElement> functions = tryFindFunction();
+        List<PsiElement> functions = tryFindFunction(incompleteCode);
         if (!functions.isEmpty()) {
             return functions;
         }
 
-        List<PsiElement> params = tryFindParameters();
+        List<PsiElement> params = tryFindParameters(incompleteCode);
         if (!params.isEmpty()) {
             return params;
         }
 
-        List<PsiElement> methods = tryFindInMethodsOfOtherClasses();
+        List<PsiElement> methods = tryFindInMethodsOfOtherClasses(); // TODO support incomplete code
         if (!methods.isEmpty()) {
             return methods;
         }
@@ -46,14 +47,13 @@ public class FregeQVaridReference extends FregeReferenceBase {
         return List.of();
     }
 
-    private List<PsiElement> tryFindFunction() {
-        String referenceText = element.getText();
+    private List<PsiElement> tryFindFunction(boolean incompleteCode) {
+        Predicate<PsiElement> predicate = getByTypePredicateCheckingText(FregeFunctionName.class, element, incompleteCode);
 
         // check if this expression has `where` ans search there for definitions if it does.
         FregeWhereSection where = findWhereInExpression(element);
         if (where != null) {
-            List<PsiElement> whereFuncNames = findElementsWithinScope(where.getIndentSection(),
-                    element -> element instanceof FregeFunctionName && element.getText().equals(referenceText));
+            List<PsiElement> whereFuncNames = findElementsWithinScope(where.getIndentSection(), predicate);
 
             if (!whereFuncNames.isEmpty()) {
                 return whereFuncNames;
@@ -63,8 +63,7 @@ public class FregeQVaridReference extends FregeReferenceBase {
         // searching for definitions in the current and outer scopes
         PsiElement scope = scopeOfElement(element);
         while (scope != null) {
-            List<PsiElement> functionNames = findElementsWithinScope(scope,
-                    element -> element instanceof FregeFunctionName && element.getText().equals(referenceText));
+            List<PsiElement> functionNames = findElementsWithinScope(scope, predicate);
 
             if (!functionNames.isEmpty()) {
                 return functionNames;
@@ -76,13 +75,12 @@ public class FregeQVaridReference extends FregeReferenceBase {
         return List.of();
     }
 
-    private List<PsiElement> tryFindParameters() {
-        String referenceText = element.getText();
+    private List<PsiElement> tryFindParameters(boolean incompleteCode) {
+        Predicate<PsiElement> predicate = getByTypePredicateCheckingText(FregeFunctionName.class, element, incompleteCode);
 
         FregeWhereSection where = findWhereInExpression(element);
         if (where != null) {
-            List<PsiElement> params = findElementsWithinScope(where,
-                    elem -> elem instanceof FregeParam && elem.getText().equals(referenceText));
+            List<PsiElement> params = findElementsWithinScope(where, predicate);
             if (!params.isEmpty()) {
                 return params;
             }
@@ -90,8 +88,7 @@ public class FregeQVaridReference extends FregeReferenceBase {
 
         FregeBinding binding = parentBinding(element);
         while (binding != null) {
-            List<PsiElement> params = findElementsWithinElement(binding,
-                    elem -> elem instanceof FregeParam && elem.getText().equals(referenceText));
+            List<PsiElement> params = findElementsWithinElement(binding, predicate);
             if (!params.isEmpty()) {
                 return params;
             }
