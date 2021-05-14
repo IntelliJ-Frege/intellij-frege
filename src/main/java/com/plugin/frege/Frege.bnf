@@ -10,7 +10,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("dataNameNative")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("dataNameNative|packageClassName")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -210,6 +210,7 @@ private packageVarid ::= qualifier? qualifier? (weakVarid | DATA | IMPORT | NATI
 packageClassName ::= qConId {
     implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.FregePackageClassNameMixin"
+    stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
 
 qName ::= qVarId | qLexOp
