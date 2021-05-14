@@ -104,6 +104,19 @@ public class FregePsiClassUtilImpl {
     }
 
     /**
+     * @return all methods in the passed project in the passed import.
+     */
+    public static @NotNull List<@NotNull PsiMethod> getAllMethodsByImportName(@NotNull Project project,
+                                                                              @NotNull String importName) {
+        if (importName.isEmpty()) {
+            return List.of();
+        }
+        return getClassesByQualifiedName(project, importName).
+                stream().flatMap(clazz -> Arrays.stream(clazz.getAllMethods()))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Iterates over all the Frege files in the passed scope and filters with the passed filter.
      * After that applies the passed processor.
      */
