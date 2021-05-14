@@ -44,7 +44,7 @@ public class FregeDataNameUsageReference extends FregeReferenceBase {
         String referenceText = element.getText();
         List<PsiElement> dataInCurrentFile = findAvailableDataDecls(element).stream()
                 .map(decl -> PsiTreeUtil.findChildOfType(decl, FregeDataNameNative.class))
-                .map(Objects::requireNonNull)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (!incompleteCode) {
             dataInCurrentFile.removeIf(keepWithText(referenceText).negate());

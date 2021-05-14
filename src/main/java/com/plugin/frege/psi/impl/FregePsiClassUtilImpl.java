@@ -14,9 +14,11 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.plugin.frege.FregeFileType;
 import com.plugin.frege.psi.FregePsiClass;
 import com.plugin.frege.psi.FregePsiClassHolder;
+import com.plugin.frege.stubs.index.FregeClassNameIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +31,11 @@ public class FregePsiClassUtilImpl {
      * Returns a list of classes in the passed project with the passed full qualified name.
      */
     public static @NotNull List<PsiClass> getClassesByQualifiedName(@NotNull Project project, @NotNull String qualifiedName) {
+        List<PsiClass> classes = new ArrayList<>(FregeClassNameIndex.getInstance().get(qualifiedName, project, GlobalSearchScope.everythingScope(project)));
+        if (!classes.isEmpty()) {
+            return classes;
+        }
+
         List<PsiClass> inProject = doFindClasses(qualifiedName, GlobalSearchScope.projectScope(project));
         if (!inProject.isEmpty()) {
             return inProject;
