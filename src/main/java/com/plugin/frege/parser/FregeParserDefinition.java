@@ -11,10 +11,10 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.plugin.frege.FregeLanguage;
 import com.plugin.frege.lexer.FregeLayoutLexerAdapter;
 import com.plugin.frege.psi.FregeFile;
 import com.plugin.frege.psi.FregeTypes;
+import com.plugin.frege.stubs.types.FregeFileElementType;
 import org.jetbrains.annotations.NotNull;
 
 public class FregeParserDefinition implements ParserDefinition {
@@ -42,8 +42,6 @@ public class FregeParserDefinition implements ParserDefinition {
             FregeTypes.PRIVATE_MODIFIER, FregeTypes.PROTECTED_MODIFIER, FregeTypes.PUBLIC_MODIFIER, FregeTypes.THEN,
             FregeTypes.THROWS, FregeTypes.TRUE, FregeTypes.TYPE, FregeTypes.WHERE, FregeTypes.SUPER_OR_SUBSCRIPT);
 
-    public static final IFileElementType FILE = new IFileElementType(FregeLanguage.INSTANCE);
-
     @Override
     public @NotNull Lexer createLexer(Project project) {
         return new FregeLayoutLexerAdapter();
@@ -65,7 +63,7 @@ public class FregeParserDefinition implements ParserDefinition {
 
     @Override
     public IFileElementType getFileNodeType() {
-        return FILE;
+        return FregeFileElementType.INSTANCE;
     }
 
     @Override
