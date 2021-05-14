@@ -10,7 +10,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("dataNameNative|packageClassName")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("dataNameNative|packageClassName|functionName")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -331,6 +331,7 @@ deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
 functionName ::= weakVarid {
     mixin="com.plugin.frege.psi.mixin.FregeFunctionNameMixin"
     implements="com.plugin.frege.psi.FregePsiMethod"
+    stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
 
 /*  Type Annotations */

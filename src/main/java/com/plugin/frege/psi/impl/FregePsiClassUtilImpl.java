@@ -15,13 +15,11 @@ import com.plugin.frege.FregeFileType;
 import com.plugin.frege.psi.FregePsiClass;
 import com.plugin.frege.psi.FregePsiClassHolder;
 import com.plugin.frege.stubs.index.FregeClassNameIndex;
+import com.plugin.frege.stubs.index.FregeMethodNameIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FregePsiClassUtilImpl {
@@ -103,6 +101,17 @@ public class FregePsiClassUtilImpl {
         String qualifier = FregePsiUtilImpl.qualifierFromQualifiedName(qualifiedName);
         if (qualifier.isEmpty()) {
             return List.of();
+        }
+
+        List<PsiMethod> methodsByName = FregeMethodNameIndex.getInstance()
+                .get(name, project, GlobalSearchScope.everythingScope(project)).stream()
+                .filter(method -> {
+                    PsiClass containingClass = method.getContainingClass(); // TODO store this in stub
+                    return containingClass != null && Objects.equals(containingClass.getQualifiedName(), qualifier);
+                }).collect(Collectors.toList());
+
+        if (!methodsByName.isEmpty()) {
+            return methodsByName;
         }
 
         return getClassesByQualifiedName(project, qualifier).
