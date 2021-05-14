@@ -8,12 +8,14 @@ import com.intellij.psi.impl.light.LightReferenceListBuilder;
 import com.intellij.psi.impl.light.LightTypeElement;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.util.MethodSignature;
 import com.intellij.psi.util.MethodSignatureBackedByPsiMethod;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.plugin.frege.FregeLanguage;
 import com.plugin.frege.psi.FregeBinding;
 import com.plugin.frege.psi.FregePsiMethod;
+import com.plugin.frege.stubs.FregeMethodStub;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,12 +24,16 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class FregePsiMethodImpl extends FregeNamedElementImpl implements FregePsiMethod {
+public abstract class FregePsiMethodImpl extends FregeNamedStubBasedPsiElementBase<FregeMethodStub> implements FregePsiMethod {
     static private PsiType objectType = null;
     private LightTypeElement objectTypeElement = null;
 
     public FregePsiMethodImpl(@NotNull ASTNode node) {
         super(node);
+    }
+
+    public FregePsiMethodImpl(@NotNull FregeMethodStub stub, @NotNull IStubElementType nodeType) {
+        super(stub, nodeType);
     }
 
     @Override
@@ -129,7 +135,11 @@ public abstract class FregePsiMethodImpl extends FregeNamedElementImpl implement
 
     @Override
     public @NotNull String getName() {
-        return Objects.requireNonNull(super.getName()); // only for making it @NotNull
+        FregeMethodStub stub = getGreenStub();
+        if (stub != null) {
+            return Objects.requireNonNull(stub.getName());
+        }
+        return getText();
     }
 
     protected abstract int getParamsNumber();

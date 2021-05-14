@@ -6,6 +6,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.light.LightModifierList;
 import com.intellij.psi.impl.source.HierarchicalMethodSignatureImpl;
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl;
+import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.MethodSignatureBackedByPsiMethod;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -15,6 +16,7 @@ import com.plugin.frege.psi.*;
 import com.plugin.frege.psi.impl.FregePsiMethodImpl;
 import com.plugin.frege.psi.impl.FregePsiUtilImpl;
 import com.plugin.frege.resolve.FregeFunctionNameReference;
+import com.plugin.frege.stubs.FregeMethodStub;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +33,11 @@ public class FregeFunctionNameMixin extends FregePsiMethodImpl implements PsiIde
         super(node);
         modifierList = new LightModifierList(getManager(), FregeLanguage.INSTANCE,
                 PsiModifier.STATIC, PsiModifier.FINAL, PsiModifier.PUBLIC); // TODO
+    }
+
+    public FregeFunctionNameMixin(@NotNull FregeMethodStub stub, @NotNull IStubElementType nodeType) {
+        super(stub, nodeType);
+        modifierList = new LightModifierList(getManager(), FregeLanguage.INSTANCE);
     }
 
     @Override

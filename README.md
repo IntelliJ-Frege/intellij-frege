@@ -29,6 +29,7 @@ Features implemented partially or completely:
 - Code completion
 - Rename
 - File templates
+- Index Frege files
 
 Features desired:
 - Structure view
