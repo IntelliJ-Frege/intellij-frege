@@ -30,6 +30,7 @@
                                  implementationClass="com.plugin.frege.findusages.FregeFindUsagesProvider"/>
         <java.elementFinder implementation="com.plugin.frege.psi.FregePsiElementFinder"/>
         <stubElementTypeHolder class="com.plugin.frege.psi.FregeTypes"/>
+        <stubIndex implementation="com.plugin.frege.stubs.index.FregeClassNameIndex"/>
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
 

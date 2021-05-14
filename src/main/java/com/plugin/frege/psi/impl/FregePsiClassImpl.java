@@ -7,8 +7,10 @@ import com.intellij.psi.impl.light.LightModifierList;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.scope.NameHint;
 import com.intellij.psi.scope.PsiScopeProcessor;
+import com.intellij.psi.stubs.IStubElementType;
 import com.plugin.frege.FregeLanguage;
 import com.plugin.frege.psi.FregePsiClass;
+import com.plugin.frege.stubs.FregeClassStub;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class FregePsiClassImpl extends FregeNamedElementImpl implements FregePsiClass {
+@SuppressWarnings("UnstableApiUsage")
+public abstract class FregePsiClassImpl extends FregeNamedStubBasedPsiElementBase<FregeClassStub> implements FregePsiClass {
 
     private final LightModifierList modifierList;
 
@@ -26,6 +29,21 @@ public abstract class FregePsiClassImpl extends FregeNamedElementImpl implements
         super(node);
         modifierList = new LightModifierList(getManager(), FregeLanguage.INSTANCE,
                 PsiModifier.PUBLIC, PsiModifier.FINAL); // TODO
+    }
+
+    public FregePsiClassImpl(@NotNull FregeClassStub stub, @NotNull IStubElementType nodeType) {
+        super(stub, nodeType);
+        modifierList = new LightModifierList(getManager(), FregeLanguage.INSTANCE);
+    }
+
+    @Override
+    public @NotNull String getName() {
+        String qualifiedName = getQualifiedName();
+        if (qualifiedName != null) {
+            return FregePsiUtilImpl.nameFromQualifiedName(qualifiedName);
+        } else {
+            return getText();
+        }
     }
 
     @Override

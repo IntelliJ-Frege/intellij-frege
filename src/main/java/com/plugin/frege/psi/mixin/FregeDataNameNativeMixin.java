@@ -3,6 +3,7 @@ package com.plugin.frege.psi.mixin;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.NlsSafe;
 import com.intellij.psi.*;
+import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
@@ -11,6 +12,7 @@ import com.plugin.frege.psi.FregeElementFactory;
 import com.plugin.frege.psi.FregeTypes;
 import com.plugin.frege.psi.impl.FregePsiClassImpl;
 import com.plugin.frege.resolve.FregeDataNameNativeReference;
+import com.plugin.frege.stubs.FregeClassStub;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,8 +24,17 @@ public class FregeDataNameNativeMixin extends FregePsiClassImpl implements PsiId
         super(node);
     }
 
+    public FregeDataNameNativeMixin(@NotNull FregeClassStub stub, @NotNull IStubElementType nodeType) {
+        super(stub, nodeType);
+    }
+
     @Override
     public @Nullable @NlsSafe String getQualifiedName() {
+        FregeClassStub stub = getGreenStub();
+        if (stub != null) {
+            return stub.getName();
+        }
+
         PsiClass containingClass = getContainingClass();
         if (containingClass == null) {
             return null;
@@ -34,7 +45,7 @@ public class FregeDataNameNativeMixin extends FregePsiClassImpl implements PsiId
             return null;
         }
 
-        return parentQualifiedName + "." + getName();
+        return parentQualifiedName + "." + getText();
     }
 
     @Override
