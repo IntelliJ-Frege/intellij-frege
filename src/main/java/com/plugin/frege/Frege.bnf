@@ -19,7 +19,7 @@ private declRecover ::= !(VIRTUAL_END_DECL)
 
 /* Operators */
 precedence ::= INTEGER
-fixity ::= infixRule precedence (lexOp | BACK_QUOTE lexOp BACK_QUOTE)+
+fixity ::= infixRule precedence (lexOp | BACK_QUOTE lexOp BACK_QUOTE | weakVarid)+
     { pin=1 }
 
 infixRule ::= INFIX | INFIXL | INFIXR
@@ -113,7 +113,7 @@ emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
 /* Primary Expression */
 primary ::= (term | doEx) (DOT (
-                VARID
+                weakVarid
               | qLexOp
               | EXLAMATION_MARK
               | QUESTION_MARK
@@ -212,7 +212,7 @@ packageClassName ::= qConId {
 }
 
 qName ::= qVarId | qLexOp
-inlineRule ::= strongInline LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN
+inlineRule ::= strongInline weakVarid* LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN
 
 body ::= topDecl (VIRTUAL_END_DECL topDecl)* {
     implements="com.plugin.frege.psi.FregeScopeElement"
@@ -348,7 +348,7 @@ nativeFun ::= strongPure? NATIVE nativeAnnoItem javaItem? DOUBLE_COLON sigma (VE
     { pin=2 }
 javaItem ::= nativeName | unOp | symOp | STRING
 throwsRule ::= THROWS typeRule (COMMA typeRule)*
-nativeAnnoItem ::= nativeFunctionName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
+nativeAnnoItem ::= nativeFunctionName | LEFT_PAREN (symOp | UNOP) RIGHT_PAREN | (symOp | UNOP)
 nativeFunctionName ::= weakVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeNativeFunctionNameMixin"
