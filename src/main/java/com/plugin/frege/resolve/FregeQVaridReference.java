@@ -3,9 +3,11 @@ package com.plugin.frege.resolve;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiMethod;
 import com.intellij.util.IncorrectOperationException;
-import com.plugin.frege.psi.*;
+import com.plugin.frege.psi.FregeBinding;
+import com.plugin.frege.psi.FregeElementFactory;
+import com.plugin.frege.psi.FregeFunctionName;
+import com.plugin.frege.psi.FregeWhereSection;
 import com.plugin.frege.psi.impl.FregePsiClassUtilImpl;
 import com.plugin.frege.psi.impl.FregePsiUtilImpl;
 import org.jetbrains.annotations.NotNull;
@@ -29,22 +31,19 @@ public class FregeQVaridReference extends FregeReferenceBase {
     // TODO take into account: qualified names
     @Override
     protected List<PsiElement> resolveInner(boolean incompleteCode) {
-        List<PsiElement> functions = tryFindFunction(incompleteCode);
-        if (!functions.isEmpty()) {
-            return functions;
+        List<PsiElement> result = new ArrayList<>(tryFindFunction(incompleteCode));
+        if (!result.isEmpty() && !incompleteCode) {
+            return result;
         }
 
-        List<PsiElement> params = tryFindParameters(incompleteCode);
-        if (!params.isEmpty()) {
-            return params;
+        result.addAll(tryFindParameters(incompleteCode));
+        if (!result.isEmpty() && !incompleteCode) {
+            return result;
         }
 
-        List<PsiElement> methods = tryFindInMethodsOfOtherClasses(); // TODO support incomplete code
-        if (!methods.isEmpty()) {
-            return methods;
-        }
+        result.addAll(tryFindInMethodsOfOtherClasses(incompleteCode));
 
-        return List.of();
+        return result;
     }
 
     private List<PsiElement> tryFindFunction(boolean incompleteCode) {
@@ -99,24 +98,27 @@ public class FregeQVaridReference extends FregeReferenceBase {
         return List.of();
     }
 
-    private List<PsiElement> tryFindInMethodsOfOtherClasses() {
+    private List<PsiElement> tryFindInMethodsOfOtherClasses(boolean incompleteCode) {
         String methodName = element.getText();
         Project project = element.getProject();
 
         List<String> imports = FregePsiUtilImpl.findImportsNamesForElement(element, true);
 
+        List<PsiElement> result = new ArrayList<>();
         for (String currentImport : imports) {
-            String qualifiedName = FregePsiUtilImpl.mergeQualifiedNames(currentImport, methodName);
-            if (qualifiedName == null) {
-                continue;
-            }
-
-            List<PsiMethod> methods = FregePsiClassUtilImpl.getMethodsByQualifiedName(project, qualifiedName);
-            if (!methods.isEmpty()) {
-                return new ArrayList<>(methods);
+            if (incompleteCode) {
+                result.addAll(FregePsiClassUtilImpl.getAllMethodsByImportName(project, currentImport));
+            } else {
+                String qualifiedName = FregePsiUtilImpl.mergeQualifiedNames(currentImport, methodName);
+                if (qualifiedName == null) {
+                    continue;
+                }
+                result.addAll(FregePsiClassUtilImpl.getMethodsByQualifiedName(project, qualifiedName));
+                if (!result.isEmpty()) {
+                    break;
+                }
             }
         }
-
-        return List.of();
+        return result;
     }
 }
