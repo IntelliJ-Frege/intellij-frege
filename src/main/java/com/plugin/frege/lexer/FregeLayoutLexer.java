@@ -25,6 +25,8 @@ public class FregeLayoutLexer {
     private @NotNull State state = State.START;
     private @NotNull Token.Line currentLine = new Token.Line();
     private int currentColumn = 0;
+    private int codeTokensScanned = 0;
+    private @Nullable IElementType firstCodeTokenType;
 
 
     public FregeLayoutLexer(@NotNull FregeLexerAdapter lexer) {
@@ -69,6 +71,10 @@ public class FregeLayoutLexer {
         }
     }
 
+    private boolean isModuleKeyword(@Nullable IElementType type) {
+        return MODULE.equals(type) || PACKAGE.equals(type);
+    }
+
     /**
      * We can't lex Frege incrementally because we have to create virtual tokens to follow the layout rule,
      * but we can lex it lazily, giving tokens part by part. This function gets the next part of tokens from lexer and processes them
@@ -87,16 +93,17 @@ public class FregeLayoutLexer {
         boolean wasLetTokenInBlock = false;
         while (true) {
             Token token = getTokenFromLexer();
-            lexer.advance();
             if (token.elementType == NEW_LINE && wasCodeTokenInBlock) {
                 processedTokens.addLast(token);
                 newlineStickyToken = token;
                 break;
             }
             if (token.isEof()) {
-                Token precedes = findPrecedesForCurrentToken();
-                for (int i = 2; i < indentStack.size(); i++) {
-                    processedTokens.addLast(createVirtualToken(VIRTUAL_END_SECTION, precedes));
+                if (indentStack.size() > 2) {
+                    Token precedes = findPrecedesForCurrentToken();
+                    for (int i = 2; i < indentStack.size(); i++) {
+                        processedTokens.addLast(createVirtualToken(VIRTUAL_END_SECTION, precedes));
+                    }
                 }
                 processedTokens.addLast(token);
                 break;
@@ -105,20 +112,24 @@ public class FregeLayoutLexer {
                 processedTokens.addLast(token);
                 continue;
             }
+            codeTokensScanned++;
+            if (codeTokensScanned == 2) {
+                if (!isModuleKeyword(firstCodeTokenType) && (!PROTECTED_MODIFIER.equals(firstCodeTokenType) || !isModuleKeyword(token.elementType))) {
+                    indentStack.push(0);
+                }
+            }
             if (LET.equals(token.elementType)) {
                 wasLetTokenInBlock = true;
             }
             switch (state) {
                 case START:
-                    if (token.isCode() && token.column == 0) {
+                    if (token.column == 0) {
                         state = State.NORMAL;
-                        if (token.elementType != PACKAGE && token.elementType != MODULE) {
-                            indentStack.push(0);
-                        }
+                        firstCodeTokenType = token.elementType;
                     }
                     break;
                 case WAITING_FOR_SECTION_START:
-                    if (token.isCode() && LEFT_BRACE.equals(token.elementType)) {
+                    if (LEFT_BRACE.equals(token.elementType)) {
                         state = State.NORMAL;
                     } else if (token.isCode() && token.column > indentStack.peek()) {
                         processedTokens.addLast(createVirtualToken(VIRTUAL_OPEN_SECTION, findPrecedesForCurrentToken()));
@@ -171,6 +182,7 @@ public class FregeLayoutLexer {
             currentLine = new Token.Line();
             currentColumn = 0;
         }
+        lexer.advance();
         return token;
     }
 
