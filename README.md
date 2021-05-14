@@ -26,11 +26,11 @@ Features implemented partially or completely:
 - Frege build system
 - Frege nagivation (from Frege to Java, from Java to Frege, from Frege to Frege)
 - Find usages
+- Code completion
 - Rename
 - File templates
 
 Features desired:
-- Code completion
 - Structure view
 - Formatter
 - Quick fixes
