@@ -11,7 +11,6 @@ import com.plugin.frege.psi.FregeDataDclNative;
 import com.plugin.frege.psi.FregeElementFactory;
 import com.plugin.frege.psi.FregeTypes;
 import com.plugin.frege.psi.impl.FregePsiClassImpl;
-import com.plugin.frege.resolve.FregeDataNameNativeReference;
 import com.plugin.frege.stubs.FregeClassStub;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +23,7 @@ public class FregeDataNameNativeMixin extends FregePsiClassImpl implements PsiId
         super(node);
     }
 
-    public FregeDataNameNativeMixin(@NotNull FregeClassStub stub, @NotNull IStubElementType nodeType) {
+    public FregeDataNameNativeMixin(@NotNull FregeClassStub stub, @NotNull IStubElementType<?, ?> nodeType) {
         super(stub, nodeType);
     }
 
@@ -71,11 +70,6 @@ public class FregeDataNameNativeMixin extends FregePsiClassImpl implements PsiId
     @Override
     public PsiElement setName(@NlsSafe @NotNull String name) throws IncorrectOperationException {
         return getNameIdentifier().replace(FregeElementFactory.createDataNameNative(getProject(), name));
-    }
-
-    @Override
-    public PsiReference getReference() {
-        return new FregeDataNameNativeReference(this);
     }
 
     @Override

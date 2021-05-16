@@ -20,7 +20,9 @@ public abstract class FregeCompositeElementImpl extends ASTWrapperPsiElement imp
     }
 
     @Override
-    public abstract PsiReference getReference();
+    public @Nullable PsiReference getReference() {
+        return null;
+    }
 
     @Override
     public String toString() {

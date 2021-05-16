@@ -3,7 +3,9 @@ package com.plugin.frege.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.PsiReference;
 import com.plugin.frege.psi.FregeNamedElement;
+import com.plugin.frege.resolve.FregeNamedElementReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,5 +37,10 @@ public abstract class FregeNamedElementImpl extends FregeCompositeElementImpl im
         } else {
             return super.getTextOffset();
         }
+    }
+
+    @Override
+    public PsiReference getReference() {
+        return new FregeNamedElementReference(this);
     }
 }

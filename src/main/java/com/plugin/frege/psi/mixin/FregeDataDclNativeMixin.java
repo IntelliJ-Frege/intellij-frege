@@ -18,9 +18,4 @@ public abstract class FregeDataDclNativeMixin extends FregeCompositeElementImpl 
     public @Nullable FregePsiClass getHoldingClass() {
         return getDataNameNative();
     }
-
-    @Override
-    public PsiReference getReference() {
-        return null;
-    }
 }
