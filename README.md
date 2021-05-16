@@ -49,6 +49,8 @@ Features desired:
 
 [Jura Khudyakov](https://github.com/23jura23/)
 
+Special thanks to [Semyon Atamas](https://github.com/satamas) and [Dierk König](https://github.com/Dierk)!
+
 ## License
 
 MIT License
