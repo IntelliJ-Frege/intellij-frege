@@ -129,13 +129,16 @@ lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 
 /* Conditional */
 cond ::= IF expr (VIRTUAL_END_DECL | SEMICOLON)? THEN expr (VIRTUAL_END_DECL | SEMICOLON)? ELSE expr
+    { pin=1 }
 
 /* Let, Where and Do Expressions */
 meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)* VIRTUAL_END_SECTION
                         | LEFT_BRACE <<rule>> (SEMICOLON <<rule>>)* RIGHT_BRACE
                         | <<rule>>
 letExpression ::= LET <<indentSection decl>>
+    { pin = 1}
 letInExpression ::= letExpression IN expr {
+    pin = 1
     implements="com.plugin.frege.psi.FregeScopeElement"
     mixin="com.plugin.frege.psi.mixin.FregeLetInExpressionMixin"
 }
@@ -147,6 +150,7 @@ doEx ::= DO <<indentSection (lcqual | qConId LEFT_BRACE getFieldsOrSingleVaridIn
 
 /* Case Expression */
 caseEx ::= CASE expr OF <<indentSection alt>>
+    { pin = 1}
 alt ::= pattern ((RIGHT_ARROW | EQUAL) expr | guardedExs) whereSection? {
     implements="com.plugin.frege.psi.FregeSubprogramsHolder"
 }
