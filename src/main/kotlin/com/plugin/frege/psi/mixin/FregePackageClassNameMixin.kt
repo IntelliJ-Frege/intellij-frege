@@ -5,7 +5,6 @@ import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.parentOfTypes
@@ -15,7 +14,6 @@ import com.plugin.frege.psi.FregeProgram
 import com.plugin.frege.psi.FregeTypes
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.subprogramsFromScopeOfElement
-import com.plugin.frege.resolve.FregePackageClassNameReference
 import com.plugin.frege.stubs.FregeClassStub
 
 @Suppress("UnstableApiUsage")
@@ -60,10 +58,6 @@ open class FregePackageClassNameMixin : FregePsiClassImpl, PsiIdentifier {
     override fun getScope(): PsiElement {
         return parentOfTypes(FregeProgram::class)
             ?: throw IllegalStateException("Package must have a program above.")
-    }
-
-    override fun getReference(): PsiReference {
-        return FregePackageClassNameReference(this)
     }
 
     override fun getTokenType(): IElementType {
