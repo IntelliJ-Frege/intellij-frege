@@ -10,6 +10,7 @@ import com.plugin.frege.psi.impl.FregeNamedElementImpl;
 import com.plugin.frege.resolve.FregeParamReference;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("UnstableApiUsage")
 public class FregeParamMixin extends FregeNamedElementImpl {
     public FregeParamMixin(@NotNull ASTNode node) {
         super(node);
