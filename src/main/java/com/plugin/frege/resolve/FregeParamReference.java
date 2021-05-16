@@ -11,7 +11,7 @@ public class FregeParamReference extends FregeReferenceBase {
     }
 
     @Override
-    protected List<PsiElement> resolveInner(boolean incompleteCode) {
-        return List.of(element);
+    protected @NotNull List<PsiElement> resolveInner(boolean incompleteCode) {
+        return List.of(psiElement);
     }
 }

@@ -9,17 +9,14 @@ import com.plugin.frege.psi.impl.FregeCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FregeDataDclNativeMixin extends FregeCompositeElementImpl implements FregePsiClassHolder {
+public abstract class FregeDataDclNativeMixin extends FregeCompositeElementImpl implements FregePsiClassHolder, FregeDataDclNative {
     public FregeDataDclNativeMixin(@NotNull ASTNode node) {
         super(node);
-        if (!(this instanceof FregeDataDclNative)) {
-            throw new IllegalStateException("This element must be an instance of Frege Program");
-        }
     }
 
     @Override
     public @Nullable FregePsiClass getHoldingClass() {
-        return ((FregeDataDclNative) this).getDataNameNative();
+        return getDataNameNative();
     }
 
     @Override
