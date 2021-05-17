@@ -8,6 +8,7 @@ import com.plugin.frege.completion.FregeKeywords.LET
 import com.plugin.frege.psi.FregeLetInExpression
 
 object LetInExpressionPatterns {
+    @JvmStatic
     fun inPattern(): PsiElementPattern.Capture<PsiElement> {
         return psiElement().inside(
             true,

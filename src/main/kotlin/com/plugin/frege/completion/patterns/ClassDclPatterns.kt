@@ -3,11 +3,11 @@ package com.plugin.frege.completion.patterns
 import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiElement
-import com.plugin.frege.psi.FregeTopEx
+import com.plugin.frege.psi.FregeTopDecl
 
-object LetExpressionPatterns {
+object ClassDclPatterns {
     @JvmStatic
-    fun letPattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().withSuperParent(4, FregeTopEx::class.java)
+    fun classOrInterfacePattern(): PsiElementPattern.Capture<PsiElement> {
+        return psiElement().withParent(FregeTopDecl::class.java)
     }
 }
