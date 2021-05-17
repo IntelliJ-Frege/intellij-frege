@@ -8,13 +8,17 @@ import com.plugin.frege.psi.FregeCaseEx
 import com.plugin.frege.psi.FregeTopEx
 
 object CaseExpressionPatterns : PlatformPatterns() {
+    @JvmStatic
     fun casePattern(): PsiElementPattern.Capture<PsiElement> {
         return psiElement().withSuperParent(4, FregeTopEx::class.java)
     }
 
+    @JvmStatic
     fun ofPattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().inside(true,
+        return psiElement().inside(
+            true,
             psiElement(FregeCaseEx::class.java),
-            psiElement().afterLeaf(FregeKeywords.OF))
+            psiElement().afterLeaf(FregeKeywords.OF)
+        )
     }
 }

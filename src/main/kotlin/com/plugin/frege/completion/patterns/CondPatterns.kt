@@ -9,10 +9,12 @@ import com.plugin.frege.psi.FregeCond
 import com.plugin.frege.psi.FregeTopEx
 
 object CondPatterns : PlatformPatterns() {
+    @JvmStatic
     fun ifPattern(): PsiElementPattern.Capture<PsiElement> {
         return psiElement().withSuperParent(4, FregeTopEx::class.java)
     }
 
+    @JvmStatic
     fun thenPattern(): PsiElementPattern.Capture<PsiElement> {
         return psiElement().inside(
             true,
@@ -21,6 +23,7 @@ object CondPatterns : PlatformPatterns() {
         )
     }
 
+    @JvmStatic
     fun elsePattern(): PsiElementPattern.Capture<PsiElement> {
         return psiElement().inside(
             true,

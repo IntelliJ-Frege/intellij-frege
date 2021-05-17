@@ -2,6 +2,7 @@ package com.plugin.frege.completion
 
 object FregeKeywords {
     const val ABSTRACT = "abstract"
+    const val AS = "as"
     const val CASE = "case"
     const val CLASS = "class"
     const val INTERFACE = "interface"
@@ -26,6 +27,7 @@ object FregeKeywords {
     const val NEWTYPE = "newtype"
     const val OF = "of"
     const val PACKAGE = "package"
+    const val PURE = "pure"
     const val MODULE = "module"
     const val PRIVATE_MODIFIER = "private"
     const val PROTECTED_MODIFIER = "protected"

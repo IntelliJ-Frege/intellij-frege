@@ -152,6 +152,7 @@ doEx ::= DO <<indentSection (lcqual | qConId LEFT_BRACE getFieldsOrSingleVaridIn
 caseEx ::= CASE expr OF <<indentSection alt>>
     { pin = 1}
 alt ::= pattern ((RIGHT_ARROW | EQUAL) expr | guardedExs) whereSection? {
+    pin = 2
     implements="com.plugin.frege.psi.FregeSubprogramsHolder"
 }
 guardedExs ::= guardedEx+
