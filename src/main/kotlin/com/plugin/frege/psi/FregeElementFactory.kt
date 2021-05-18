@@ -57,4 +57,10 @@ object FregeElementFactory {
         val fakeDataNameUsage = "${fakeProgram}func :: $name"
         return createElement(project, fakeDataNameUsage, FregeDataNameUsage::class)
     }
+
+    @JvmStatic
+    fun createAnnotationName(project: Project, name: String): FregeAnnotationName {
+        val fakeAnnotationName = "${fakeProgram}$name :: Int"
+        return createElement(project, fakeAnnotationName, FregeAnnotationName::class)
+    }
 }

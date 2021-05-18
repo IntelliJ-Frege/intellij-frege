@@ -329,15 +329,19 @@ deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
 
 /* fake function name rule for highlighting */
 functionName ::= weakVarid {
-    mixin="com.plugin.frege.psi.mixin.FregeFunctionNameMixin"
     implements="com.plugin.frege.psi.FregePsiMethod"
+    mixin="com.plugin.frege.psi.mixin.FregeFunctionNameMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
+}
+annotationName ::= weakVarid {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeAnnotationNameMixin"
 }
 
 /*  Type Annotations */
 annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
     { pin=3 }
-annoItem ::= functionName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
+annoItem ::= annotationName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
 
 /*  Function and Pattern Bindings */
 binding ::= lhs rhs

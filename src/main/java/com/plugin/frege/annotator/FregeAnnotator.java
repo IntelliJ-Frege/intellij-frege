@@ -6,6 +6,7 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.psi.PsiElement;
 import com.plugin.frege.highlighter.FregeSyntaxHighlighter;
+import com.plugin.frege.psi.FregeAnnotationName;
 import com.plugin.frege.psi.FregeFunctionName;
 import com.plugin.frege.psi.FregePackageName;
 import com.plugin.frege.psi.FregeStrongKeyword;
@@ -20,6 +21,8 @@ public class FregeAnnotator implements Annotator {
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof FregeFunctionName) {
             annotateFunctionName((FregeFunctionName) element, holder);
+        } else if (element instanceof FregeAnnotationName) {
+            annotateAnnotationName((FregeAnnotationName) element, holder);
         } else if (element instanceof FregeStrongKeyword) {
             annotateStrongKeyword((FregeStrongKeyword) element, holder);
         } else if (element instanceof FregePackageName) {
@@ -31,6 +34,10 @@ public class FregeAnnotator implements Annotator {
 
     private void annotateFunctionName(@NotNull FregeFunctionName funcName, @NotNull AnnotationHolder holder) {
         annotateWithInfo(funcName, holder, FregeSyntaxHighlighter.FUNCTION_NAME);
+    }
+
+    private void annotateAnnotationName(@NotNull FregeAnnotationName annotationName, @NotNull AnnotationHolder holder) {
+        annotateWithInfo(annotationName, holder, FregeSyntaxHighlighter.FUNCTION_NAME);
     }
 
     private void annotateStrongKeyword(@NotNull FregeStrongKeyword keyword, @NotNull AnnotationHolder holder) {
