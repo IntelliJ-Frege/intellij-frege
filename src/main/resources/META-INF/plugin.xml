@@ -28,6 +28,8 @@
                         implementationClass="com.plugin.frege.editor.FregeCommenter"/>
         <lang.findUsagesProvider language="Frege"
                                  implementationClass="com.plugin.frege.findusages.FregeFindUsagesProvider"/>
+        <lang.refactoringSupport language="Frege"
+                                 implementationClass="com.plugin.frege.refactor.FregeRefactoringSupportProvider"/>
         <java.elementFinder implementation="com.plugin.frege.psi.FregePsiElementFinder"/>
         <stubElementTypeHolder class="com.plugin.frege.psi.FregeTypes"/>
         <stubIndex implementation="com.plugin.frege.stubs.index.FregeClassNameIndex"/>
