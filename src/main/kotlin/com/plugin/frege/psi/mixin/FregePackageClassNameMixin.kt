@@ -48,6 +48,8 @@ open class FregePackageClassNameMixin : FregePsiClassImpl, PsiIdentifier {
             .asSequence()
             .mapNotNull { binding -> binding.lhs.funLhs }
             .mapNotNull { lhs -> lhs.functionName }
+            .sortedBy { it.textOffset }
+            .distinctBy { it.name } // pattern-matching
             .toList().toTypedArray()
     }
 

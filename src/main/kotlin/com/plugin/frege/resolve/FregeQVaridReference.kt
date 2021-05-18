@@ -55,7 +55,7 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
         while (scope != null) {
             val functionNames = findElementsWithinScope(scope, predicate)
             if (functionNames.isNotEmpty()) {
-                return functionNames
+                return listOf(functionNames.minByOrNull { it.textOffset }!!)
             }
             scope = scopeOfElement(scope.parent)
         }
