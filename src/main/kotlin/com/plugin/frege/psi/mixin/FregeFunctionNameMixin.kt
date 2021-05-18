@@ -15,6 +15,7 @@ import com.intellij.util.IncorrectOperationException
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
+import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.isInGlobalScope
 import com.plugin.frege.resolve.FregeFunctionNameReference
 import com.plugin.frege.stubs.FregeMethodStub
@@ -74,9 +75,6 @@ open class FregeFunctionNameMixin : FregePsiMethodImpl, PsiIdentifier {
         return FregeFunctionNameReference(this)
     }
 
-    fun isFunctionBinding(): Boolean = parent is FregeFunLhs
-    fun isFunctionAnnotation(): Boolean = parent is FregeAnnoItem
-
     // TODO
     override fun getParamsNumber(): Int {
         if (!isFunctionBinding()) {
@@ -85,6 +83,15 @@ open class FregeFunctionNameMixin : FregePsiMethodImpl, PsiIdentifier {
         val fregeLhs = parentOfTypes(FregeLhs::class)!!
         return PsiTreeUtil.findChildrenOfType(fregeLhs, FregeParam::class.java).size
     }
+
+    fun getAnnotationName(): FregeAnnotationName? {
+        val referenceText = text
+        return FregePsiUtilImpl.findElementsWithinScope(this) { elem ->
+            elem is FregeAnnotationName && elem.getText() == referenceText
+        }.firstOrNull() as? FregeAnnotationName
+    }
+
+    fun isFunctionBinding(): Boolean = parent is FregeFunLhs
 
     fun isMainFunctionBinding(): Boolean {
         val argsCount = getParamsNumber()
