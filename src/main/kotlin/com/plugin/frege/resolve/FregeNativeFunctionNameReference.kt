@@ -13,7 +13,7 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
 
     // TODO take into account: signatures
     override fun resolveInner(incompleteCode: Boolean): List<PsiElement> { // TODO support incomplete code
-        val nativeFunction = psiElement.parentOfTypes(FregeNativeFun::class) ?: return listOf()
+        val nativeFunction = psiElement.parentOfTypes(FregeNativeFun::class) ?: return emptyList()
 
         val nativeNames: List<String>
         val methodName: String
@@ -25,12 +25,12 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
             nativeNames = if (nativeNameString.contains(".")) {
                 listOf(FregePsiUtilImpl.qualifierFromQualifiedName(nativeNameString))
             } else {
-                listOf()
+                emptyList()
             }
         } else {
             val sigmas = nativeFunction.sigmaList
             if (sigmas.isEmpty()) {
-                return listOf()
+                return emptyList()
             }
 
             val sigma = sigmas[0]
@@ -41,8 +41,8 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
 
         val project = psiElement.project
         return nativeNames.asSequence()
-            .flatMap { name -> getClassesByQualifiedName(project, name) }
-            .flatMap { psiClass -> getMethodsAndFieldsByName(psiClass, methodName) }
+            .flatMap { getClassesByQualifiedName(project, it) }
+            .flatMap { getMethodsAndFieldsByName(it, methodName) }
             .toList()
     }
 
@@ -52,9 +52,9 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
     ): List<String> {
         return if (dataNameUsage != null) {
             FregeDataNameUsageReference(dataNameUsage).resolveInner(incompleteCode)
-                .mapNotNull { dataName -> getNativeNameFromData(dataName)?.text }
+                .mapNotNull { getNativeNameFromData(it)?.text }
         } else {
-            listOf()
+            emptyList()
         }
     }
 

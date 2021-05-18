@@ -44,10 +44,9 @@ open class FregePackageClassNameMixin : FregePsiClassImpl, PsiIdentifier {
 
         val body = program.body ?: return PsiMethod.EMPTY_ARRAY
 
-        return subprogramsFromScopeOfElement(body) { decl -> (decl as? FregeDecl)?.binding }
+        return subprogramsFromScopeOfElement(body) { (it as? FregeDecl)?.binding }
             .asSequence()
-            .mapNotNull { binding -> binding.lhs.funLhs }
-            .mapNotNull { lhs -> lhs.functionName }
+            .mapNotNull { it.lhs.funLhs?.functionName }
             .sortedBy { it.textOffset }
             .distinctBy { it.name } // pattern-matching
             .toList().toTypedArray()

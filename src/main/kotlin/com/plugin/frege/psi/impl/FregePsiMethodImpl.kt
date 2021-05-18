@@ -70,7 +70,7 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
     }
 
     override fun findSuperMethodSignaturesIncludingStatic(checkAccess: Boolean): List<MethodSignatureBackedByPsiMethod> {
-        return listOf() // TODO
+        return emptyList() // TODO
     }
 
     override fun findDeepestSuperMethod(): PsiMethod? {

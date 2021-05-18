@@ -13,7 +13,7 @@ abstract class FregeReferenceBase(@JvmField protected val psiElement: PsiElement
         return ResolveCache.getInstance(psiElement.project).resolveWithCaching(
                 this, { fregeReferenceBase, _ ->
                 fregeReferenceBase.resolveInner(false)
-                    .map { element -> PsiElementResolveResult(element) }
+                    .map { PsiElementResolveResult(it) }
                     .toTypedArray()
             },
             true, false
@@ -30,9 +30,7 @@ abstract class FregeReferenceBase(@JvmField protected val psiElement: PsiElement
     }
 
     override fun equals(other: Any?): Boolean {
-        return if (other !is FregeReferenceBase) {
-            false
-        } else psiElement == other.psiElement
+        return if (other is FregeReferenceBase) psiElement == other.psiElement else false
     }
 
     override fun hashCode(): Int {
