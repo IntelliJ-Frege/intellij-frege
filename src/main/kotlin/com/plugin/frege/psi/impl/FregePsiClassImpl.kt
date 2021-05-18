@@ -111,8 +111,8 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
     }
 
     override fun findMethodsBySignature(patternMethod: PsiMethod, checkBases: Boolean): Array<PsiMethod> {
-        val allMethods = if (checkBases) allMethods else methods
-        return allMethods.filter { method ->
+        val methodsByName = findMethodsByName(patternMethod.name, checkBases)
+        return methodsByName.filter { method ->
             patternMethod.getSignature(EmptySubstitutor.getInstance()).parameterTypes.contentEquals(
                 method.getSignature(EmptySubstitutor.getInstance()).parameterTypes
             )
