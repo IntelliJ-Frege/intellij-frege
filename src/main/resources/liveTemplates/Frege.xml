@@ -1,0 +1,10 @@
+<templateSet group="Frege">
+  <template name="ife" value="if $BOOLEAN_EXPR$ then $IF_TRUE$ else $IF_FALSE$&#10;$END$" description="Create if then else conditional" toReformat="false" toShortenFQNames="true">
+    <variable name="BOOLEAN_EXPR" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="IF_TRUE" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="IF_FALSE" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="FREGE_IF" value="true" />
+    </context>
+  </template>
+</templateSet>
