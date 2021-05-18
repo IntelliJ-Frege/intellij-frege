@@ -35,9 +35,9 @@ object FregePsiUtilImpl {
     fun <T : PsiElement> subprogramsFromScopeOfElement(element: PsiElement, getter: (elem: PsiElement) -> T?): List<T> {
         val scope = scopeOfElement(element)
         return if (isScope(scope)) {
-            scope!!.subprogramsFromScope.mapNotNull { subprogram -> getter(subprogram) }
+            scope!!.subprogramsFromScope.mapNotNull {getter(it) }
         } else {
-            listOf()
+            emptyList()
         }
     }
 
@@ -54,7 +54,7 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun keepWithText(text: String): (elem: PsiElement?) -> Boolean {
-        return { elem -> elem != null && text == elem.text }
+        return { it != null && text == it.text }
     }
 
     /**
@@ -67,10 +67,10 @@ object FregePsiUtilImpl {
         clazz: KClass<out PsiElement>, element: T, incompleteCode: Boolean
     ): (elem: PsiElement?) -> Boolean {
         val instancePredicate = { elem: PsiElement? -> clazz.isInstance(elem) }
-        return if (incompleteCode) {
-            instancePredicate
+        return if (!incompleteCode) { elem ->
+            instancePredicate(elem) && elem != null && elem.text == element.text
         } else {
-            elem: PsiElement? -> instancePredicate(elem) && elem != null && elem.text == element.text
+            instancePredicate
         }
     }
 
@@ -80,10 +80,10 @@ object FregePsiUtilImpl {
     @JvmStatic
     fun findWhereInExpression(element: PsiElement): FregeWhereSection? {
         val binding = getParentBinding(element)
-        val elements = findElementsWithinElementSequence(binding) { elem: PsiElement -> elem == element }
+        val elements = findElementsWithinElementSequence(binding) { it === element }
         return if (elements.any()) {
-            findElementsWithinElementSequence(binding) { elem ->
-                elem is FregeWhereSection
+            findElementsWithinElementSequence(binding) {
+                it is FregeWhereSection
             }.firstOrNull() as FregeWhereSection?
         } else {
             null
@@ -129,9 +129,7 @@ object FregePsiUtilImpl {
     @JvmStatic
     fun findElementsWithinScope(element: PsiElement, predicate: (elem: PsiElement) -> Boolean): List<PsiElement> {
         val subprograms = subprogramsFromScopeOfElement(element)
-        return subprograms.flatMap { subprogram ->
-            findElementsWithinElementSequence(subprogram, predicate)
-        }
+        return subprograms.flatMap { findElementsWithinElementSequence(it, predicate) }
     }
 
     @JvmStatic
@@ -150,9 +148,7 @@ object FregePsiUtilImpl {
                 emptySequence()
             }
             else -> {
-                element.children.asSequence().flatMap { elem ->
-                    findElementsWithinElementSequence(elem, predicate)
-                }
+                element.children.asSequence().flatMap { findElementsWithinElementSequence(it, predicate) }
             }
         }
     }
@@ -181,10 +177,10 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun findAvailableDataDecls(element: PsiElement): List<FregeDataDcl> {
-        val globalScope = globalScopeOfElement(element) ?: return listOf()
+        val globalScope = globalScopeOfElement(element) ?: return emptyList()
         check(globalScope is FregeBody) { "Global scope must be Frege body." }
         return globalScope.topDeclList.asSequence()
-            .map { decl -> decl.dataDcl }
+            .map { it.dataDcl }
             .filterNotNull().toList()
     }
 
@@ -213,9 +209,9 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun findImportsForElement(element: PsiElement): List<FregeImportDcl> {
-        val body = element.parentOfTypes(FregeBody::class, withSelf = true) ?: return listOf()
+        val body = element.parentOfTypes(FregeBody::class, withSelf = true) ?: return emptyList()
         return body.topDeclList.asSequence()
-            .map { decl -> decl.importDcl }
+            .map { it.importDcl }
             .filterNotNull().toList()
     }
 
@@ -226,8 +222,7 @@ object FregePsiUtilImpl {
     @JvmStatic
     fun findImportsNamesForElement(element: PsiElement, includingDefault: Boolean): List<String> {
         val imports = findImportsForElement(element)
-            .mapNotNull { decl -> decl.importPackageName }
-            .map { decl -> decl.text }
+            .mapNotNull { it.importPackageName?.text }
             .toMutableList()
         if (includingDefault) {
             imports.addAll(defaultImports)

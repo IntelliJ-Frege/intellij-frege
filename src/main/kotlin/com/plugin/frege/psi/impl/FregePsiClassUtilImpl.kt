@@ -40,7 +40,7 @@ object FregePsiClassUtilImpl {
 
     private fun doFindClasses(qualifiedName: String, scope: GlobalSearchScope): List<PsiClass> {
         if (scope.project == null) {
-            return listOf()
+            return emptyList()
         }
         return JavaPsiFacade.getInstance(scope.project!!).findClasses(qualifiedName, scope).toList()
     }
@@ -55,7 +55,7 @@ object FregePsiClassUtilImpl {
             return methods.toList()
         }
         val field = psiClass.findFieldByName(name, true)
-        return if (field != null) listOf(field) else listOf()
+        return if (field != null) listOf(field) else emptyList()
     }
 
     /**
@@ -80,7 +80,7 @@ object FregePsiClassUtilImpl {
         val name = FregePsiUtilImpl.nameFromQualifiedName(qualifiedName)
         val qualifier = FregePsiUtilImpl.qualifierFromQualifiedName(qualifiedName)
         if (qualifier.isEmpty()) {
-            return listOf()
+            return emptyList()
         }
 
         val methodsByName =
@@ -92,7 +92,7 @@ object FregePsiClassUtilImpl {
 
         return methodsByName.ifEmpty {
             getClassesByQualifiedName(project, qualifier)
-                .flatMap { clazz -> clazz.findMethodsByName(name, true).toList() }
+                .flatMap { it.findMethodsByName(name, true).toList() }
         }
     }
 
@@ -102,9 +102,9 @@ object FregePsiClassUtilImpl {
     @JvmStatic
     fun getAllMethodsByImportName(project: Project, importName: String): List<PsiMethod> {
         return if (importName.isNotEmpty()) {
-            getClassesByQualifiedName(project, importName).flatMap { clazz -> clazz.allMethods.toList() }
+            getClassesByQualifiedName(project, importName).flatMap { it.allMethods.toList() }
         } else {
-            listOf()
+            emptyList()
         }
     }
 

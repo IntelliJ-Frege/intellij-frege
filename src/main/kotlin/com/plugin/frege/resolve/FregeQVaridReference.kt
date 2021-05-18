@@ -59,7 +59,7 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
             }
             scope = scopeOfElement(scope.parent)
         }
-        return listOf()
+        return emptyList()
     }
 
     private fun tryFindParameters(incompleteCode: Boolean): List<PsiElement> { // TODO copy/paste
@@ -80,7 +80,7 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
             }
             binding = getParentBinding(binding.parent)
         }
-        return listOf()
+        return emptyList()
     }
 
     private fun tryFindInMethodsOfOtherClasses(incompleteCode: Boolean): List<PsiElement> {

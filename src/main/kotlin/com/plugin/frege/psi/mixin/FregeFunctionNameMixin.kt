@@ -11,7 +11,6 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.MethodSignatureBackedByPsiMethod
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfTypes
-import com.intellij.util.IncorrectOperationException
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
@@ -60,7 +59,6 @@ open class FregeFunctionNameMixin : FregePsiMethodImpl, PsiIdentifier {
         return modifierList
     }
 
-    @Throws(IncorrectOperationException::class)
     override fun setName(name: @NlsSafe String): PsiElement {
         return nameIdentifier.replace(FregeElementFactory.createFunctionName(project, name))
     }

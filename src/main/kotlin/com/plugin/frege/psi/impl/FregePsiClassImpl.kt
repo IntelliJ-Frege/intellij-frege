@@ -107,7 +107,7 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
 
     override fun findMethodBySignature(patternMethod: PsiMethod, checkBases: Boolean): PsiMethod? {
         val methods = findMethodsBySignature(patternMethod, checkBases)
-        return if (methods.isNotEmpty()) methods[0] else null
+        return methods.firstOrNull()
     }
 
     override fun findMethodsBySignature(patternMethod: PsiMethod, checkBases: Boolean): Array<PsiMethod> {
@@ -121,19 +121,18 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
 
     override fun findMethodsByName(@NonNls name: String, checkBases: Boolean): Array<PsiMethod> {
         val allMethods = if (checkBases) allMethods else methods
-        return allMethods.filter { method -> method.name == name }.toTypedArray()
+        return allMethods.filter { it.name == name }.toTypedArray()
     }
 
     override fun findMethodsAndTheirSubstitutorsByName(
         @NonNls name: String,
         checkBases: Boolean
     ): List<Pair<PsiMethod, PsiSubstitutor>> {
-        return findMethodsByName(name, checkBases)
-            .map { method -> Pair(method, EmptySubstitutor.EMPTY) }
+        return findMethodsByName(name, checkBases).map { Pair(it, EmptySubstitutor.EMPTY) }
     }
 
     override fun getAllMethodsAndTheirSubstitutors(): List<Pair<PsiMethod, PsiSubstitutor>> {
-        return allMethods.map { method -> Pair(method, EmptySubstitutor.EMPTY) }
+        return allMethods.map { Pair(it, EmptySubstitutor.EMPTY) }
     }
 
     override fun findInnerClassByName(@NonNls name: String, checkBases: Boolean): PsiClass? {
@@ -149,7 +148,7 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
     }
 
     override fun getVisibleSignatures(): Collection<HierarchicalMethodSignature> {
-        return allMethods.map { method -> method.hierarchicalMethodSignature }
+        return allMethods.map { it.hierarchicalMethodSignature }
     }
 
     override fun isDeprecated(): Boolean {

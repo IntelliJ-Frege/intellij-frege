@@ -23,26 +23,26 @@ class FregeDataNameUsageReference(element: PsiElement) : FregeReferenceBase(elem
     private fun tryFindDataInCurrentFile(incompleteCode: Boolean): List<PsiElement> {
         val referenceText = psiElement.text
         val dataInCurrentFile: MutableList<PsiElement> = findAvailableDataDecls(psiElement)
-            .mapNotNull { decl -> PsiTreeUtil.findChildOfType(decl, FregeDataNameNative::class.java) }
+            .mapNotNull { PsiTreeUtil.findChildOfType(it, FregeDataNameNative::class.java) }
             .toMutableList()
 
         if (!incompleteCode) {
-            dataInCurrentFile.removeIf { elem -> !keepWithText(referenceText).invoke(elem) }
+            dataInCurrentFile.removeIf { !keepWithText(referenceText).invoke(it) }
         }
         return dataInCurrentFile
     }
 
     private fun tryFindDataByImports(): List<PsiElement> {
-        val clazzName = psiElement.text
+        val className = psiElement.text
         val project = psiElement.project
         val imports = findImportsNamesForElement(psiElement, true)
         for (currentImport in imports) {
-            val qualifiedName = "$currentImport.$clazzName"
+            val qualifiedName = "$currentImport.$className"
             val classes = getClassesByQualifiedName(project, qualifiedName)
             if (classes.isNotEmpty()) {
                 return classes
             }
         }
-        return listOf()
+        return emptyList()
     }
 }
