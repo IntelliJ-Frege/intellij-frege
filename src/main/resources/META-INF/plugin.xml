@@ -40,6 +40,10 @@
         <runLineMarkerContributor language="Frege" implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerContributor" />
         <completion.contributor language="Frege" implementationClass="com.plugin.frege.completion.FregeKeywordCompletionContributor"/>
 
+        <defaultLiveTemplates file="/liveTemplates/Frege.xml"/>
+        <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregeAbstractContext$Generic"/>
+        <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregePatternedContext$FregeIf"/>
+
         <internalFileTemplate name="Frege Module" />
         <internalFileTemplate name="Frege Empty File" />
     </extensions>
