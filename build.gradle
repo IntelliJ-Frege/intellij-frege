@@ -44,6 +44,11 @@ task generateFregeParser(type: GenerateParser) {
     purgeOldFiles = true
 }
 
+compileKotlin {
+    dependsOn generateFregeParser
+    dependsOn generateFregeLexer
+}
+
 compileJava {
     dependsOn generateFregeParser
     dependsOn generateFregeLexer
