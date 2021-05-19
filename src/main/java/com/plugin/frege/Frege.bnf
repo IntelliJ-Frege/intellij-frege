@@ -143,6 +143,7 @@ letInExpression ::= letExpression IN expr {
     mixin="com.plugin.frege.psi.mixin.FregeLetInExpressionMixin"
 }
 whereSection ::= WHERE <<indentSection decl>> {
+    pin = 1
     implements="com.plugin.frege.psi.FregeScopeElement"
     mixin="com.plugin.frege.psi.mixin.FregeWhereSectionMixin"
 }

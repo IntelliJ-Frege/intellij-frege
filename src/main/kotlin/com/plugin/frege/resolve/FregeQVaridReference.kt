@@ -43,8 +43,8 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
 
         // check if this expression has `where` ans search there for definitions if it does.
         val where = findWhereInExpression(psiElement)
-        if (where != null) {
-            val whereFuncNames = findElementsWithinScope(where.indentSection, predicate)
+        if (where != null && where.indentSection != null) {
+            val whereFuncNames = findElementsWithinScope(where.indentSection!!, predicate)
             if (whereFuncNames.isNotEmpty()) {
                 return whereFuncNames
             }
