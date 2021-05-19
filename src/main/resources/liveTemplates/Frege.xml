@@ -15,4 +15,12 @@
       <option name="FREGE_IF" value="true" />
     </context>
   </template>
+  <template name="inst" value="instance $INSTANCE_DEF$ where&#10;    $func1$ = $expr1$&#10;    $END$" description="Create new instance" toReformat="false" toShortenFQNames="true">
+    <variable name="INSTANCE_DEF" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="func1" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="expr1" expression="" defaultValue="&quot;undefined&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="FREGE_INSTANCEDECL" value="true" />
+    </context>
+  </template>
 </templateSet>
