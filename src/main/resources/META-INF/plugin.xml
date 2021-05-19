@@ -45,6 +45,7 @@
         <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregePatternedContext$FregeIf"/>
         <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregePatternedContext$FregeClassDecl"/>
         <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregePatternedContext$FregeInstanceDecl"/>
+        <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregePatternedContext$FregeDecl"/>
 
         <internalFileTemplate name="Frege Module" />
         <internalFileTemplate name="Frege Empty File" />
