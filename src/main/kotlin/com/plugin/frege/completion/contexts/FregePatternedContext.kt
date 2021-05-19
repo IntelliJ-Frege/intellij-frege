@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFile
 import com.plugin.frege.FregeFileType
 import com.plugin.frege.completion.patterns.ClassDclPatterns
 import com.plugin.frege.completion.patterns.CondPatterns
+import com.plugin.frege.completion.patterns.DeclPatterns
 import com.plugin.frege.completion.patterns.InstDclPatterns
 
 abstract class FregePatternedContext(idSuffix: String, presentableName: String) :
@@ -32,5 +33,10 @@ abstract class FregePatternedContext(idSuffix: String, presentableName: String) 
     class FregeInstanceDecl : FregePatternedContext("INSTANCEDECL", "Instance declaration") {
         override val pattern: PsiElementPattern.Capture<PsiElement>
             get() = InstDclPatterns.instancePattern()
+    }
+
+    class FregeDecl : FregePatternedContext("DECL", "Declaration") {
+        override val pattern: PsiElementPattern.Capture<PsiElement>
+            get() = DeclPatterns.declPattern()
     }
 }

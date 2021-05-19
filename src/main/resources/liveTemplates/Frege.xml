@@ -23,4 +23,12 @@
       <option name="FREGE_INSTANCEDECL" value="true" />
     </context>
   </template>
+  <template name="func" value="$name$ :: $type$&#10;$name$ $args$ = $END$" description="Create a new function with annotation" toReformat="false" toShortenFQNames="true">
+    <variable name="name" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="type" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="args" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="FREGE_DECL" value="true" />
+    </context>
+  </template>
 </templateSet>
