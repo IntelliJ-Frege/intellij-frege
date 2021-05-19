@@ -56,7 +56,7 @@ qVarId ::= qualifier? qualifier? weakVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeQVaridMixin"
 }
-qConId ::= qualifier? qualifier? dataNameUsage
+qConId ::= qualifier qualifier dataNameUsage | qualifier dataNameUsage | dataNameUsage
 
 /* Literals */
 literal ::= boolLiteral
@@ -118,10 +118,10 @@ primary ::= (term | doEx) (DOT (
               | qLexOp
               | EXLAMATION_MARK
               | QUESTION_MARK
-              | LEFT_BRACE (getFields | weakVarid (QUESTION_MARK | EQUAL | LEFT_ARROW)) RIGHT_BRACE
+              | LEFT_BRACE getFieldsOrSingleVaridInit RIGHT_BRACE
               | LEFT_BRACKET expr RIGHT_BRACKET))*
-
-getFields ::= getField (COMMA getFields)* COMMA?
+getFieldsOrSingleVaridInit ::= weakVarid (QUESTION_MARK | EQUAL | LEFT_ARROW) (
+    expr (COMMA getField)* COMMA?)?
 getField ::= weakVarid ((LEFT_ARROW | EQUAL) expr)?
 
 /* Lambda Expression */
@@ -143,7 +143,7 @@ whereSection ::= WHERE <<indentSection decl>> {
     implements="com.plugin.frege.psi.FregeScopeElement"
     mixin="com.plugin.frege.psi.mixin.FregeWhereSectionMixin"
 }
-doEx ::= DO <<indentSection (lcqual | qConId LEFT_BRACE (getFields | weakVarid (QUESTION_MARK | EQUAL | LEFT_ARROW)) RIGHT_BRACE)>>
+doEx ::= DO <<indentSection (lcqual | qConId LEFT_BRACE getFieldsOrSingleVaridInit RIGHT_BRACE)>>
 
 /* Case Expression */
 caseEx ::= CASE expr OF <<indentSection alt>>
