@@ -4,7 +4,6 @@ import com.intellij.execution.lineMarker.RunLineMarkerContributor;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.psi.PsiElement;
-import com.plugin.frege.psi.FregeBinding;
 import com.plugin.frege.psi.FregeFunctionName;
 import com.plugin.frege.psi.impl.FregeFunctionNameImpl;
 import com.plugin.frege.psi.impl.FregePsiUtilImpl;
@@ -21,10 +20,6 @@ public class FregeRunLineMarkerContributor extends RunLineMarkerContributor {
         FregeFunctionNameImpl functionName = (FregeFunctionNameImpl) parent;
         if (!functionName.isMainFunctionBinding()) {
             return null;
-        }
-
-        if (!(FregePsiUtilImpl.getDeclType(element) instanceof FregeBinding)) {
-            return null; // we are annotation or something else
         }
 
         final String moduleName = FregePsiUtilImpl.getModuleName(element);

@@ -1,21 +1,17 @@
-import org.jetbrains.grammarkit.tasks.*
+/**
+ * Minimal version of build.gradle file
+ * See full version for more comments and additional tasks
+ *
+ * Authored by: Dierk
+ * Origin: https://github.com/Dierk/HelloFrege/blob/sample_code/build.gradle
+ * Modified by 23jura23
+ */
+
 
 plugins {
     id "application"
     id "idea"
-    id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.0'
-    id 'org.jetbrains.intellij' version '0.7.2'
-    id 'org.jetbrains.grammarkit' version '2021.1'
 }
-
-
-apply plugin: 'org.jetbrains.intellij'
-apply plugin: 'org.jetbrains.grammarkit'
-
-group 'com.plugin.frege'
-version '1.0-SNAPSHOT'
-
 
 ext {
     javaTarget = "15"
@@ -28,7 +24,6 @@ ext {
     fregeMainJavaDir = "${buildDir}/src/main/frege"
 }
 
-// mark Frege directory as Source root
 idea {
     module {
         sourceDirs += file(fregeMainSourceDir)
@@ -36,38 +31,32 @@ idea {
 }
 
 repositories {
-    mavenCentral()
-
-    // Frege lib
     flatDir {
         dirs fregeDir
     }
+    mavenCentral()
 }
 
-void downloadFregeCompiler() {
+void downloadCompiler() {
     ant.mkdir(dir: fregeDir)
     ant.get(src: fregeCompilerUrl,
             dest: fregeJar,
             skipexisting: 'true')
 }
 
-// Those lines add Frege standard library dependency
-// And as standard library is not updated in Gradle repositories, we need to download compiler before
 configurations.implementation.withDependencies { deps ->
-    downloadFregeCompiler()
+    downloadCompiler()
     deps.add(project.dependencies.create("org.frege-lang:frege:${fregeVersion}"))
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+//    implementation group: 'org.frege-lang', name: 'frege-interpreter-core', version: '1.2'
+    // cannot be used as it's class files were compiled on old compiler
 }
 
-intellij {
-    version '2021.1'
-    plugins = ['java', 'gradle', 'gradle-java']
-    downloadSources true
+task fregeInit {
+    group "frege"
+    ant.mkdir(dir: fregeMainSourceDir)
 }
 
 task prepareCompileDirs { // prepare all the directories that the frege tasks rely upon
@@ -107,33 +96,14 @@ fregeCompile.doLast {
     }
 }
 
-task generateFregeLexer(type: GenerateLexer) {
-    source = 'src/main/java/com/plugin/frege/lexer/FregeLexer.flex'
-    targetDir = 'src/gen/com/plugin/frege/lexer/'
-    targetClass = 'FregeLexer'
-    purgeOldFiles = true
+task fregeRun(type: JavaExec) {
+    dependsOn     fregeCompile  // in case we always want to compile before running
+    group         = "frege"
+    description   = "Run -Pclass_name=${project.mainClassName}"
+    standardInput = System.in 								// this might run interactively, so we need stdin
+    classpath     = files sourceSets.main.runtimeClasspath.asPath
+    main          = project.hasProperty("class_name") ? project.class_name : project.mainClassName
 }
 
-task generateFregeParser(type: GenerateParser) {
-    source = 'src/main/java/com/plugin/frege/Frege.bnf'
-    targetRoot = 'src/gen'
-    pathToParser = '/com/plugin/frege/parser/FregeParser.java'
-    pathToPsiRoot = '/com/plugin/frege/psi'
-    purgeOldFiles = true
-}
-
-
-
-compileJava {
-    dependsOn generateFregeParser
-    dependsOn generateFregeLexer
-    dependsOn fregeCompile
-}
-
-patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
-}
-
-sourceSets.main.java.srcDirs 'src/gen'
+compileJava.dependsOn fregeCompile
+sourceSets.main.compileClasspath = files (sourceSets.main.compileClasspath + sourceSets.main.java.outputDir)
