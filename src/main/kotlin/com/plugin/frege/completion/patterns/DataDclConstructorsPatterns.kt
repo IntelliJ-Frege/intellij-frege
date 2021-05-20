@@ -9,15 +9,16 @@ import com.plugin.frege.psi.FregeTopDecl
 object DataDclConstructorsPatterns : PlatformPatterns() {
     @JvmStatic
     fun abstractPattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().withParent(FregeTopDecl::class.java)
+        return psiElement().andOr(
+            psiElement().atStartOf(psiElement(FregeTopDecl::class.java)),
+            psiElement().afterLeaf(AccessModifierPatterns.accessModifierPattern())
+        )
     }
 
     @JvmStatic
     fun dataPattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().inside(
-            true,
-            psiElement().withParent(FregeTopDecl::class.java),
-            psiElement().afterLeaf(FregeKeywords.DATA)
+        return psiElement().withParent(
+            psiElement().afterLeaf(FregeKeywords.ABSTRACT)
         )
     }
 }

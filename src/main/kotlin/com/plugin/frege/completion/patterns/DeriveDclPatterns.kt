@@ -11,7 +11,8 @@ object DeriveDclPatterns : PlatformPatterns() {
     @JvmStatic
     fun derivePattern(): PsiElementPattern.Capture<PsiElement> {
         return psiElement().andOr(
-            psiElement().withParent(FregeTopDecl::class.java),
+            psiElement().atStartOf(psiElement(FregeTopDecl::class.java)),
+            psiElement().afterLeaf(AccessModifierPatterns.accessModifierPattern()),
             psiElement().inside(
                 true,
                 psiElement(FregeDataDcl::class.java),

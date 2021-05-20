@@ -8,6 +8,6 @@ import com.plugin.frege.psi.FregeTopDecl
 object InfixRulePatterns : PlatformPatterns() {
     @JvmStatic
     fun infixRulePattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().withParent(FregeTopDecl::class.java)
+        return psiElement().atStartOf(psiElement(FregeTopDecl::class.java))
     }
 }
