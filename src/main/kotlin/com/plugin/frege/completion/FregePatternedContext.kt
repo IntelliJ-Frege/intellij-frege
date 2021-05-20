@@ -1,13 +1,9 @@
-package com.plugin.frege.completion.contexts
+package com.plugin.frege.completion
 
 import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.plugin.frege.FregeFileType
-import com.plugin.frege.completion.patterns.ClassDclPatterns
-import com.plugin.frege.completion.patterns.CondPatterns
-import com.plugin.frege.completion.patterns.DeclPatterns
-import com.plugin.frege.completion.patterns.InstDclPatterns
 
 abstract class FregePatternedContext(idSuffix: String, presentableName: String) :
     FregeAbstractContext(idSuffix, presentableName) {
@@ -22,21 +18,21 @@ abstract class FregePatternedContext(idSuffix: String, presentableName: String) 
 
     class FregeIf : FregePatternedContext("IF", "If") {
         override val pattern: PsiElementPattern.Capture<PsiElement>
-            get() = CondPatterns.ifPattern()
+            get() = FregePatterns.CondPatterns.ifPattern()
     }
 
     class FregeClassDecl : FregePatternedContext("CLASSDECL", "Class declaration") {
         override val pattern: PsiElementPattern.Capture<PsiElement>
-            get() = ClassDclPatterns.classOrInterfacePattern()
+            get() = FregePatterns.ClassDclPatterns.classOrInterfacePattern()
     }
 
     class FregeInstanceDecl : FregePatternedContext("INSTANCEDECL", "Instance declaration") {
         override val pattern: PsiElementPattern.Capture<PsiElement>
-            get() = InstDclPatterns.instancePattern()
+            get() = FregePatterns.InstDclPatterns.instancePattern()
     }
 
     class FregeDecl : FregePatternedContext("DECL", "Declaration") {
         override val pattern: PsiElementPattern.Capture<PsiElement>
-            get() = DeclPatterns.declPattern()
+            get() = FregePatterns.DeclPatterns.declPattern()
     }
 }
