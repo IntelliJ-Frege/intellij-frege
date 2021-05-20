@@ -11,7 +11,7 @@ import com.plugin.frege.psi.FregeTopEx
 object CondPatterns : PlatformPatterns() {
     @JvmStatic
     fun ifPattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().withSuperParent(4, FregeTopEx::class.java)
+        return psiElement().atStartOf(psiElement(FregeTopEx::class.java))
     }
 
     @JvmStatic

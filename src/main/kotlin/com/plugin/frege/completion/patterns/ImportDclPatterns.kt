@@ -8,7 +8,7 @@ import com.plugin.frege.psi.FregeTopDecl
 object ImportDclPatterns : PlatformPatterns() {
     @JvmStatic
     fun importPattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().withParent(FregeTopDecl::class.java)
+        return psiElement().atStartOf(psiElement(FregeTopDecl::class.java))
     }
 
     // TODO as and public modifier patterns

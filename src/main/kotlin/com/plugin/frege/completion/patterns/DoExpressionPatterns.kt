@@ -8,6 +8,6 @@ import com.plugin.frege.psi.FregeTopEx
 object DoExpressionPatterns : PlatformPatterns() {
     @JvmStatic
     fun doExpressionPattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().withParent(FregeTopEx::class.java)
+        return psiElement().atStartOf(psiElement(FregeTopEx::class.java))
     }
 }

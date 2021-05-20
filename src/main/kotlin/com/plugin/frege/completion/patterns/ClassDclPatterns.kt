@@ -8,6 +8,9 @@ import com.plugin.frege.psi.FregeTopDecl
 object ClassDclPatterns {
     @JvmStatic
     fun classOrInterfacePattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().withParent(FregeTopDecl::class.java)
+        return psiElement().andOr(
+            psiElement().atStartOf(psiElement(FregeTopDecl::class.java)),
+            psiElement().afterLeaf(AccessModifierPatterns.accessModifierPattern())
+        )
     }
 }

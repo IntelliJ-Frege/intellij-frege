@@ -8,6 +8,6 @@ import com.plugin.frege.psi.FregeTopDecl
 object AccessModifierPatterns : PlatformPatterns() {
     @JvmStatic
     fun accessModifierPattern(): PsiElementPattern.Capture<PsiElement> {
-        return psiElement().withParent(FregeTopDecl::class.java)
+        return psiElement().atStartOf(psiElement(FregeTopDecl::class.java))
     }
 }

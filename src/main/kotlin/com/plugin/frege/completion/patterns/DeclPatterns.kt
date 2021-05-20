@@ -11,7 +11,8 @@ object DeclPatterns {
     @JvmStatic
     fun declPattern(): PsiElementPattern.Capture<PsiElement> {
         return psiElement().andOr(
-            psiElement().withParent(FregeTopDecl::class.java),
+            psiElement().atStartOf(psiElement(FregeTopDecl::class.java)),
+            psiElement().afterLeaf(AccessModifierPatterns.accessModifierPattern()),
             psiElement().withParent(FregeLetExpression::class.java),
             psiElement().withParent(FregeWhereSection::class.java)
         )
