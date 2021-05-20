@@ -43,11 +43,11 @@
         <completion.contributor language="Frege" implementationClass="com.plugin.frege.completion.FregeKeywordCompletionContributor"/>
 
         <defaultLiveTemplates file="/liveTemplates/Frege.xml"/>
-        <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregeAbstractContext$Generic"/>
-        <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregePatternedContext$FregeIf"/>
-        <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregePatternedContext$FregeClassDecl"/>
-        <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregePatternedContext$FregeInstanceDecl"/>
-        <liveTemplateContext implementation="com.plugin.frege.completion.contexts.FregePatternedContext$FregeDecl"/>
+        <liveTemplateContext implementation="com.plugin.frege.completion.FregeAbstractContext$Generic"/>
+        <liveTemplateContext implementation="com.plugin.frege.completion.FregePatternedContext$FregeIf"/>
+        <liveTemplateContext implementation="com.plugin.frege.completion.FregePatternedContext$FregeClassDecl"/>
+        <liveTemplateContext implementation="com.plugin.frege.completion.FregePatternedContext$FregeInstanceDecl"/>
+        <liveTemplateContext implementation="com.plugin.frege.completion.FregePatternedContext$FregeDecl"/>
 
         <internalFileTemplate name="Frege Module" />
         <internalFileTemplate name="Frege Empty File" />

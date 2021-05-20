@@ -14,11 +14,7 @@ class FregeKeywordCompletionProvider(private val keywords: List<String>, private
         result: CompletionResultSet
     ) {
         result.addAllElements(keywords.map { keyword ->
-            var indentedKeyword = keyword
-            if (addSpaceToEnd) {
-                indentedKeyword += ' '
-            }
-            LookupElementBuilder.create(indentedKeyword)
+            LookupElementBuilder.create(if (addSpaceToEnd) "$keyword " else keyword)
         })
     }
 }
