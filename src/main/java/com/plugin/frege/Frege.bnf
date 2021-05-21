@@ -10,7 +10,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("dataNameNative|packageClassName|functionName")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("dataNameNative|packageClassName|functionName|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -231,7 +231,8 @@ topDecl ::= !<<eof>> (
               fixity
             | importDcl
             | accessModifier? typeDcl
-            | accessModifier? dataDcl
+            | accessModifier? dataDclConstructors
+            | accessModifier? dataDclNative
             | accessModifier? classDcl
             | accessModifier? instDcl
             | accessModifier? deriveDcl
@@ -269,7 +270,7 @@ tyCon ::= qConId
             | unit
             | tupleConstructor
             | RIGHT_ARROW
-className ::= qConId
+className ::= dataNameUsage
 kind ::= simpleKind
             | simpleKind RIGHT_ARROW kind
 simpleKind ::= STAR
@@ -278,12 +279,9 @@ simpleKind ::= STAR
 
 
 /* Algebraic Data type Declaration */
-dataDcl ::= (dataDclConstructors | dataDclNative) deriveDcl?
-    { pin=1 }
-
-dataDclConstructors ::= ABSTRACT? DATA dataNameConstructor tyVar* EQUAL constructors whereSection?
+dataDclConstructors ::= ABSTRACT? DATA dataNameConstructor tyVar* EQUAL constructors whereSection? deriveDcl?
     { pin=6 }
-dataDclNative ::= DATA dataNameNative tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection? {
+dataDclNative ::= DATA dataNameNative tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection? deriveDcl? {
     pin=6
     implements="com.plugin.frege.psi.FregePsiClassHolder"
     mixin="com.plugin.frege.psi.mixin.FregeDataDclNativeMixin"
@@ -297,7 +295,8 @@ dataNameNative ::= CONID {
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
 dataNameUsage ::= CONID {
-    implements="com.plugin.frege.psi.FregeCompositeElement"
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
     mixin="com.plugin.frege.psi.mixin.FregeDataNameUsageMixin"
 }
 
@@ -333,20 +332,25 @@ instDcl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? className typeRule whereS
 deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
     { pin=1 }
 
-/* fake function name rule for highlighting */
+
 functionName ::= weakVarid {
     implements="com.plugin.frege.psi.FregePsiMethod"
     mixin="com.plugin.frege.psi.mixin.FregeFunctionNameMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
 annotationName ::= weakVarid {
-    implements="com.plugin.frege.psi.FregeCompositeElement"
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
     mixin="com.plugin.frege.psi.mixin.FregeAnnotationNameMixin"
 }
 
 /*  Type Annotations */
-annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma
-    { pin=3 }
+annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma {
+    pin=3
+    implements="com.plugin.frege.psi.FregePsiMethod"
+    mixin="com.plugin.frege.psi.mixin.FregeAnnotationMixin"
+    stubClass="com.plugin.frege.stubs.FregeMethodStub"
+}
 annoItem ::= annotationName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
 
 /*  Function and Pattern Bindings */
