@@ -4,7 +4,6 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.NlsSafe;
-import com.intellij.psi.PsiReference;
 import com.intellij.usageView.UsageViewUtil;
 import com.plugin.frege.FregeIcons;
 import com.plugin.frege.psi.FregeCompositeElement;
@@ -17,11 +16,6 @@ import javax.swing.*;
 public abstract class FregeCompositeElementImpl extends ASTWrapperPsiElement implements FregeCompositeElement {
     public FregeCompositeElementImpl(@NotNull ASTNode node) {
         super(node);
-    }
-
-    @Override
-    public @Nullable PsiReference getReference() {
-        return null;
     }
 
     @Override
