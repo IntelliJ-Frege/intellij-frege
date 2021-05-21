@@ -6,6 +6,7 @@ import com.intellij.psi.impl.light.LightParameter
 import com.intellij.psi.impl.light.LightParameterListBuilder
 import com.intellij.psi.impl.light.LightReferenceListBuilder
 import com.intellij.psi.impl.light.LightTypeElement
+import com.intellij.psi.impl.source.HierarchicalMethodSignatureImpl
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.IStubElementType
@@ -124,8 +125,21 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
     }
 
     override fun getName(): String {
-        val stub = greenStub
-        return if (stub != null) stub.name!! else text
+        return greenStub?.name ?: nameIdentifier?.text ?: text
+    }
+
+    override fun getHierarchicalMethodSignature(): HierarchicalMethodSignature {
+        return HierarchicalMethodSignatureImpl(
+            MethodSignatureBackedByPsiMethod.create(this, PsiSubstitutor.EMPTY)
+        )
+    }
+
+    override fun getReturnType(): PsiType {
+        return objectType!! // TODO waiting for type system
+    }
+
+    override fun getReturnTypeElement(): PsiTypeElement? {
+        return objectTypeElement // TODO waiting for type system
     }
 
     protected abstract fun getParamsNumber(): Int

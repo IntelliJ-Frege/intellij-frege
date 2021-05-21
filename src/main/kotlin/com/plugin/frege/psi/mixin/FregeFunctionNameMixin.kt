@@ -4,11 +4,9 @@ import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightModifierList
-import com.intellij.psi.impl.source.HierarchicalMethodSignatureImpl
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.MethodSignatureBackedByPsiMethod
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.FregeLanguage
@@ -33,14 +31,6 @@ open class FregeFunctionNameMixin : FregePsiMethodImpl, PsiIdentifier {
         modifierList = LightModifierList(manager, FregeLanguage.INSTANCE)
     }
 
-    override fun getReturnType(): PsiType {
-        return objectType!!
-    }
-
-    override fun getReturnTypeElement(): PsiTypeElement? {
-        return objectTypeElement
-    }
-
     override fun getBody(): PsiCodeBlock {
         val binding = PsiTreeUtil.getParentOfType(this, FregeBinding::class.java)
         val text = if (binding == null) text else binding.text // TODO
@@ -61,12 +51,6 @@ open class FregeFunctionNameMixin : FregePsiMethodImpl, PsiIdentifier {
 
     override fun setName(name: @NlsSafe String): PsiElement {
         return nameIdentifier.replace(FregeElementFactory.createFunctionName(project, name))
-    }
-
-    override fun getHierarchicalMethodSignature(): HierarchicalMethodSignature {
-        return HierarchicalMethodSignatureImpl(
-            MethodSignatureBackedByPsiMethod.create(this, PsiSubstitutor.EMPTY)
-        )
     }
 
     override fun getReference(): PsiReference? {
