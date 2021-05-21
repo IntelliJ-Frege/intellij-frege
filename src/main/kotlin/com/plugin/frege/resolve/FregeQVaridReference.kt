@@ -2,11 +2,13 @@ package com.plugin.frege.resolve
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiMethod
 import com.plugin.frege.psi.FregeElementFactory.createVarId
 import com.plugin.frege.psi.FregeFunctionName
 import com.plugin.frege.psi.FregeParam
 import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.getAllMethodsByImportName
 import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.getMethodsByQualifiedName
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.findClassesInCurrentFile
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
@@ -34,7 +36,12 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
             return result
         }
 
-        result.addAll(tryFindInMethodsOfOtherClasses(incompleteCode))
+        result.addAll(tryFindMethodsInClassesInCurrentFile())
+        if (result.isNotEmpty() && !incompleteCode) {
+            return result
+        }
+
+        result.addAll(tryFindMethodsByImports(incompleteCode))
         return result
     }
 
@@ -83,7 +90,7 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
         return emptyList()
     }
 
-    private fun tryFindInMethodsOfOtherClasses(incompleteCode: Boolean): List<PsiElement> {
+    private fun tryFindMethodsByImports(incompleteCode: Boolean): List<PsiElement> {
         val methodName = psiElement.text
         val project = psiElement.project
         val imports = findImportsNamesForElement(psiElement, true)
@@ -92,7 +99,7 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
             if (incompleteCode) {
                 result.addAll(getAllMethodsByImportName(project, currentImport))
             } else {
-                val qualifiedName = mergeQualifiedNames(currentImport, methodName) ?: continue
+                val qualifiedName = mergeQualifiedNames(currentImport, methodName)
                 result.addAll(getMethodsByQualifiedName(project, qualifiedName))
                 if (result.isNotEmpty()) {
                     break
@@ -100,5 +107,21 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
             }
         }
         return result
+    }
+
+    private fun tryFindMethodsInClassesInCurrentFile(): List<PsiMethod> { // TODO incomplete code
+        val methodName = psiElement.text
+        val project = psiElement.project
+        val availableClasses = findClassesInCurrentFile(psiElement)
+        for (clazz in availableClasses) {
+            val className = clazz.qualifiedName ?: continue
+            val qualifiedName = mergeQualifiedNames(className, methodName)
+            val methods = getMethodsByQualifiedName(project, qualifiedName)
+            if (methods.isNotEmpty()) {
+                return methods // TODO errors if several references in different classes
+            }
+        }
+
+        return emptyList()
     }
 }
