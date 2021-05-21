@@ -2,17 +2,15 @@ package com.plugin.frege.resolve
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.plugin.frege.psi.FregeDataNameNative
 import com.plugin.frege.psi.FregeElementFactory.createDataNameUsage
+import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.getClassesByQualifiedName
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.findAvailableDataDecls
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.findClassesInCurrentFile
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.keepWithText
 
 class FregeDataNameUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
     public override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
-        val currentFileData = tryFindDataInCurrentFile(incompleteCode)
+        val currentFileData = tryFindClassesInCurrentFile(incompleteCode)
         return currentFileData.ifEmpty { tryFindDataByImports() } // TODO support incomplete code
     }
 
@@ -20,16 +18,13 @@ class FregeDataNameUsageReference(element: PsiElement) : FregeReferenceBase(elem
         return psiElement.replace(createDataNameUsage(psiElement.project, name))
     }
 
-    private fun tryFindDataInCurrentFile(incompleteCode: Boolean): List<PsiElement> {
+    private fun tryFindClassesInCurrentFile(incompleteCode: Boolean): List<PsiElement> {
         val referenceText = psiElement.text
-        val dataInCurrentFile: MutableList<PsiElement> = findAvailableDataDecls(psiElement)
-            .mapNotNull { PsiTreeUtil.findChildOfType(it, FregeDataNameNative::class.java) }
-            .toMutableList()
-
+        val classes: MutableList<FregePsiClass> = findClassesInCurrentFile(psiElement).toMutableList()
         if (!incompleteCode) {
-            dataInCurrentFile.removeIf { !keepWithText(referenceText).invoke(it) }
+            classes.removeIf { referenceText != it.name }
         }
-        return dataInCurrentFile
+        return classes
     }
 
     private fun tryFindDataByImports(): List<PsiElement> {

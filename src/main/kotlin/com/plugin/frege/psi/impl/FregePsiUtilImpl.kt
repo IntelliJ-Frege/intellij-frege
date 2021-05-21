@@ -173,21 +173,29 @@ object FregePsiUtilImpl {
     }
 
     /**
-     * @return list of [FregeDataDcl] which are in the global scope of [element].
+     * @return list of [FregePsiClass] which are in the global scope of [element].
      */
     @JvmStatic
-    fun findAvailableDataDecls(element: PsiElement): List<FregeDataDcl> {
+    fun findClassesInCurrentFile(element: PsiElement): List<FregePsiClass> {
         val globalScope = globalScopeOfElement(element) ?: return emptyList()
         check(globalScope is FregeBody) { "Global scope must be Frege body." }
-        return globalScope.topDeclList.asSequence()
-            .map { it.dataDcl }
-            .filterNotNull().toList()
+        return globalScope.topDeclList
+            .mapNotNull {
+                when { // TODO omg, think up a better way
+                    it.classDcl != null -> it.classDcl
+                    it.dataDclConstructors != null -> it.dataDclConstructors
+                    it.dataDclNative != null -> it.dataDclNative
+                    it.typeDcl != null -> it.typeDcl
+                    else -> null
+                }
+            }
+            .filterIsInstance(FregePsiClassHolder::class.java)
+            .mapNotNull { it.holdingClass }
     }
 
     /**
      * @return the module name of [psi], if presented, or `null` otherwise
      */
-    @Suppress("SENSELESS_COMPARISON", "RedundantRequireNotNullCall")
     @JvmStatic
     fun getModuleName(psi: PsiElement): String? {
         val fregeProgram = psi.parentOfTypes(FregeProgram::class, withSelf = true)
@@ -252,13 +260,13 @@ object FregePsiUtilImpl {
      * Example: `frege.prelude.PreludeBase` merges with `PreludeBase.Int` -> `frege.prelude.PreludeBase.Int`.
      */
     @JvmStatic
-    fun mergeQualifiedNames(first: String, second: String): String? {
+    fun mergeQualifiedNames(first: String, second: String): String {
         val secondName = nameFromQualifiedName(second)
         val secondQualifier = qualifierFromQualifiedName(second)
-        return if (secondQualifier.isEmpty() || qualifiedNameEndsWithQualifier(first, secondQualifier)) {
+        return if (qualifiedNameEndsWithQualifier(first, secondQualifier)) {
             "$first.$secondName" // TODO
         } else {
-            null
+            "$first.$second"
         }
     }
 
