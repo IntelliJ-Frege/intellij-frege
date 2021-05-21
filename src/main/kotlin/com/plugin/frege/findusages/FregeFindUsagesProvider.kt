@@ -31,6 +31,7 @@ class FregeFindUsagesProvider : FindUsagesProvider {
 
     override fun getType(element: PsiElement): @Nls String {
         return when (element) {
+            is FregeAnnotation -> "annotation"
             is FregeFunctionName -> "function"
             is FregeDataDclNative -> "native data"
             is FregePackageClassName -> "module"

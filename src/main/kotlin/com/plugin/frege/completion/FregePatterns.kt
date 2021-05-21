@@ -131,7 +131,7 @@ object FregePatterns {
                 psiElement().afterLeaf(AccessModifierPatterns.accessModifierPattern()),
                 psiElement().inside(
                     true,
-                    psiElement(FregeDataDcl::class.java),
+                    psiElement(FregeDataDclNative::class.java), // TODO add constructors
                     psiElement(FregeDeriveDcl::class.java)
                 )
             )
