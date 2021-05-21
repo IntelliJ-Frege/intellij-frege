@@ -10,6 +10,7 @@ import com.plugin.frege.psi.impl.FregeCompositeElementImpl
 
 abstract class FregeWhereSectionMixin(node: ASTNode) : FregeCompositeElementImpl(node), FregeScopeElement, FregeWhereSection {
     override fun getSubprogramsFromScope(): List<PsiElement> {
-        return PsiTreeUtil.getChildrenOfType(indentSection, FregeSubprogramsHolder::class.java).toList()
+        return PsiTreeUtil.getChildrenOfType(indentSection, FregeSubprogramsHolder::class.java)?.toList()
+            ?: emptyList()
     }
 }

@@ -64,7 +64,7 @@ object FregePsiClassUtilImpl {
      */
     @JvmStatic
     fun findContainingFregeClass(element: PsiElement): FregePsiClass? {
-        val holder = element.parentOfTypes(FregePsiClassHolder::class) ?: return null
+        val holder = element.parentOfTypes(FregePsiClassHolder::class, withSelf = true) ?: return null
         if (element is FregePsiClass) { // in order not to return the same class
             val parent = holder.parent
             return if (parent != null) findContainingFregeClass(parent) else null

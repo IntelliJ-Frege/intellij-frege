@@ -213,6 +213,10 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
         return getModifierList().hasModifierProperty(name) // TODO
     }
 
+    override fun getContainingClass(): PsiClass? {
+        return FregePsiClassUtilImpl.findContainingFregeClass(this)
+    }
+
     override fun processDeclarations(
         processor: PsiScopeProcessor,
         state: ResolveState,
@@ -221,14 +225,31 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
     ): Boolean {
         val nameHint = processor.getHint(NameHint.KEY)
         val name = nameHint?.getName(state)
-        val methods = if (name == null) allMethods else findMethodsByName(name, true)
-        for (method in methods) {
-            processor.execute(method, state)
-        }
+        processMethods(processor, state, name)
+        processClasses(processor, state, name)
         return false // TODO fields
     }
 
-    override fun getContainingClass(): PsiClass? {
-        return FregePsiClassUtilImpl.findContainingFregeClass(this)
+    private fun processMethods(
+        processor: PsiScopeProcessor,
+        state: ResolveState,
+        nameHint: String?
+    ) {
+        val methods = if (nameHint == null) allMethods else findMethodsByName(nameHint, true)
+        for (method in methods) {
+            processor.execute(method, state)
+        }
+    }
+
+    private fun processClasses(
+        processor: PsiScopeProcessor,
+        state: ResolveState,
+        nameHint: String?
+    ) {
+        val allClasses = PsiTreeUtil.findChildrenOfType(scope, FregePsiClass::class.java).filter { it != this }
+        val classes = if (nameHint == null) allClasses else allClasses.filter { it.name == nameHint }
+        for (clazz in classes) {
+            processor.execute(clazz, state)
+        }
     }
 }
