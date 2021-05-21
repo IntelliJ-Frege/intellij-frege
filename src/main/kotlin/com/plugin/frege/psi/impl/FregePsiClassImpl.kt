@@ -8,6 +8,7 @@ import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.scope.NameHint
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.stubs.IStubElementType
+import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.stubs.FregeClassStub
@@ -31,6 +32,31 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
             FregePsiUtilImpl.nameFromQualifiedName(qualifiedName)
         else
             text
+    }
+
+    override fun getQualifiedName(): String? {
+        val stub = greenStub
+        if (stub != null) {
+            return stub.name
+        }
+
+        val containingClass = containingClass ?: return null
+        val parentQualifiedName = containingClass.qualifiedName ?: return null
+        return "$parentQualifiedName.$name"
+    }
+
+    override fun getNavigationElement(): PsiElement {
+        val nameIdentifier: PsiElement? = nameIdentifier
+        return nameIdentifier ?: this
+    }
+
+    override fun getTextOffset(): Int {
+        val nameIdentifier: PsiElement? = nameIdentifier
+        return if (nameIdentifier != null && nameIdentifier !== this) {
+            nameIdentifier.textOffset
+        } else {
+            super.getTextOffset()
+        }
     }
 
     override fun isAnnotationType(): Boolean {
