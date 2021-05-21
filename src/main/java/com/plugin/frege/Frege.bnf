@@ -10,7 +10,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("dataNameNative|packageClassName|functionName|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("dataNameNative|packageClassName|functionName|classDcl|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -319,8 +319,12 @@ typeDcl ::= TYPE dataNameType (tyVar)* EQUAL sigma
 dataNameType ::= CONID
 
 /* Class Declarations */
-classDcl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW CONID classVar)?  whereSection?
-    { pin=1 }
+classDcl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW CONID classVar)?  whereSection?{
+    pin=1
+    implements="com.plugin.frege.psi.FregePsiClass"
+    mixin="com.plugin.frege.psi.mixin.FregeClassDclMixin"
+    stubClass="com.plugin.frege.stubs.FregeClassStub"
+}
 
 classVar ::= tyVar
 

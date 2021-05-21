@@ -34,6 +34,7 @@ class FregeFindUsagesProvider : FindUsagesProvider {
             is FregeAnnotation -> "annotation"
             is FregeFunctionName -> "function"
             is FregeDataDclNative -> "native data"
+            is FregeClassDcl -> "class"
             is FregePackageClassName -> "module"
             is FregeParam -> "parameter"
             else -> "" // TODO
