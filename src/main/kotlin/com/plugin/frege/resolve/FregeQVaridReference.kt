@@ -3,8 +3,8 @@ package com.plugin.frege.resolve
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
+import com.plugin.frege.psi.FregeBinding
 import com.plugin.frege.psi.FregeElementFactory.createVarId
-import com.plugin.frege.psi.FregeFunctionName
 import com.plugin.frege.psi.FregeParam
 import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.getAllMethodsByImportName
 import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.getMethodsByQualifiedName
@@ -13,7 +13,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findWhereInExpression
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingText
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getParentBinding
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.mergeQualifiedNames
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
@@ -46,7 +46,7 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
     }
 
     private fun tryFindFunction(incompleteCode: Boolean): List<PsiElement> {
-        val predicate = getByTypePredicateCheckingText(FregeFunctionName::class, psiElement, incompleteCode)
+        val predicate = getByTypePredicateCheckingName(FregeBinding::class, psiElement.text, incompleteCode)
 
         // check if this expression has `where` ans search there for definitions if it does.
         val where = findWhereInExpression(psiElement)
@@ -70,7 +70,7 @@ class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, Te
     }
 
     private fun tryFindParameters(incompleteCode: Boolean): List<PsiElement> { // TODO copy/paste
-        val predicate = getByTypePredicateCheckingText(FregeParam::class, psiElement, incompleteCode)
+        val predicate = getByTypePredicateCheckingName(FregeParam::class, psiElement.text, incompleteCode)
         val where = findWhereInExpression(psiElement)
         if (where != null) {
             val params = findElementsWithinScope(where, predicate)

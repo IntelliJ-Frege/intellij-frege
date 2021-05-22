@@ -10,7 +10,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("dataNameNative|packageClassName|functionName|classDcl|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("dataNameNative|packageClassName|binding|classDcl|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -338,9 +338,9 @@ deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
 
 
 functionName ::= weakVarid {
-    implements="com.plugin.frege.psi.FregePsiMethod"
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
     mixin="com.plugin.frege.psi.mixin.FregeFunctionNameMixin"
-    stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
 annotationName ::= weakVarid {
     implements=["com.plugin.frege.psi.FregeCompositeElement"
@@ -358,7 +358,11 @@ annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma {
 annoItem ::= annotationName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
 
 /*  Function and Pattern Bindings */
-binding ::= lhs rhs
+binding ::= lhs rhs {
+    implements="com.plugin.frege.psi.FregePsiMethod"
+    mixin="com.plugin.frege.psi.mixin.FregeBindingMixin"
+    stubClass="com.plugin.frege.stubs.FregeMethodStub"
+}
 lhs ::= funLhs | pattern
 funLhs ::= pconApp lexOp pconApp
             | (functionName | LEFT_PAREN symOp RIGHT_PAREN) strictPattern* // TODO UNOP?

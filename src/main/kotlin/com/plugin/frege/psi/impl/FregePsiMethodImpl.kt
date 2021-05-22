@@ -12,16 +12,14 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.MethodSignature
 import com.intellij.psi.util.MethodSignatureBackedByPsiMethod
-import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.FregeLanguage
-import com.plugin.frege.psi.FregeBinding
 import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.findContainingFregeClass
 import com.plugin.frege.stubs.FregeMethodStub
 import org.jetbrains.annotations.NonNls
 
 @Suppress("UnstableApiUsage")
-abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMethodStub?>, FregePsiMethod {
+abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMethodStub>, FregePsiMethod {
     protected companion object {
         private var objectType: PsiType? = null
     }
@@ -109,9 +107,8 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
     override fun getParameterList(): PsiParameterList {
         val list = LightParameterListBuilder(manager, FregeLanguage.INSTANCE)
         val paramsNumber = getParamsNumber()
-        val scope = PsiTreeUtil.getParentOfType(this, FregeBinding::class.java) ?: return list
         for (i in 0 until paramsNumber) {
-            list.addParameter(LightParameter("arg$i", objectType as PsiType, scope))
+            list.addParameter(LightParameter("arg$i", objectType as PsiType, this))
         }
         return list // TODO a normal type system
     }
