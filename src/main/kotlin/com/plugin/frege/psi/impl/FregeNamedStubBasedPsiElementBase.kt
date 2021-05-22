@@ -6,6 +6,8 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.plugin.frege.psi.FregeNamedElement
 import com.intellij.psi.stubs.IStubElementType
+import com.plugin.frege.FregeIcons
+import javax.swing.Icon
 
 abstract class FregeNamedStubBasedPsiElementBase<T : StubElement<*>> : StubBasedPsiElementBase<T>, FregeNamedElement {
     constructor(stub: T, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
@@ -23,5 +25,9 @@ abstract class FregeNamedStubBasedPsiElementBase<T : StubElement<*>> : StubBased
         } else {
             super.getTextOffset()
         }
+    }
+
+    override fun getIcon(flags: Int): Icon? {
+        return FregeIcons.FILE
     }
 }
