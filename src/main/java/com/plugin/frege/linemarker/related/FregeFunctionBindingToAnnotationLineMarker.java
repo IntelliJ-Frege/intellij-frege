@@ -2,7 +2,9 @@ package com.plugin.frege.linemarker.related;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.psi.PsiElement;
-import com.plugin.frege.psi.FregeAnnotationName;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.plugin.frege.psi.FregeAnnotation;
+import com.plugin.frege.psi.impl.FregeBindingImpl;
 import com.plugin.frege.psi.impl.FregeFunctionNameImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,12 +18,12 @@ public class FregeFunctionBindingToAnnotationLineMarker extends FregeRelatedItem
         if (!(parent instanceof FregeFunctionNameImpl)) {
             return List.of();
         }
-        FregeFunctionNameImpl functionName = (FregeFunctionNameImpl) parent;
-        if (!functionName.isFunctionBinding()) {
+        FregeBindingImpl binding = PsiTreeUtil.getParentOfType(parent, FregeBindingImpl.class);
+        if (binding == null) {
             return List.of();
         }
-        FregeAnnotationName annotationName = functionName.getAnnotationName();
-        return annotationName != null ? List.of(annotationName) : List.of();
+        FregeAnnotation annotation = binding.getAnnotation();
+        return annotation != null ? List.of(annotation) : List.of();
     }
 
     @Override

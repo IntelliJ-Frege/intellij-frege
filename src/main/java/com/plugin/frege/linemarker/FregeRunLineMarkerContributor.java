@@ -4,9 +4,9 @@ import com.intellij.execution.lineMarker.RunLineMarkerContributor;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.psi.PsiElement;
-import com.plugin.frege.psi.FregeBinding;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.plugin.frege.psi.FregeFunctionName;
-import com.plugin.frege.psi.impl.FregeFunctionNameImpl;
+import com.plugin.frege.psi.impl.FregeBindingImpl;
 import com.plugin.frege.psi.impl.FregePsiUtilImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,17 +18,15 @@ public class FregeRunLineMarkerContributor extends RunLineMarkerContributor {
         if (!(parent instanceof FregeFunctionName)) {
             return null;
         }
-        FregeFunctionNameImpl functionName = (FregeFunctionNameImpl) parent;
-        if (!functionName.isMainFunctionBinding()) {
+        FregeBindingImpl binding = PsiTreeUtil.getParentOfType(parent, FregeBindingImpl.class);
+        if (binding == null || !binding.isMainFunctionBinding()) {
             return null;
         }
 
-        if (!(FregePsiUtilImpl.getDeclType(element) instanceof FregeBinding)) {
-            return null; // we are annotation or something else
-        }
-
         final String moduleName = FregePsiUtilImpl.getModuleName(element);
-        if (moduleName == null) return null;
+        if (moduleName == null) {
+            return null;
+        }
 
         return new Info(AllIcons.RunConfigurations.TestState.Run,
                 new AnAction[]{

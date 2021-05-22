@@ -1,6 +1,7 @@
 package com.plugin.frege.psi.impl
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.psi.*
 import kotlin.reflect.KClass
@@ -59,16 +60,15 @@ object FregePsiUtilImpl {
 
     /**
      * @return a predicate, accepting only instance of [clazz]
-     * for which [PsiElement.getText] equals [PsiElement.getText] of [element] if
-     * incompleteCode is false.
+     * for which [PsiNamedElement.getName] equals [name] if [incompleteCode] is `false`
      */
     @JvmStatic
-    fun <T : PsiElement> getByTypePredicateCheckingText(
-        clazz: KClass<out PsiElement>, element: T, incompleteCode: Boolean
+    fun getByTypePredicateCheckingName(
+        clazz: KClass<out PsiNamedElement>, name: String, incompleteCode: Boolean
     ): (elem: PsiElement?) -> Boolean {
         val instancePredicate = { elem: PsiElement? -> clazz.isInstance(elem) }
         return if (!incompleteCode) { elem ->
-            instancePredicate(elem) && elem != null && elem.text == element.text
+            instancePredicate(elem) && (elem as? PsiNamedElement)?.name == name
         } else {
             instancePredicate
         }

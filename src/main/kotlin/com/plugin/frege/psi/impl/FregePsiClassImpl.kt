@@ -15,7 +15,7 @@ import com.plugin.frege.stubs.FregeClassStub
 import org.jetbrains.annotations.NonNls
 
 @Suppress("UnstableApiUsage")
-abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassStub?>, FregePsiClass {
+abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassStub>, FregePsiClass {
     private val modifierList: LightModifierList
 
     constructor(node: ASTNode) : super(node) {
@@ -43,20 +43,6 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
         val containingClass = containingClass ?: return null
         val parentQualifiedName = containingClass.qualifiedName ?: return null
         return "$parentQualifiedName.$name"
-    }
-
-    override fun getNavigationElement(): PsiElement {
-        val nameIdentifier: PsiElement? = nameIdentifier
-        return nameIdentifier ?: this
-    }
-
-    override fun getTextOffset(): Int {
-        val nameIdentifier: PsiElement? = nameIdentifier
-        return if (nameIdentifier != null && nameIdentifier !== this) {
-            nameIdentifier.textOffset
-        } else {
-            super.getTextOffset()
-        }
     }
 
     override fun isAnnotationType(): Boolean {

@@ -46,7 +46,6 @@ open class FregePackageClassNameMixin : FregePsiClassImpl, PsiIdentifier {
 
         return subprogramsFromScopeOfElement(body) { (it as? FregeDecl)?.binding }
             .asSequence()
-            .mapNotNull { it.lhs.funLhs?.functionName }
             .sortedBy { it.textOffset }
             .distinctBy { it.name } // pattern-matching
             .toList().toTypedArray()
