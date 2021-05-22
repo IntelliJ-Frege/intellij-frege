@@ -1,18 +1,18 @@
 package com.plugin.frege.stubs.types;
 
 import com.plugin.frege.psi.FregePsiClass;
-import com.plugin.frege.psi.impl.FregeDataNameNativeImpl;
+import com.plugin.frege.psi.impl.FregeDataDclNativeImpl;
 import com.plugin.frege.stubs.FregeClassStub;
 import org.jetbrains.annotations.NotNull;
 
-public class FregeDataNativeNameElementType extends FregeClassElementType {
-    public FregeDataNativeNameElementType(@NotNull String debugName) {
+public class FregeDataDclNativeElementType extends FregeClassElementType {
+    public FregeDataDclNativeElementType(@NotNull String debugName) {
         super(debugName);
     }
 
     @Override
     public FregePsiClass createPsi(@NotNull FregeClassStub stub) {
-        return new FregeDataNameNativeImpl(stub, this);
+        return new FregeDataDclNativeImpl(stub, this);
     }
 
     @Override
