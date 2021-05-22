@@ -10,7 +10,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("dataNameNative|packageClassName|binding|classDcl|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("dataDclNative|packageClassName|binding|classDcl|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -281,19 +281,15 @@ simpleKind ::= STAR
 /* Algebraic Data type Declaration */
 dataDclConstructors ::= ABSTRACT? DATA dataNameConstructor tyVar* EQUAL constructors whereSection? deriveDcl?
     { pin=6 }
-dataDclNative ::= DATA dataNameNative tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection? deriveDcl? {
+dataDclNative ::= DATA dataNameUsage tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection? deriveDcl? {
     pin=6
-    implements="com.plugin.frege.psi.FregePsiClassHolder"
+    implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.FregeDataDclNativeMixin"
+    stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
 
 dataNameConstructor ::= CONID
 
-dataNameNative ::= CONID {
-    implements="com.plugin.frege.psi.FregePsiClass"
-    mixin="com.plugin.frege.psi.mixin.FregeDataNameNativeMixin"
-    stubClass="com.plugin.frege.stubs.FregeClassStub"
-}
 dataNameUsage ::= CONID {
     implements=["com.plugin.frege.psi.FregeCompositeElement"
                 "com.intellij.psi.PsiIdentifier"]

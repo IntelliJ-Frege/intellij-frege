@@ -47,12 +47,6 @@ object FregeElementFactory {
     }
 
     @JvmStatic
-    fun createDataNameNative(project: Project, name: String): FregeDataNameNative {
-        val fakeDataName = "${fakeProgram}data $name = DummyConstructor"
-        return createElement(project, fakeDataName, FregeDataNameNative::class)
-    }
-
-    @JvmStatic
     fun createDataNameUsage(project: Project, name: String): FregeDataNameUsage {
         val fakeDataNameUsage = "${fakeProgram}func :: $name"
         return createElement(project, fakeDataNameUsage, FregeDataNameUsage::class)
