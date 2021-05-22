@@ -189,8 +189,7 @@ object FregePsiUtilImpl {
                     else -> null
                 }
             }
-            .filterIsInstance(FregePsiClassHolder::class.java)
-            .mapNotNull { it.holdingClass }
+            .filterIsInstance(FregePsiClass::class.java)
     }
 
     /**

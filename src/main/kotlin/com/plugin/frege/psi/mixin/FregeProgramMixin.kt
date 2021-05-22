@@ -8,14 +8,12 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.stubs.IStubElementType
 import com.plugin.frege.psi.FregeDecl
 import com.plugin.frege.psi.FregeProgram
-import com.plugin.frege.psi.FregePsiClass
-import com.plugin.frege.psi.FregePsiClassHolder
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeClassStub
 
 @Suppress("UnstableApiUsage")
-abstract class FregeProgramMixin : FregePsiClassImpl, FregePsiClassHolder, FregeProgram {
+abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
     private companion object {
         private const val DEFAULT_MODULE_NAME: String = "Main"
     }
@@ -23,10 +21,6 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregePsiClassHolder, Frege
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
-
-    override fun getHoldingClass(): FregePsiClass? {
-        return this
-    }
 
     override fun getNameIdentifier(): PsiIdentifier? {
         return packageName?.qConIdList?.lastOrNull()?.dataNameUsage
