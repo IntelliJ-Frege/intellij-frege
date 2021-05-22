@@ -7,20 +7,14 @@ import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.stubs.IStubElementType
 import com.plugin.frege.psi.FregeDataDclNative
-import com.plugin.frege.psi.FregePsiClass
-import com.plugin.frege.psi.FregePsiClassHolder
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
 @Suppress("UnstableApiUsage")
-abstract class FregeDataDclNativeMixin : FregePsiClassImpl, FregePsiClassHolder, FregeDataDclNative {
+abstract class FregeDataDclNativeMixin : FregePsiClassImpl, FregeDataDclNative {
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
-
-    override fun getHoldingClass(): FregePsiClass? {
-        return this
-    }
 
     override fun getName(): String {
         return dataNameUsage.text
