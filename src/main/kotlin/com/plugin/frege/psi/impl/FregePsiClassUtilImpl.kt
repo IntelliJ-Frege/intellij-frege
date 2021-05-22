@@ -15,7 +15,6 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.FregeFileType
 import com.plugin.frege.psi.FregePsiClass
-import com.plugin.frege.psi.FregePsiClassHolder
 import com.plugin.frege.stubs.index.FregeClassNameIndex
 import com.plugin.frege.stubs.index.FregeMethodNameIndex
 
@@ -60,16 +59,10 @@ object FregePsiClassUtilImpl {
 
     /**
      * @return the nearest containing class of [element].
-     * @see [FregePsiClassHolder].
      */
     @JvmStatic
     fun findContainingFregeClass(element: PsiElement): FregePsiClass? {
-        val holder = element.parentOfTypes(FregePsiClassHolder::class, withSelf = true) ?: return null
-        if (element is FregePsiClass) { // in order not to return the same class
-            val parent = holder.parent
-            return if (parent != null) findContainingFregeClass(parent) else null
-        }
-        return holder.holdingClass
+        return element.parentOfTypes(FregePsiClass::class, withSelf = false)
     }
 
     /**

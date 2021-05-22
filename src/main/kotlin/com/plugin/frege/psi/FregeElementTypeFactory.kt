@@ -8,7 +8,7 @@ object FregeElementTypeFactory {
     fun factory(name: String): IElementType {
         return when (name) {
             "DATA_DCL_NATIVE" -> FregeDataDclNativeElementType(name)
-            "PACKAGE_CLASS_NAME" -> FregePackageClassNameElementType(name)
+            "PROGRAM" -> FregeProgramElementType(name)
             "CLASS_DCL" -> FregeClassDclElementType(name)
             "BINDING" -> FregeBindingElementType(name)
             "ANNOTATION" -> FregeAnnotationElementType(name)

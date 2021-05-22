@@ -10,7 +10,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("dataDclNative|packageClassName|binding|classDcl|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("dataDclNative|program|binding|classDcl|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -205,19 +205,13 @@ patternField ::= param (EQUAL pattern)? // TODO I'm not sure about this
 // TODO modifiers
 program ::= (PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION)? body {
     pin=1
-    implements="com.plugin.frege.psi.FregePsiClassHolder"
-    mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
-}
-
-packagePrefix ::= ((packageVarid | qConId) DOT)*
-packageName ::= packagePrefix packageClassName
-private packageVarid ::= qualifier? qualifier? (weakVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
-
-packageClassName ::= qConId {
     implements="com.plugin.frege.psi.FregePsiClass"
-    mixin="com.plugin.frege.psi.mixin.FregePackageClassNameMixin"
+    mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
+
+packageName ::= ((packageVarid | qConId) DOT)* qConId
+private packageVarid ::= qualifier? qualifier? (weakVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
 
 qName ::= qVarId | qLexOp
 inlineRule ::= strongInline weakVarid* LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN
@@ -377,11 +371,9 @@ nativeFunctionName ::= weakVarid {
 }
 
 /* Importing Packages */
-importDcl ::= IMPORT importPackageName (strongAs? nameSpace)? PUBLIC_MODIFIER? importList?
+importDcl ::= IMPORT packageName (strongAs? nameSpace)? PUBLIC_MODIFIER? importList?
     { pin=1 }
 
-importPackageName ::= packagePrefix importName
-importName ::= qConId
 importList ::= strongHiding? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
 importSpec ::= PUBLIC_MODIFIER? importItem alias?
 importItem ::= weakVarid
