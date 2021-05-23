@@ -14,7 +14,7 @@ import com.intellij.psi.util.MethodSignature
 import com.intellij.psi.util.MethodSignatureBackedByPsiMethod
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.psi.FregePsiMethod
-import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.findContainingFregeClass
+import com.plugin.frege.resolve.FregeResolveUtil.findContainingFregeClass
 import com.plugin.frege.stubs.FregeMethodStub
 import org.jetbrains.annotations.NonNls
 

@@ -11,6 +11,7 @@ import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.psi.FregePsiClass
+import com.plugin.frege.resolve.FregeResolveUtil.findContainingFregeClass
 import com.plugin.frege.stubs.FregeClassStub
 import org.jetbrains.annotations.NonNls
 
@@ -200,7 +201,7 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
     }
 
     override fun getContainingClass(): PsiClass? {
-        return FregePsiClassUtilImpl.findContainingFregeClass(this)
+        return findContainingFregeClass(this)
     }
 
     override fun processDeclarations(

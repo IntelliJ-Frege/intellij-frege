@@ -8,7 +8,7 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiPackage
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
-import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.iterateFregeFiles
+import com.plugin.frege.resolve.FregeResolveUtil
 
 class FregePsiElementFinder : PsiElementFinder() {
     override fun findClass(qualifiedName: String, scope: GlobalSearchScope): PsiClass? {
@@ -46,7 +46,7 @@ class FregePsiElementFinder : PsiElementFinder() {
         }
         val filter = VirtualFileFilter { true }
 
-        iterateFregeFiles(processor, scope, filter, includingLibrary)
+        FregeResolveUtil.iterateFregeFiles(processor, scope, filter, includingLibrary)
         return classes.toTypedArray()
     }
 
