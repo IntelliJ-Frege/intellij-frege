@@ -8,7 +8,7 @@ import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.FregeLanguage
-import com.plugin.frege.psi.FregeAnnotation
+import com.plugin.frege.psi.FregeAnnoItem
 import com.plugin.frege.psi.FregeBinding
 import com.plugin.frege.psi.FregeParam
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
@@ -69,11 +69,11 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeBinding {
         return PsiTreeUtil.findChildrenOfType(funLhs, FregeParam::class.java).size
     }
 
-    fun getAnnotation(): FregeAnnotation? {
+    fun getAnnoItem(): FregeAnnoItem? {
         val referenceText = name
         return FregePsiUtilImpl.findElementsWithinScope(this) { elem ->
-            elem is FregeAnnotation && elem.name == referenceText
-        }.firstOrNull() as? FregeAnnotation
+            elem is FregeAnnoItem && elem.name == referenceText
+        }.firstOrNull() as? FregeAnnoItem
     }
 
     fun isMainFunctionBinding(): Boolean {
