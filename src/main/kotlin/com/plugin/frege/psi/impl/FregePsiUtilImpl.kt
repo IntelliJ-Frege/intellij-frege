@@ -246,6 +246,16 @@ object FregePsiUtilImpl {
     }
 
     /**
+     * Tries to get qualifiers before [usage] and merge them with [usage] text.
+     */
+    @JvmStatic
+    fun getQualifiedNameFromUsage(usage: PsiElement): String {
+        val firstQualifier = usage.prevSibling ?: return usage.text
+        val secondQualifier = firstQualifier.prevSibling ?: return "${firstQualifier.text}${usage.text}"
+        return "${secondQualifier.text}${firstQualifier.text}${usage.text}"
+    }
+
+    /**
      * @return the prefix before the last '.' in [qualifiedName].
      */
     @JvmStatic

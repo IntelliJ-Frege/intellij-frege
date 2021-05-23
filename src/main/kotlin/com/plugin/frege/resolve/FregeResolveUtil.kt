@@ -22,6 +22,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findWhereInExpression
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.getQualifiedNameFromUsage
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.mergeQualifiedNames
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 import com.plugin.frege.stubs.index.FregeClassNameIndex
@@ -132,7 +133,7 @@ object FregeResolveUtil {
     }
 
     /**
-     * Searches for methods in :
+     * First of all tries to get qualified name. After that searches for methods in:
      * * Methods declared in current scope of [usage] and outer ones
      * * Methods in classes declared in the file of [usage]
      * * Methods in classes imported in the file of [usage]
@@ -142,25 +143,26 @@ object FregeResolveUtil {
         usage: PsiElement,
         incompleteCode: Boolean
     ): List<PsiElement> {
-        val result = findBindings(usage, incompleteCode).toMutableList()
+        val qualifiedName = getQualifiedNameFromUsage(usage)
+        val result = findBindings(qualifiedName, usage, incompleteCode).toMutableList()
         if (result.isNotEmpty() && !incompleteCode) {
             return result
         }
 
-        result.addAll(findMethodsInClassesInCurrentFile(usage)) // TODO incomplete code
+        result.addAll(findMethodsInClassesInCurrentFile(qualifiedName, usage)) // TODO incomplete code
         if (result.isNotEmpty() && !incompleteCode) {
             return result
         }
 
-        result.addAll(findMethodsByImports(usage, incompleteCode))
+        result.addAll(findMethodsByImports(qualifiedName, usage, incompleteCode))
         return result
     }
 
     private fun findMethodsByImports(
+        name: String,
         usage: PsiElement,
         incompleteCode: Boolean
     ): List<PsiMethod> {
-        val name = usage.text
         val project = usage.project
         val imports = findImportsNamesForElement(usage, true)
         val methods = mutableListOf<PsiMethod>()
@@ -179,9 +181,9 @@ object FregeResolveUtil {
     }
 
     private fun findMethodsInClassesInCurrentFile(
+        name: String,
         usage: PsiElement,
     ): List<PsiMethod> {
-        val name = usage.text
         val project = usage.project
         val availableClasses = findClassesInCurrentFile(usage)
         for (clazz in availableClasses) {
@@ -197,10 +199,10 @@ object FregeResolveUtil {
     }
 
     private fun findBindings(
+        name: String,
         usage: PsiElement,
         incompleteCode: Boolean
     ): List<PsiElement> {
-        val name = usage.text
         val predicate = getByTypePredicateCheckingName(FregeBinding::class, name, incompleteCode)
 
         // check if this expression has `where` ans search there for definitions if it does.
