@@ -55,11 +55,12 @@ private strongInline ::= <<strongKeyword INLINE>>
 private strongMutable ::= <<strongKeyword MUTABLE>>
 private strongPure ::= <<strongKeyword PURE>>
 
-qualifier ::= CONID DOT
+qualifier ::= dataNameUsage DOT
 qLexOp ::= qualifier? qualifier? lexOp
-qVarId ::= qualifier? qualifier? weakVarid {
+qVarId ::= qualifier? qualifier? varidUsage
+varidUsage ::= weakVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
-    mixin="com.plugin.frege.psi.mixin.FregeQVaridMixin"
+    mixin="com.plugin.frege.psi.mixin.FregeVaridUsageMixin"
 }
 qConId ::= qualifier qualifier dataNameUsage | qualifier dataNameUsage | dataNameUsage
 

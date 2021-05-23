@@ -10,7 +10,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.findWhereInExpression
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getParentBinding
 
-class FregeQVaridReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
+class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
 
     override fun handleElementRename(name: String): PsiElement {
         return psiElement.replace(createVarId(psiElement.project, name))
