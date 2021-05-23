@@ -63,9 +63,10 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
     }
 
     private fun getNativeNameFromData(dataNative: PsiElement): FregeNativeName? {
-        if (dataNative !is FregeDataDclNative) {
-            return null
+        return if (dataNative is FregeDataDclNative) {
+            PsiTreeUtil.getChildOfType(dataNative, FregeNativeName::class.java)
+        } else {
+            null
         }
-        return PsiTreeUtil.getChildOfType(dataNative, FregeNativeName::class.java)
     }
 }
