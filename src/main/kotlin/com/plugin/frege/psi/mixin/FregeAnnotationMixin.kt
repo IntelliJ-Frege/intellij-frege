@@ -31,7 +31,8 @@ abstract class FregeAnnotationMixin : FregePsiMethodImpl, FregeAnnotation {
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {
-        return annoItemList.firstOrNull()?.annotationName
+        val annoItem = annoItemList.firstOrNull()
+        return annoItem?.annotationName ?: annoItem?.symOp
     }
 
     override fun getBody(): PsiCodeBlock? {

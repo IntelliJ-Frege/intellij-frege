@@ -29,10 +29,15 @@ private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA |
             RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON |
             AMPERSAND | DEGREE_SIGN | CARRET | PERCENT | SUPER_OR_SUBSCRIPT | UNKNOWN_SYMBOL)
 private cannotAlone ::= EQUAL | VERT_BAR | DOUBLE_COLON
-symOp ::= opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
-            | cannotAlone (opCharsCanUseAlone | cannotAlone)+
+symOp ::= (opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
+            | cannotAlone (opCharsCanUseAlone | cannotAlone)+) {
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
+    mixin="com.plugin.frege.psi.mixin.FregeSymopMixin"
+}
 
-lexOp ::= WORD_OPERATOR | symOp
+lexOp ::= wordOp | symOp
+wordOp ::= WORD_OPERATOR
 
 /* Unary operators */
 unOp ::= EXLAMATION_MARK | QUESTION_MARK

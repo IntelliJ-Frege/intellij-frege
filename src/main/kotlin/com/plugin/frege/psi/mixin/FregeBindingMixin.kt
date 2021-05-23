@@ -40,7 +40,19 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeBinding {
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {
-        return lhs.funLhs?.functionName
+        val functionName = lhs.funLhs?.functionName
+        if (functionName != null) {
+            return functionName
+        }
+        val symop = lhs.funLhs?.symOp
+        if (symop != null) {
+            return symop
+        }
+        val symopFromLexop = lhs.funLhs?.lexOp?.symOp
+        if (symopFromLexop != null) {
+            return symopFromLexop
+        }
+        return null // TODO lexop
     }
 
     override fun getModifierList(): PsiModifierList {
