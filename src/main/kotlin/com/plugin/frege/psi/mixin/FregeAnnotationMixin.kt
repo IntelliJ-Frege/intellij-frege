@@ -7,10 +7,8 @@ import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.psi.FregeAnnotation
-import com.plugin.frege.psi.FregeBinding
 import com.plugin.frege.psi.FregeSimpleType
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeMethodStub
 
 abstract class FregeAnnotationMixin : FregePsiMethodImpl, FregeAnnotation {
@@ -43,10 +41,11 @@ abstract class FregeAnnotationMixin : FregePsiMethodImpl, FregeAnnotation {
         return false
     }
 
-    fun getBinding(): FregeBinding? {
-        val referenceText = name
-        return FregePsiUtilImpl.findElementsWithinScope(this) { elem ->
-            elem is FregeBinding && elem.name == referenceText
-        }.minByOrNull { it.textOffset } as? FregeBinding
-    }
+    // isn't required now but maybe later it will be
+//    fun getBinding(): FregeBinding? {
+//        val referenceText = name
+//        return FregePsiUtilImpl.findElementsWithinScope(this) { elem ->
+//            elem is FregeBinding && elem.name == referenceText
+//        }.minByOrNull { it.textOffset } as? FregeBinding
+//    }
 }

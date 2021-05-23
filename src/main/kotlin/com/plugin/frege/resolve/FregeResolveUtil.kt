@@ -133,6 +133,18 @@ object FregeResolveUtil {
     }
 
     /**
+     * Util method for getting the first binding from psi element presenting a name of binding.
+     */
+    @JvmStatic
+    fun resolveBindingByNameElement(bindingName: PsiElement, incompleteCode: Boolean): List<PsiElement> {
+        val binding = findElementsWithinScope(
+            bindingName,
+            getByTypePredicateCheckingName(FregeBinding::class, bindingName.text, incompleteCode)
+        ).minByOrNull { it.textOffset }
+        return if (binding != null) listOf(binding) else emptyList()
+    }
+
+    /**
      * First of all tries to get qualified name. After that searches for methods in:
      * * Methods declared in current scope of [usage] and outer ones
      * * Methods in classes declared in the file of [usage]
