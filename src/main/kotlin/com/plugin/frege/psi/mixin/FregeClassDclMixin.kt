@@ -30,7 +30,10 @@ abstract class FregeClassDclMixin : FregePsiClassImpl, FregeClassDcl {
 
     override fun getMethods(): Array<PsiMethod> {
         val subprograms = whereSection?.subprogramsFromScope ?: return PsiMethod.EMPTY_ARRAY
-        return subprograms.mapNotNull { (it as? FregeDecl)?.annotation }.toTypedArray()
+        return subprograms
+            .mapNotNull { (it as? FregeDecl)?.annotation }
+            .flatMap { it.annoItemList }
+            .toTypedArray()
     }
 
     override fun isInterface(): Boolean {

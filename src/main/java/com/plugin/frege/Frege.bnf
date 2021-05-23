@@ -10,7 +10,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("dataDclNative|program|binding|classDcl|annotation")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("dataDclNative|program|binding|classDcl|annoItem")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -347,11 +347,12 @@ annotationName ::= weakVarid {
 /*  Type Annotations */
 annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma {
     pin=3
+}
+annoItem ::= annotationName | LEFT_PAREN symOp RIGHT_PAREN | UNOP {
     implements="com.plugin.frege.psi.FregePsiMethod"
-    mixin="com.plugin.frege.psi.mixin.FregeAnnotationMixin"
+    mixin="com.plugin.frege.psi.mixin.FregeAnnoItemMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
-annoItem ::= annotationName | LEFT_PAREN symOp RIGHT_PAREN | UNOP
 
 /*  Function and Pattern Bindings */
 binding ::= lhs rhs {
