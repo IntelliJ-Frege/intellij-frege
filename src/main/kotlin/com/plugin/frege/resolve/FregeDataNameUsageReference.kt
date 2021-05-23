@@ -4,9 +4,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.plugin.frege.psi.FregeElementFactory.createDataNameUsage
 import com.plugin.frege.psi.FregePsiClass
-import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.getClassesByQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findClassesInCurrentFile
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
+import com.plugin.frege.resolve.FregeResolveUtil.findClassesByQualifiedName
 
 class FregeDataNameUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
     public override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
@@ -33,7 +33,7 @@ class FregeDataNameUsageReference(element: PsiElement) : FregeReferenceBase(elem
         val imports = findImportsNamesForElement(psiElement, true)
         for (currentImport in imports) {
             val qualifiedName = "$currentImport.$className"
-            val classes = getClassesByQualifiedName(project, qualifiedName)
+            val classes = findClassesByQualifiedName(project, qualifiedName)
             if (classes.isNotEmpty()) {
                 return classes
             }

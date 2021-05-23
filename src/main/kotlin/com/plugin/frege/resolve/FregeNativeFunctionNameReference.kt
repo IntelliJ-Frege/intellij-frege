@@ -5,9 +5,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.psi.*
-import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.getClassesByQualifiedName
-import com.plugin.frege.psi.impl.FregePsiClassUtilImpl.getMethodsAndFieldsByName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
+import com.plugin.frege.resolve.FregeResolveUtil.findClassesByQualifiedName
+import com.plugin.frege.resolve.FregeResolveUtil.findMethodsAndFieldsByName
 
 class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
 
@@ -41,8 +41,8 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
 
         val project = psiElement.project
         return nativeNames.asSequence()
-            .flatMap { getClassesByQualifiedName(project, it) }
-            .flatMap { getMethodsAndFieldsByName(it, methodName) }
+            .flatMap { findClassesByQualifiedName(project, it) }
+            .flatMap { findMethodsAndFieldsByName(it, methodName) }
             .toList()
     }
 
