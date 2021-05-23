@@ -27,8 +27,7 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
     }
 
     override fun getQualifiedName(): @NlsSafe String? {
-        val packageName = packageName
-        return if (packageName != null) packageName.text else DEFAULT_MODULE_NAME
+        return packageName?.text ?: DEFAULT_MODULE_NAME
     }
 
     override fun getName(): @NlsSafe String {
