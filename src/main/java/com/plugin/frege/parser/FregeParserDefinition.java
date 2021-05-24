@@ -27,12 +27,11 @@ public class FregeParserDefinition implements ParserDefinition {
             FregeTypes.HIDING, FregeTypes.INLINE, FregeTypes.MUTABLE, FregeTypes.PURE);
 
     public static final TokenSet OPERATORS = TokenSet.create(FregeTypes.WORD_OPERATOR, FregeTypes.DOUBLE_COLON,
-            FregeTypes.COLON, FregeTypes.DOLLAR, FregeTypes.RIGHT_ARROW, FregeTypes.LEFT_ARROW, FregeTypes.DOUBLE_RIGHT_ARROW,
-            FregeTypes.VERTICAL_BAR, FregeTypes.EQUAL, FregeTypes.DASH, FregeTypes.EXLAMATION_MARK, FregeTypes.PLUS,
-            FregeTypes.QUESTION_MARK, FregeTypes.COMMA, FregeTypes.SEMICOLON, FregeTypes.SLASH, FregeTypes.DOT,
-            FregeTypes.BACK_SLASH, FregeTypes.STAR, FregeTypes.AT, FregeTypes.TILDA, FregeTypes.HASH,
-            FregeTypes.LESS, FregeTypes.GREATER, FregeTypes.DEGREE_SIGN, FregeTypes.CARRET, FregeTypes.PERCENT,
-            FregeTypes.UNKNOWN_SYMBOL);
+            FregeTypes.COLON, FregeTypes.RIGHT_ARROW, FregeTypes.LEFT_ARROW, FregeTypes.DOUBLE_RIGHT_ARROW,
+            FregeTypes.VERTICAL_BAR, FregeTypes.EQUAL, FregeTypes.EXLAMATION_MARK,
+            FregeTypes.QUESTION_MARK, FregeTypes.COMMA, FregeTypes.SEMICOLON, FregeTypes.DOT,
+            FregeTypes.BACK_SLASH, FregeTypes.STAR, FregeTypes.AT, FregeTypes.TILDA,
+            FregeTypes.SYM_OPERATOR);
 
     public static final TokenSet KEYWORDS = TokenSet.create(FregeTypes.ABSTRACT, FregeTypes.CASE, FregeTypes.CLASS,
             FregeTypes.INTERFACE, FregeTypes.DATA, FregeTypes.DEFAULT, FregeTypes.DERIVING, FregeTypes.DERIVE, FregeTypes.DO, FregeTypes.ELSE,
