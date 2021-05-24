@@ -1,0 +1,52 @@
+module com.plugin.frege.typesystem_fr.FregeTypeSystemUtils where
+
+import frege.interpreter.FregeInterpreter
+import frege.ide.Utilities
+import frege.compiler.types.QNames
+import frege.compiler.types.Packs
+import frege.compiler.types.Global
+
+import frege.control.monad.trans.EitherT
+import frege.data.List
+
+outType (Success (Module s) global) = s
+outType (Success (Expression symbol) global) = label global symbol
+outType (Success (Definitions symbols) global) = show $ map (label global) symbols
+outType (Failure m) = show m
+
+-- TODO get ClassLoader from opened project, not from plugin project
+
+getTypeOfByFullText :: ClassLoader -> String -> String -> EitherT [FregeInterpreter.Message] IO String
+getTypeOfByFullText classLoader moduleText funcName = do
+      let myConfig = InterpreterConfig.initialState
+--      let myState = classLoader
+      myState <- EitherT.lift $ InterpreterClassLoader.new classLoader
+      let myInterpreter = interpret moduleText
+      (res, newState) <- EitherT.lift $ Interpreter.run myInterpreter myConfig myState
+
+      success <- case res of Failure m -> EitherT.left m
+                             s         -> pure s
+
+      let g = InterpreterResult.compilerState res
+      let srcInfo = InterpreterResult.sourceRepr res
+      let pkgName = case srcInfo of Module m -> m
+                                    _        -> "frege.interpreter.Console"
+
+      let toGet = QName.VName (Pack.new pkgName) funcName
+      let toPrint = case Global.find g toGet of Just sym -> pure $ showSymbol g sym
+                                                Nothing -> EitherT.left $ [FregeInterpreter.Message.error (funcName ++ " not found")]
+      toPrint
+
+isFailure :: EitherT [FregeInterpreter.Message] IO String -> Bool
+isFailure e = case (IO.performUnsafe $ EitherT.run e) of Left _ -> True
+                                                         Right _ -> False
+
+getErrorMessage :: EitherT [FregeInterpreter.Message] IO String -> String
+getErrorMessage e = case (IO.performUnsafe $ EitherT.run e) of Left m -> packed $ List.intercalate (unpacked "\n") $ map (unpacked . show) m
+                                                               Right _ -> error "Unable to get error message from successful type inference"
+
+getType :: EitherT [FregeInterpreter.Message] IO String -> String
+getType e = case (IO.performUnsafe $ EitherT.run e) of Left m -> error "Unable to get type from failed type inference"
+                                                       Right t -> t
+
+main = print "123"

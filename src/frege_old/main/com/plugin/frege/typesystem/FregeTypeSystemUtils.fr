@@ -1,0 +1,5 @@
+module com.plugin.frege.FregeTypeSystemUtils where
+
+vari = 123
+
+main = print "1"

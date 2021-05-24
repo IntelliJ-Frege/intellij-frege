@@ -1,12 +1,14 @@
 import org.jetbrains.grammarkit.tasks.*
+import org.gradle.plugins.ide.idea.model.*
+
+import java.util.stream.Collectors
 
 plugins {
-    id "application"
-    id "idea"
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.5.0'
     id 'org.jetbrains.intellij' version '0.7.2'
     id 'org.jetbrains.grammarkit' version '2021.1'
+    id 'idea'
 }
 
 
@@ -16,9 +18,8 @@ apply plugin: 'org.jetbrains.grammarkit'
 group 'com.plugin.frege'
 version '1.0-SNAPSHOT'
 
-
 ext {
-    javaTarget = "15"
+    javaTarget = JavaVersion.current().toString()
     fregeRelease = "3.24alpha"
     fregeVersion = "3.24.100"
     fregeDir = "${rootProject.projectDir}/lib/org/frege-lang/frege/${fregeVersion}"
@@ -28,12 +29,16 @@ ext {
     fregeMainJavaDir = "${buildDir}/src/main/frege"
 }
 
-// mark Frege directory as Source root
 idea {
     module {
         sourceDirs += file(fregeMainSourceDir)
     }
+//    project {
+//        projectLibraries << new ProjectLibrary(name: "class-file-dependencies", classes: [sourceSets.main.java.outputDir])
+//    }
 }
+
+//println idea.project.projectLibraries.iterator().next().getClasses()
 
 repositories {
     mavenCentral()
@@ -42,7 +47,12 @@ repositories {
     flatDir {
         dirs fregeDir
     }
+
+    flatDir {
+        dirs 'libs'
+    }
 }
+
 
 void downloadFregeCompiler() {
     ant.mkdir(dir: fregeDir)
@@ -56,55 +66,21 @@ void downloadFregeCompiler() {
 configurations.implementation.withDependencies { deps ->
     downloadFregeCompiler()
     deps.add(project.dependencies.create("org.frege-lang:frege:${fregeVersion}"))
+//    deps.add(project.dependencies.create("fuck:this:2.2.8"))
 }
 
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation project(":fregeJavaDependencies")
+    implementation files("libsa/frege-1.0-SNAPSHOT.jar")
 }
 
 intellij {
     version '2021.1'
     plugins = ['java', 'gradle', 'gradle-java']
     downloadSources true
-}
-
-task prepareCompileDirs { // prepare all the directories that the frege tasks rely upon
-    group "frege"
-    outputs.dir(sourceSets.main.java.outputDir).withPropertyName("compileOutputDir")
-    outputs.dir(sourceSets.test.java.outputDir).withPropertyName("testOutputDir")
-    doLast {
-        ant.mkdir(dir: sourceSets.main.java.outputDir)
-        ant.mkdir(dir: sourceSets.test.java.outputDir)
-    }
-}
-
-task fregeCompile(type: JavaExec) {      	// https://docs.gradle.org/6.5/dsl/org.gradle.api.tasks.JavaExec.html
-    dependsOn     prepareCompileDirs
-    group       = "frege"
-    description = "Compile the -Pfrege_file=."
-    classpath   = files fregeJar
-    args([
-            "-d", sourceSets.main.java.outputDir,
-            "-fp", sourceSets.main.compileClasspath.asPath,
-            "-enc", "UTF-8",
-            "-target", javaTarget,
-            "-hints",
-            "-make",
-            "-sp", sourceSets.main.java.srcDirs.join(':'),
-            "-ascii",
-            "-latin",
-            project.hasProperty("frege_file") ? project.frege_file : fregeMainSourceDir
-    ])
-}
-
-fregeCompile.doLast {
-    ant.move(toDir: fregeMainJavaDir) {
-        fileSet(dir: sourceSets.main.java.outputDir) {
-            include name:"**/*.java"
-        }
-    }
 }
 
 task generateFregeLexer(type: GenerateLexer) {
@@ -122,12 +98,88 @@ task generateFregeParser(type: GenerateParser) {
     purgeOldFiles = true
 }
 
+// Frege building tasks
 
+task fregeInit {
+    group "frege"
+    ant.mkdir(dir: fregeMainSourceDir)
+}
+
+task prepareCompileDirs { // prepare all the directories that the frege tasks rely upon
+    group "frege"
+    outputs.dir(sourceSets.main.java.outputDir).withPropertyName("compileOutputDir")
+    outputs.dir(sourceSets.test.java.outputDir).withPropertyName("testOutputDir")
+    doLast {
+        ant.mkdir(dir: sourceSets.main.java.outputDir)
+        ant.mkdir(dir: sourceSets.test.java.outputDir)
+    }
+}
+
+task fregeCompile(type: JavaExec) {      	// https://docs.gradle.org/6.5/dsl/org.gradle.api.tasks.JavaExec.html
+//    doFirst {
+//        println "THIS IS SOURCE SET" + sourceSets.main.compileClasspath.asPath
+//    }
+    dependsOn     ":fregeJavaDependencies:build"
+    dependsOn     prepareCompileDirs
+    group       = "frege"
+    description = "Compile the -Pfrege_file=."
+    classpath   = files fregeJar
+    args([
+            "-d", sourceSets.main.java.outputDir,
+            "-fp", fregeJar,
+            "-enc", "UTF-8",
+            "-target", javaTarget,
+            "-hints",
+            "-make",
+            "-sp", sourceSets.main.java.srcDirs.join(':'),
+            "-ascii",
+            "-latin",
+            "-v",
+            project.hasProperty("frege_file") ? project.frege_file : fregeMainSourceDir
+    ])
+//    println "outputDir: " + sourceSets.main.java.outputDir
+//    println "classpath: " + sourceSets.main.compileClasspath.asPath
+//    println "joined srcDirs: " + sourceSets.main.java.srcDirs.join(':')
+//    println "mainSource: " + fregeMainSourceDir
+    println commandLine.stream().collect(Collectors.joining(" "))
+}
+
+fregeCompile.doLast {
+    ant.move(toDir: fregeMainJavaDir) {
+        fileSet(dir: sourceSets.main.java.outputDir) {
+            include name:"**/*.java"
+        }
+    }
+}
+
+//tasks.register('fregeJar', Jar) {
+//    archiveClassifier = 'uber'
+//    dependsOn fregeCompile
+//
+//    from sourceSets.main.output
+//
+//    dependsOn configurations.runtimeClasspath
+//    from {
+//        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+//    }
+//}
+
+
+task fregeJarPlugin(type: Jar) {
+    dependsOn fregeCompile
+    archiveBaseName.set("frege")
+
+    from sourceSets.main.java.outputDir // TODO
+    doFirst {
+        sourceSets.main.compileClasspath = files(sourceSets.main.compileClasspath + file("libs/frege-1.0-SNAPSHOT.jar"))
+        sourceSets.main.runtimeClasspath = files(sourceSets.main.runtimeClasspath + file("libs/frege-1.0-SNAPSHOT.jar"))
+    }
+}
 
 compileJava {
-    dependsOn generateFregeParser
-    dependsOn generateFregeLexer
-    dependsOn fregeCompile
+    dependsOn fregeJarPlugin
+//    dependsOn generateFregeParser
+//    dependsOn generateFregeLexer
 }
 
 patchPluginXml {

@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+ext {
+    fregeRelease = "3.24alpha"
+    fregeVersion = "3.24.100"
+    fregeDir = "${rootProject.projectDir}/lib/org/frege-lang/frege/${fregeVersion}"
+    fregeJar = "${fregeDir}/frege-${fregeVersion}.jar"
+    fregeCompilerUrl = "https://github.com/Frege/frege/releases/download/${fregeRelease}/frege${fregeVersion}.jar"
+}
+
+repositories {
+    mavenCentral()
+
+    flatDir {
+        dirs fregeDir
+    }
+}
+
+void downloadFregeCompiler() {
+    ant.mkdir(dir: fregeDir)
+    ant.get(src: fregeCompilerUrl,
+            dest: fregeJar,
+            skipexisting: 'true')
+}
+
+configurations.implementation.withDependencies { deps ->
+    downloadFregeCompiler()
+    deps.add(project.dependencies.create("org.frege-lang:frege:${fregeVersion}"))
+}
+
+project.buildDir = rootProject.buildDir

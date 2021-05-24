@@ -9,6 +9,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import com.plugin.frege.psi.FregeElementFactory;
+import com.plugin.frege.psi.impl.FregePsiUtilImpl;
+import com.plugin.frege.typesystem.FregeTypeSystemUtilsJavaSupport;
+import com.plugin.frege.typesystem.TypeSystemException;
 import org.jetbrains.annotations.NotNull;
 
 public class FregeAddAnnotationQuickFix extends BaseIntentionAction {
@@ -37,9 +40,21 @@ public class FregeAddAnnotationQuickFix extends BaseIntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        toAddBefore.getParent().addBefore(FregeElementFactory.createNewLine(project), toAddBefore);
-        toAddBefore.getParent().addBefore(FregeElementFactory.createAnnotation(project, toAnnotate.getText(), "myType"), toAddBefore);
-        toAddBefore.getParent().addBefore(FregeElementFactory.createNewLine(project), toAddBefore);
+//        toAddBefore.getParent().addBefore(FregeElementFactory.createNewLine(project), toAddBefore);
+
+        System.err.println("TEXT: " + file.getText());
+        System.err.println("\nANNO: " + toAnnotate.getText());
+
+        String type;
+        try {
+            type = FregeTypeSystemUtilsJavaSupport.getTypeOfByFullText(file.getText(), toAnnotate.getText());
+        } catch (TypeSystemException e) {
+            System.err.println("ERROR AAA: " + e.getMessage());
+            throw new IncorrectOperationException(e);
+        }
+        System.err.println("Type infered: " + type);
+        toAddBefore.getParent().addBefore(FregeElementFactory.createAnnotation(project, toAnnotate.getText(), type), toAddBefore);
+//        toAddBefore.getParent().addBefore(FregeElementFactory.createNewLine(project), toAddBefore);
         // TODO do we need to create FregeAnnotation, or better create FregeTopDecl instead?
     }
 }

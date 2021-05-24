@@ -1,2 +1,2 @@
 rootProject.name = 'intellij-frege'
-//include 'src:main:frege'
+include 'fregeJavaDependencies'

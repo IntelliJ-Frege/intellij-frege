@@ -1,3 +1,0 @@
-module com.plugin.frege.typesystem.FregeTypeSystemUtils where
-
-main = undefined

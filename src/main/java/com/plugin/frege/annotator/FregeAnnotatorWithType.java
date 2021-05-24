@@ -111,9 +111,9 @@ public class FregeAnnotatorWithType implements Annotator {
 
 
         // TODO remove
-        String fullDefinitionTMP = getFullFunctionDefinitionsText(element, sameFunctionsInScope);
-        System.err.println(element.getText());
-        System.err.println(fullDefinitionTMP);
-        System.err.println("\n");
+//        String fullDefinitionTMP = getFullFunctionDefinitionsText(element, sameFunctionsInScope);
+//        System.err.println(element.getText());
+//        System.err.println(fullDefinitionTMP);
+//        System.err.println("\n");
     }
 }
