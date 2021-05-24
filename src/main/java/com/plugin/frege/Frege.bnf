@@ -400,13 +400,9 @@ simpleKind ::= STAR | LEFT_PAREN kind RIGHT_PAREN
 
 
 /* Operators */
-private aloneOperatorChars ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
-            DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
-            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON |
-            AMPERSAND | DEGREE_SIGN | CARRET | PERCENT | SUPER_OR_SUBSCRIPT | UNKNOWN_SYMBOL)
-private notAloneOperatorChars ::= EQUAL | VERTICAL_BAR | DOUBLE_COLON
-symbolOperator ::= (aloneOperatorChars (aloneOperatorChars | notAloneOperatorChars)*
-                 | notAloneOperatorChars (aloneOperatorChars | notAloneOperatorChars)+) {
+private preservedAloneOperators ::= STAR | COLON | SUPER_OR_SUBSCRIPT
+                                  | DOT | AT | TILDA | EXLAMATION_MARK | QUESTION_MARK // TODO AT is not an operator
+symbolOperator ::= SYM_OPERATOR | preservedAloneOperators {
     implements=["com.plugin.frege.psi.FregeCompositeElement"
                 "com.intellij.psi.PsiIdentifier"]
     mixin="com.plugin.frege.psi.mixin.FregeSymbolOperatorMixin"

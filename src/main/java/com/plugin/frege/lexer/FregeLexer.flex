@@ -68,6 +68,13 @@ conid                = \p{Lu}(\d | {underscore} | \p{L})*
 varid                = \p{Ll}(\d | {underscore} | \p{L})*{quote}*
 
 /* Operators */
+aloneOps             = {exlamationMark} | {questionMark} | {hash} | {tilda} | {plus}
+                        | {star} | {at} | {dash} | {slash} | {backSlash} | {dollar}
+                        | {less} | {greater} | {colon} | {degreeSign} | {ampersand} | {carret}
+                        | {percent} | {superOrSubscript} | [\u2201-\u22FF]
+notAloneOps          = {equal} | {verticalBar} | {doubleColon}
+symop                = {aloneOps} ({aloneOps} | {notAloneOps} | {dot})* | {notAloneOps} ({aloneOps} | {notAloneOps} | {dot})+
+
 wordop               = {backQuote}\w+{backQuote}
 
 colon                = :
@@ -97,6 +104,7 @@ greater              = >
 dollar               = \$
 carret               = \^
 percent              = %
+hash                 = #
 forall               = \u2200
 degreeSign           = \u00B0
 
@@ -111,7 +119,6 @@ rightBrace           = \}
 /* quotes */
 quote                = \'
 doubleQuote          = \"
-hash                 = #
 backQuote            = \`
 
 %%
@@ -162,8 +169,6 @@ backQuote            = \`
       {newline}               { return FregeTypes.NEW_LINE; }
       {whitespace}            { return TokenType.WHITE_SPACE; }
 
-      {doubleDot}             { return FregeTypes.DOUBLE_DOT; }
-
    /* literals */
       {integer}               { return FregeTypes.INTEGER; }
       {float}                 { return FregeTypes.FLOAT; }
@@ -186,37 +191,28 @@ backQuote            = \`
       {leftArrow}             { return FregeTypes.LEFT_ARROW; }
       {doubleRightArrow}      { return FregeTypes.DOUBLE_RIGHT_ARROW; }
       {verticalBar}           { return FregeTypes.VERTICAL_BAR; }
-      {ampersand}             { return FregeTypes.AMPERSAND; }
       {equal}                 { return FregeTypes.EQUAL; }
-      {dash}                  { return FregeTypes.DASH; }
       {exlamationMark}        { return FregeTypes.EXLAMATION_MARK; }
       {questionMark}          { return FregeTypes.QUESTION_MARK; }
       {comma}                 { return FregeTypes.COMMA; }
       {semicolon}             { return FregeTypes.SEMICOLON; }
-      {slash}                 { return FregeTypes.SLASH; }
       {backSlash}             { return FregeTypes.BACK_SLASH; }
       {underscore}            { return FregeTypes.UNDERSCORE; }
       {star}                  { return FregeTypes.STAR; }
       {at}                    { return FregeTypes.AT; }
       {tilda}                 { return FregeTypes.TILDA; }
-      {hash}                  { return FregeTypes.HASH; }
       {backQuote}             { return FregeTypes.BACK_QUOTE; }
       {dot}                   { return FregeTypes.DOT; }
-      {plus}                  { return FregeTypes.PLUS; }
-      {less}                  { return FregeTypes.LESS; }
-      {greater}               { return FregeTypes.GREATER; }
-      {dollar}                { return FregeTypes.DOLLAR; }
-      {carret}                { return FregeTypes.CARRET; }
-      {percent}               { return FregeTypes.PERCENT; }
+      {doubleDot}             { return FregeTypes.DOUBLE_DOT; }
       {forall}                { return FregeTypes.FORALL; }
-      {degreeSign}            { return FregeTypes.DEGREE_SIGN; }
       {superOrSubscript}      { return FregeTypes.SUPER_OR_SUBSCRIPT; }
 
    /* operators */
+      {symop}                 { return FregeTypes.SYM_OPERATOR; }
       {wordop}                { return FregeTypes.WORD_OPERATOR; }
 
    /* identifiers */
       {conid}                 { return FregeTypes.CONID; }
       {varid}                 { return FregeTypes.VARID; }
 
-      [^]                     { return FregeTypes.UNKNOWN_SYMBOL; }
+      [^]                     { return TokenType.BAD_CHARACTER; }
