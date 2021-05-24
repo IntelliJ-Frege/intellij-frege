@@ -29,7 +29,7 @@ abstract class FregeClassDeclMixin : FregePsiClassImpl, FregeClassDecl {
     }
 
     override fun getMethods(): Array<PsiMethod> {
-        val subprograms = whereSection?.subprogramsFromScope ?: return PsiMethod.EMPTY_ARRAY
+        val subprograms = whereSection?.linearIndentSection?.subprogramsFromScope ?: return PsiMethod.EMPTY_ARRAY
         return subprograms
             .mapNotNull { (it as? FregeDecl)?.annotation }
             .flatMap { it.annotationItemList }

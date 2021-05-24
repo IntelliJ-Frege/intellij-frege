@@ -219,8 +219,8 @@ object FregeResolveUtil {
 
         // check if this expression has `where` ans search there for definitions if it does.
         val where = findWhereInExpression(usage)
-        if (where?.indentSection != null) {
-            val whereFuncNames = findElementsWithinScope(where.indentSection!!, predicate)
+        if (where?.linearIndentSection != null) {
+            val whereFuncNames = findElementsWithinScope(where.linearIndentSection!!, predicate)
             if (whereFuncNames.isNotEmpty()) {
                 return whereFuncNames
             }
