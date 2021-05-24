@@ -20,9 +20,21 @@ fregeFile ::= !<<eof>> program
 /* Util Meta Rules */
 private meta commaSequence ::= <<rule>> (COMMA <<rule>>)*
 private meta semicolonSequence ::= <<rule>> (SEMICOLON <<rule>>)*
-meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)* VIRTUAL_END_SECTION
-                     | LEFT_BRACE <<rule>> (SEMICOLON <<rule>>)* RIGHT_BRACE
-                     | <<rule>>
+
+meta linearIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)*
+meta linearIndentSectionItemsSemicolon ::= <<rule>> (SEMICOLON <<rule>>)*
+meta linearIndentSection ::= VIRTUAL_OPEN_SECTION <<linearIndentSectionItemsVirtual <<rule>> >> VIRTUAL_END_SECTION
+                        | LEFT_BRACE <<linearIndentSectionItemsSemicolon <<rule>> >> RIGHT_BRACE
+                        | <<rule>> {
+    implements="com.plugin.frege.psi.FregeScopeElement"
+    mixin="com.plugin.frege.psi.mixin.indentsection.FregeLinearIndentSectionMixin"
+}
+
+meta nestedIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<nestedIndentSectionItemsVirtual <<rule>> >>)?
+meta nestedIndentSectionItemsSemicolon ::= <<rule>> (SEMICOLON <<nestedIndentSectionItemsSemicolon <<rule>> >>)?
+meta nestedIndentSection ::= VIRTUAL_OPEN_SECTION <<nestedIndentSectionItemsVirtual <<rule>> >> VIRTUAL_END_SECTION
+                        | LEFT_BRACE <<nestedIndentSectionItemsSemicolon <<rule>> >> RIGHT_BRACE
+                        | <<rule>>
 
 
 /* Varids and Conids */
@@ -126,10 +138,8 @@ accessModifier ::= PUBLIC_MODIFIER | PROTECTED_MODIFIER | PRIVATE_MODIFIER
 
 
 /* Where Sections */
-whereSection ::= WHERE <<indentSection decl>> {
+whereSection ::= WHERE <<linearIndentSection decl>> {
     pin=1
-    implements="com.plugin.frege.psi.FregeScopeElement"
-    mixin="com.plugin.frege.psi.mixin.FregeWhereSectionMixin"
 }
 
 
@@ -254,18 +264,18 @@ topExpression ::= condition
                 | caseExpression
                 | lambda
                 | ((EXLAMATION_MARK | QUESTION_MARK)* primary)+
-                
+
 /* Lambda Expressions */
 lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 
 /* Do Expressions */
-doExpression ::= DO <<indentSection (doDecl | qConid LEFT_BRACE fieldsOrVaridInit RIGHT_BRACE)>>
+doExpression ::= DO <<nestedIndentSection (doDecl | qConid LEFT_BRACE fieldsOrVaridInit RIGHT_BRACE)>>
 doDecl ::= letExpression | expr ((LEFT_ARROW | EQUAL) expr)? {
     implements="com.plugin.frege.psi.FregeSubprogramsHolder"
 }
 
 /* Case Expressions */
-caseExpression ::= CASE expr OF <<indentSection caseDecl>> {
+caseExpression ::= CASE expr OF <<linearIndentSection caseDecl>> {
     pin=1
 }
 caseDecl ::= pattern ((RIGHT_ARROW | EQUAL) expr | guardedExpressions) whereSection? {
@@ -279,13 +289,13 @@ condition ::= IF expr (VIRTUAL_END_DECL | SEMICOLON)? THEN expr (VIRTUAL_END_DEC
 }
 
 /* Let Expressions */
-letExpression ::= LET <<indentSection decl>> {
+letExpression ::= LET <<linearIndentSection decl>> {
     pin=1
 }
 letInExpression ::= letExpression IN expr {
     pin=1
     implements="com.plugin.frege.psi.FregeScopeElement"
-    mixin="com.plugin.frege.psi.mixin.FregeLetInExpressionMixin"
+    mixin="com.plugin.frege.psi.mixin.indentsection.FregeLetInExpressionMixin"
 }
 
 /* Guarded Expressions */
