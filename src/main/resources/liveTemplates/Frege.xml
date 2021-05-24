@@ -7,7 +7,7 @@
       <option name="FREGE_CLASSDECL" value="true" />
     </context>
   </template>
-  <template name="ife" value="if $BOOLEAN_EXPR$ then $IF_TRUE$ else $IF_FALSE$" description="Create if then else conditional" toReformat="false" toShortenFQNames="true">
+  <template name="ife" value="if $BOOLEAN_EXPR$ then $IF_TRUE$ else $IF_FALSE$" description="Create 'if then else' conditional" toReformat="false" toShortenFQNames="true">
     <variable name="BOOLEAN_EXPR" expression="" defaultValue="" alwaysStopAt="true" />
     <variable name="IF_TRUE" expression="" defaultValue="" alwaysStopAt="true" />
     <variable name="IF_FALSE" expression="" defaultValue="" alwaysStopAt="true" />
@@ -23,7 +23,7 @@
       <option name="FREGE_INSTANCEDECL" value="true" />
     </context>
   </template>
-  <template name="func" value="$name$ :: $type$&#10;$name$ $args$ = $END$" description="Create a new function with annotation" toReformat="false" toShortenFQNames="true">
+  <template name="func" value="$name$ :: $type$&#10;$name$ $args$ = $END$" description="Create new function with annotation" toReformat="false" toShortenFQNames="true">
     <variable name="name" expression="" defaultValue="" alwaysStopAt="true" />
     <variable name="type" expression="" defaultValue="" alwaysStopAt="true" />
     <variable name="args" expression="" defaultValue="" alwaysStopAt="true" />
@@ -31,7 +31,7 @@
       <option name="FREGE_DECL" value="true" />
     </context>
   </template>
-  <template name="main" value="main :: [String] -&gt; IO ()&#10;main [args] = $END$" description="Create main function" toReformat="false" toShortenFQNames="true">
+  <template name="main" value="main :: [String] -&gt; IO ()&#10;main args = $END$" description="Create main function" toReformat="false" toShortenFQNames="true">
     <context>
       <option name="FREGE_DECL" value="true" />
     </context>
