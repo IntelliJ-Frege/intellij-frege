@@ -182,10 +182,10 @@ object FregePsiUtilImpl {
         return globalScope.topDeclList
             .mapNotNull {
                 when { // TODO omg, think up a better way
-                    it.classDcl != null -> it.classDcl
-                    it.dataDclConstructors != null -> it.dataDclConstructors
-                    it.dataDclNative != null -> it.dataDclNative
-                    it.typeDcl != null -> it.typeDcl
+                    it.classDecl != null -> it.classDecl
+                    it.dataDecl != null -> it.dataDecl
+                    it.nativeDataDecl != null -> it.nativeDataDecl
+                    it.typeDecl != null -> it.typeDecl
                     else -> null
                 }
             }
@@ -215,10 +215,10 @@ object FregePsiUtilImpl {
      * It doesn't return default imports such as `frege.Prelude`.
      */
     @JvmStatic
-    fun findImportsForElement(element: PsiElement): List<FregeImportDcl> {
+    fun findImportsForElement(element: PsiElement): List<FregeImportDecl> {
         val body = element.parentOfTypes(FregeBody::class, withSelf = true) ?: return emptyList()
         return body.topDeclList.asSequence()
-            .map { it.importDcl }
+            .map { it.importDecl }
             .filterNotNull().toList()
     }
 

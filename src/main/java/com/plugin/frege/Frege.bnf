@@ -10,44 +10,40 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("dataDclNative|program|binding|classDcl|annoItem")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("nativeDataDecl|program|binding|classDecl|annotationItem")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
 fregeFile ::= !<<eof>> program
 
-private declRecover ::= !(VIRTUAL_END_DECL)
 
-/* Operators */
-precedence ::= INTEGER
-fixity ::= infixRule precedence (lexOp | BACK_QUOTE lexOp BACK_QUOTE | weakVarid)+
-    { pin=1 }
+/* Util Meta Rules */
+private meta commaSequence ::= <<rule>> (COMMA <<rule>>)*
+private meta semicolonSequence ::= <<rule>> (SEMICOLON <<rule>>)*
+meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)* VIRTUAL_END_SECTION
+                     | LEFT_BRACE <<rule>> (SEMICOLON <<rule>>)* RIGHT_BRACE
+                     | <<rule>>
 
-infixRule ::= INFIX | INFIXL | INFIXR
-private opCharsCanUseAlone ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
-            DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
-            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON |
-            AMPERSAND | DEGREE_SIGN | CARRET | PERCENT | SUPER_OR_SUBSCRIPT | UNKNOWN_SYMBOL)
-private cannotAlone ::= EQUAL | VERT_BAR | DOUBLE_COLON
-symOp ::= (opCharsCanUseAlone (opCharsCanUseAlone | cannotAlone)*
-            | cannotAlone (opCharsCanUseAlone | cannotAlone)+) {
+
+/* Varids and Conids */
+private extendedVarid ::= VARID | weakKeyword
+private weakKeyword ::= AS | HIDING | INLINE | MUTABLE | PURE
+varidUsage ::= extendedVarid {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeVaridUsageMixin"
+}
+conidUsage ::= CONID {
     implements=["com.plugin.frege.psi.FregeCompositeElement"
                 "com.intellij.psi.PsiIdentifier"]
-    mixin="com.plugin.frege.psi.mixin.FregeSymopMixin"
+    mixin="com.plugin.frege.psi.mixin.FregeConidUsageMixin"
 }
 
-lexOp ::= wordOp | symOp
-wordOp ::= WORD_OPERATOR
+qualifier ::= conidUsage DOT
+qLexOperator ::= qualifier? qualifier? lexOperator
+qVarid ::= qualifier? qualifier? varidUsage
+qConid ::= qualifier qualifier conidUsage | qualifier conidUsage | conidUsage
 
-/* Unary operators */
-unOp ::= EXLAMATION_MARK | QUESTION_MARK
-
-/* Imported operators */
-// Unary operators can not be qualified.
-private weakVarid ::= VARID | weakKeyword
-private weakKeyword ::= AS | HIDING | INLINE | MUTABLE | PURE
-
-/* for real usages of these pseudo-keywords (for highlighting) */
+// For real usages of these pseudo-keywords (for highlighting)
 meta strongKeyword ::= <<keyword>>
 private strongAs ::= <<strongKeyword AS>>
 private strongHiding ::= <<strongKeyword HIDING>>
@@ -55,348 +51,358 @@ private strongInline ::= <<strongKeyword INLINE>>
 private strongMutable ::= <<strongKeyword MUTABLE>>
 private strongPure ::= <<strongKeyword PURE>>
 
-qualifier ::= dataNameUsage DOT
-qLexOp ::= qualifier? qualifier? lexOp
-qVarId ::= qualifier? qualifier? varidUsage
-varidUsage ::= weakVarid {
-    implements="com.plugin.frege.psi.FregeCompositeElement"
-    mixin="com.plugin.frege.psi.mixin.FregeVaridUsageMixin"
-}
-qConId ::= qualifier qualifier dataNameUsage | qualifier dataNameUsage | dataNameUsage
 
 /* Literals */
 literal ::= boolLiteral
-            | numericLiteral
-            | CHAR
-            | STRING
-            | REGEX
-numericLiteral ::= integralLiteral
-                    | floatLiteral
+          | numericLiteral
+          | CHAR
+          | STRING
+          | REGEX
+numericLiteral ::= integralLiteral | floatLiteral
 boolLiteral ::= TRUE | FALSE
 integralLiteral ::= INTEGER
 floatLiteral ::= FLOAT
 
-/* Terms */
-term ::= qVarId
-         | qConId LEFT_BRACE initFields? RIGHT_BRACE
-         | qConId
-         | literal
-         | LEFT_PAREN expr RIGHT_PAREN
-         | list
-         | section
-         | unit
-         | tuple
-         | UNDERSCORE
-         | LEFT_PAREN qLexOp RIGHT_PAREN
-         | LEFT_PAREN unOp RIGHT_PAREN
 
-initFields ::= initField (COMMA initField)*
-
-initField ::= weakVarid (EQUAL expr)?
-
-/* Sections */
-section ::= LEFT_PAREN (binEx lexOp | lexOp expr) RIGHT_PAREN
-
-/* Unit */
-unit ::= LEFT_PAREN RIGHT_PAREN
-
-/* Tuples */
-tuple ::= tupleConstructor | nTuple | strictNTuple
-tupleConstructor ::= LEFT_PAREN COMMA* RIGHT_PAREN
-nTuple ::= LEFT_PAREN expr COMMA expr (COMMA expr)* RIGHT_PAREN
-strictNTuple ::= LEFT_PAREN expr SEMICOLON expr (SEMICOLON expr)* RIGHT_PAREN
-
-/* Lists */
-list ::= emptyList
-            | LEFT_BRACKET expr (COMMA expr)* COMMA? RIGHT_BRACKET
-            | LEFT_BRACKET expr (COMMA expr)? DOUBLE_DOT expr? RIGHT_BRACKET
-            | LEFT_BRACKET expr VERT_BAR lcquals RIGHT_BRACKET
-lcquals ::= lcqual (COMMA lcqual)* COMMA?
-lcqual ::= letExpression | expr ((LEFT_ARROW | EQUAL) expr)? {
-    implements="com.plugin.frege.psi.FregeSubprogramsHolder"
-}
-
-emptyList ::= LEFT_BRACKET RIGHT_BRACKET
-
-/* Primary Expression */
-primary ::= (term | doEx) (DOT (
-                weakVarid
-              | qLexOp
-              | EXLAMATION_MARK
-              | QUESTION_MARK
-              | LEFT_BRACE getFieldsOrSingleVaridInit RIGHT_BRACE
-              | LEFT_BRACKET expr RIGHT_BRACKET))*
-getFieldsOrSingleVaridInit ::= weakVarid (QUESTION_MARK | EQUAL | LEFT_ARROW) (
-    expr (COMMA getField)* COMMA?)?
-getField ::= weakVarid ((LEFT_ARROW | EQUAL) expr)?
-
-/* Lambda Expression */
-lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
-
-/* Conditional */
-cond ::= IF expr (VIRTUAL_END_DECL | SEMICOLON)? THEN expr (VIRTUAL_END_DECL | SEMICOLON)? ELSE expr
-    { pin=1 }
-
-/* Let, Where and Do Expressions */
-meta indentSection ::= VIRTUAL_OPEN_SECTION <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)* VIRTUAL_END_SECTION
-                        | LEFT_BRACE <<rule>> (SEMICOLON <<rule>>)* RIGHT_BRACE
-                        | <<rule>>
-letExpression ::= LET <<indentSection decl>>
-    { pin = 1}
-letInExpression ::= letExpression IN expr {
-    pin = 1
-    implements="com.plugin.frege.psi.FregeScopeElement"
-    mixin="com.plugin.frege.psi.mixin.FregeLetInExpressionMixin"
-}
-whereSection ::= WHERE <<indentSection decl>> {
-    pin = 1
-    implements="com.plugin.frege.psi.FregeScopeElement"
-    mixin="com.plugin.frege.psi.mixin.FregeWhereSectionMixin"
-}
-doEx ::= DO <<indentSection (lcqual | qConId LEFT_BRACE getFieldsOrSingleVaridInit RIGHT_BRACE)>>
-
-/* Case Expression */
-caseEx ::= CASE expr OF <<indentSection alt>>
-    { pin = 1}
-alt ::= pattern ((RIGHT_ARROW | EQUAL) expr | guardedExs) whereSection? {
-    pin = 2
-    implements="com.plugin.frege.psi.FregeSubprogramsHolder"
-}
-guardedExs ::= guardedEx+
-guardedEx ::= VERT_BAR gquals (RIGHT_ARROW | EQUAL) expr
-gquals ::= gqual (COMMA gqual)* COMMA?
-gqual ::= expr (LEFT_ARROW expr)?
-
-/* Annotated Expression */
-expr ::= binEx (DOUBLE_COLON (FORALL | rho))?
-topEx ::= cond
-        | letInExpression
-        | caseEx
-        | lambda
-        | ((EXLAMATION_MARK | QUESTION_MARK)* primary)+
-/* Binary application */
-binEx ::= topEx (qLexOp topEx)*
-
-/* Patterns */
-param ::= weakVarid {
-    mixin="com.plugin.frege.psi.mixin.FregeParamMixin"
-    implements="com.plugin.frege.psi.FregeNamedElement"
-}
-
-pattern ::= atPattern (DOUBLE_COLON sigma)* // was left rec
-    { pin=1 }
-
-atPattern ::= pVar AT atPattern
-                | listPattern
-listPattern ::= matcherPattern (COLON listPattern)?
-matcherPattern ::= pVar TILDA REGEX
-                    | pconApp
-pconApp ::= strictPattern+
-strictPattern ::= EXLAMATION_MARK? pTerm
-pTerm ::= dataNameUsage LEFT_BRACE patternFields? RIGHT_BRACE
-            | dataNameUsage
-            | pVar
-            | literal
-            | unit
-            | emptyList
-            | LEFT_BRACKET pattern (COMMA pattern)* RIGHT_BRACKET
-            | LEFT_PAREN pVar SUPER_OR_SUBSCRIPT RIGHT_PAREN
-            | LEFT_PAREN pattern (COMMA pattern)* RIGHT_PAREN
-pVar ::= param
-            | UNDERSCORE
-patternFields ::= patternField (COMMA patternField)*
-patternField ::= param (EQUAL pattern)? // TODO I'm not sure about this
-
-/* Declarations and Bindings */
-// TODO modifiers
+/* Frege Program */
 program ::= (PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION)? body {
     pin=1
     implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
+packageName ::= ((packageVarid | qConid) DOT)* qConid
+private packageVarid ::= qualifier? qualifier? (extendedVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
+inlineRule ::= strongInline extendedVarid* LEFT_PAREN <<commaSequence (qVarid | qLexOperator)>> RIGHT_PAREN
 
-packageName ::= ((packageVarid | qConId) DOT)* qConId
-private packageVarid ::= qualifier? qualifier? (weakVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
 
-qName ::= qVarId | qLexOp
-inlineRule ::= strongInline weakVarid* LEFT_PAREN qName (COMMA qName)* RIGHT_PAREN
+/* Recovers */
+private declRecover ::= !(VIRTUAL_END_DECL)
 
+
+/* Importing Packages */
+importDecl ::= IMPORT packageName (strongAs? conidUsage)? PUBLIC_MODIFIER? importList? {
+    pin=1
+}
+importList ::= strongHiding? LEFT_PAREN (<<commaSequence importSpec>>)? RIGHT_PAREN
+importSpec ::= PUBLIC_MODIFIER? importItem importAlias?
+importItem ::= extendedVarid
+             | conidUsage importMembers?
+             | symbolOperator
+             | LEFT_PAREN symbolOperator RIGHT_PAREN
+             | BACK_QUOTE symbolOperator BACK_QUOTE
+             | conidUsage DOT (extendedVarid | conidUsage | symbolOperator)
+importAlias ::= extendedVarid | CONID | symbolOperator
+importMembers ::= LEFT_PAREN (<<commaSequence importMemberSpec>>)? RIGHT_PAREN
+importMemberSpec ::= PUBLIC_MODIFIER? importMember importAlias?
+importMember ::= extendedVarid | symbolOperator | conidUsage
+
+
+/* Main part of program */
 body ::= topDecl (VIRTUAL_END_DECL topDecl)* {
     implements="com.plugin.frege.psi.FregeScopeElement"
     mixin="com.plugin.frege.psi.mixin.FregeBodyMixin"
 }
 
+
+/* Top-level declarations */
 topDecl ::= !<<eof>> (
               fixity
-            | importDcl
-            | accessModifier? typeDcl
-            | accessModifier? dataDclConstructors
-            | accessModifier? dataDclNative
-            | accessModifier? classDcl
-            | accessModifier? instDcl
-            | accessModifier? deriveDcl
-            | decl)
-    { pin=1 recoverWhile=declRecover }
+            | importDecl
+            | accessModifier? typeDecl
+            | accessModifier? dataDecl
+            | accessModifier? nativeDataDecl
+            | accessModifier? classDecl
+            | accessModifier? instanceDecl
+            | accessModifier? deriveDecl
+            | decl) {
+    pin=1
+    recoverWhile=declRecover
+}
 
+
+/* Access Modifiers */
 accessModifier ::= PUBLIC_MODIFIER | PROTECTED_MODIFIER | PRIVATE_MODIFIER
 
-decl ::= accessModifier? (annotation | binding | nativeFun) {
+
+/* Where Sections */
+whereSection ::= WHERE <<indentSection decl>> {
+    pin=1
+    implements="com.plugin.frege.psi.FregeScopeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeWhereSectionMixin"
+}
+
+
+/* Functions */
+decl ::= accessModifier? (annotation | binding | nativeFunction) {
     implements="com.plugin.frege.psi.FregeSubprogramsHolder"
 }
 
-/* Syntax of Types */
-sigma ::= (FORALL tyVar (tyVar)* DOT)? chro
-chro ::= (constraints DOUBLE_RIGHT_ARROW)? rho
-rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
-        | tyApp RIGHT_ARROW rho
-        | tyApp
-constraints ::= constraint
-                | LEFT_PAREN constraint (COMMA constraint)* COMMA? RIGHT_PAREN
-constraint ::= className tyApp+
-typeRule ::= tyApp (RIGHT_ARROW typeRule)* // was left rec
-tyApp ::= simpleType+ // was left rec
 
-simpleType ::= tyVar
-                | tyCon
-                | LEFT_PAREN typeRule RIGHT_PAREN
-                | LEFT_PAREN typeRule COMMA typeRule (COMMA typeRule)* RIGHT_PAREN
-                | LEFT_BRACKET typeRule RIGHT_BRACKET
-                | LEFT_PAREN typeRule VERT_BAR typeRule (VERT_BAR typeRule)* RIGHT_PAREN
-tyVar ::= weakVarid
-            | LEFT_PAREN weakVarid DOUBLE_COLON kind RIGHT_PAREN
-tyCon ::= qConId
-            | emptyList
-            | unit
-            | tupleConstructor
-            | RIGHT_ARROW
-className ::= dataNameUsage
-kind ::= simpleKind
-            | simpleKind RIGHT_ARROW kind
-simpleKind ::= STAR
-                | LEFT_PAREN kind RIGHT_PAREN
-
-
-
-/* Algebraic Data type Declaration */
-dataDclConstructors ::= ABSTRACT? DATA dataNameConstructor tyVar* EQUAL constructors whereSection? deriveDcl?
-    { pin=6 }
-dataDclNative ::= DATA dataNameUsage tyVar* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection? deriveDcl? {
-    pin=6
-    implements="com.plugin.frege.psi.FregePsiClass"
-    mixin="com.plugin.frege.psi.mixin.FregeDataDclNativeMixin"
-    stubClass="com.plugin.frege.stubs.FregeClassStub"
-}
-
-dataNameConstructor ::= CONID
-
-dataNameUsage ::= CONID {
-    implements=["com.plugin.frege.psi.FregeCompositeElement"
-                "com.intellij.psi.PsiIdentifier"]
-    mixin="com.plugin.frege.psi.mixin.FregeDataNameUsageMixin"
-}
-
-nativeName ::= (weakVarid | CONID) (DOT (weakVarid | CONID))* {
-    implements="com.plugin.frege.psi.FregeCompositeElement"
-    mixin="com.plugin.frege.psi.mixin.FregeNativeNameMixin"
-}
-
-constructors ::= constructor (VERT_BAR constructor)*
-
-constructor ::= PRIVATE? (EXLAMATION_MARK? dataNameUsage) (LEFT_BRACE labels DOUBLE_COLON sigma (COMMA labels DOUBLE_COLON sigma)* RIGHT_BRACE | (simpleType | bracedConstructor)*)
-bracedConstructor ::= LEFT_PAREN (bracedConstructor | constructor) RIGHT_PAREN
-
-labels ::= label (COMMA label)*
-label ::= EXLAMATION_MARK? weakVarid
-
-typeDcl ::= TYPE dataNameType (tyVar)* EQUAL sigma
-    { pin=1 }
-
-dataNameType ::= CONID
-
-/* Class Declarations */
-classDcl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW CONID classVar)?  whereSection?{
-    pin=1
-    implements="com.plugin.frege.psi.FregePsiClass"
-    mixin="com.plugin.frege.psi.mixin.FregeClassDclMixin"
-    stubClass="com.plugin.frege.stubs.FregeClassStub"
-}
-
-classVar ::= tyVar
-
-/* Instance Declarations */
-instDcl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? className typeRule whereSection?
-    { pin=1 }
-
-/* Derived Instances */
-deriveDcl ::= DERIVE className (constraints DOUBLE_RIGHT_ARROW)? typeRule
-    { pin=1 }
-
-
-functionName ::= weakVarid {
-    implements=["com.plugin.frege.psi.FregeCompositeElement"
-                "com.intellij.psi.PsiIdentifier"]
-    mixin="com.plugin.frege.psi.mixin.FregeFunctionNameMixin"
-}
-annotationName ::= weakVarid {
-    implements=["com.plugin.frege.psi.FregeCompositeElement"
-                "com.intellij.psi.PsiIdentifier"]
-    mixin="com.plugin.frege.psi.mixin.FregeAnnotationNameMixin"
-}
-
-/*  Type Annotations */
-annotation ::= annoItem (COMMA annoItem)* DOUBLE_COLON sigma {
-    pin=3
-}
-annoItem ::= annotationName | LEFT_PAREN symOp RIGHT_PAREN | UNOP {
-    implements="com.plugin.frege.psi.FregePsiMethod"
-    mixin="com.plugin.frege.psi.mixin.FregeAnnoItemMixin"
-    stubClass="com.plugin.frege.stubs.FregeMethodStub"
-}
-
-/*  Function and Pattern Bindings */
+/* Bindings */
 binding ::= lhs rhs {
     implements="com.plugin.frege.psi.FregePsiMethod"
     mixin="com.plugin.frege.psi.mixin.FregeBindingMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
-lhs ::= funLhs | pattern
-funLhs ::= pconApp lexOp pconApp
-            | (functionName | LEFT_PAREN symOp RIGHT_PAREN) strictPattern* // TODO UNOP?
-rhs ::= (EQUAL expr | guardedExs) whereSection?
-    { pin=1 }
+lhs ::= functionLhs | pattern
+functionLhs ::= strictPatterns lexOperator strictPatterns
+              | (functionName | LEFT_PAREN symbolOperator RIGHT_PAREN) strictPattern* // TODO UNOP?
+rhs ::= (EQUAL expr | guardedExpressions) whereSection? {
+    pin=1
+}
+functionName ::= extendedVarid {
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
+    mixin="com.plugin.frege.psi.mixin.FregeFunctionNameMixin"
+}
 
-/* Native Declaration */
-nativeFun ::= strongPure? NATIVE nativeAnnoItem javaItem? DOUBLE_COLON sigma (VERT_BAR sigma)* throwsRule?
-    { pin=2 }
-javaItem ::= nativeName | unOp | symOp | STRING
-throwsRule ::= THROWS typeRule (COMMA typeRule)*
-nativeAnnoItem ::= nativeFunctionName | LEFT_PAREN (symOp | UNOP) RIGHT_PAREN | (symOp | UNOP)
-nativeFunctionName ::= weakVarid {
+
+/*  Binding Annotations */
+annotation ::= annotationItem (COMMA annotationItem)* DOUBLE_COLON sigma {
+    pin=3
+}
+annotationItem ::= annotationName | LEFT_PAREN symbolOperator RIGHT_PAREN | UNOP {
+    implements="com.plugin.frege.psi.FregePsiMethod"
+    mixin="com.plugin.frege.psi.mixin.FregeAnnotationItemMixin"
+    stubClass="com.plugin.frege.stubs.FregeMethodStub"
+}
+annotationName ::= extendedVarid {
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
+    mixin="com.plugin.frege.psi.mixin.FregeAnnotationNameMixin"
+}
+
+
+/* Native Bindings */
+nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? DOUBLE_COLON sigma (VERT_BAR sigma)* throwsSequence? {
+    pin=2
+}
+javaItem ::= nativeName | unaryOperator | symbolOperator | STRING
+throwsSequence ::= THROWS <<commaSequence typeApplications>>
+nativeAnnotationItem ::= nativeFunctionName | LEFT_PAREN (symbolOperator | UNOP) RIGHT_PAREN | (symbolOperator | UNOP)
+nativeFunctionName ::= extendedVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeNativeFunctionNameMixin"
 }
 
-/* Importing Packages */
-importDcl ::= IMPORT packageName (strongAs? nameSpace)? PUBLIC_MODIFIER? importList?
-    { pin=1 }
 
-importList ::= strongHiding? LEFT_PAREN (importSpec (COMMA importSpec)*)? RIGHT_PAREN
-importSpec ::= PUBLIC_MODIFIER? importItem alias?
-importItem ::= weakVarid
-                | CONID members?
-                | symOp
-                | LEFT_PAREN symOp RIGHT_PAREN
-                | BACK_QUOTE symOp BACK_QUOTE
-                | CONID DOT (weakVarid | CONID | symOp)
-alias ::= weakVarid | CONID | symOp
-members ::= LEFT_PAREN (memSpec (COMMA memSpec)*)? RIGHT_PAREN
-memSpec ::= PUBLIC_MODIFIER? member alias?
-member ::= weakVarid | symOp | CONID
-nameSpace ::= CONID
+/* Fixity */
+fixity ::= infixRule precedence (lexOperator | BACK_QUOTE lexOperator BACK_QUOTE | extendedVarid)+ {
+    pin=1
+}
+precedence ::= INTEGER
+infixRule ::= INFIX | INFIXL | INFIXR
 
 
-todo ::= NEW_LINE | SYMBOL_OPERATOR | INTEGER | SLASH | STAR | TILDA | HASH | AT | COLON | DASH | FLOAT | REGEX | CHAR | WORD_OPERATOR | CASE | TRUE | PURE
-            | CLASS | FALSE | INFIX | DERIVE | THROWS | NATIVE | INFIXL | INFIXR | IMPORT | MODULE | PUBLIC_MODIFIER | PLUS | LESS | GREATER
-            | MUTABLE | INSTANCE | INTERFACE | PROTECTED_MODIFIER | OF | STRING | UNDERSCORE | QUESTION_MARK | DO | LEFT_ARROW | SLASH | LINE_COMMENT | BLOCK_COMMENT
-            | DEFAULT | FOREIGN | NEWTYPE | DERIVING
+/* Type Declarations */
+typeDecl ::= TYPE conidUsage (typedVarid)* EQUAL sigma {
+    pin=1
+}
+
+
+/* Class Declarations */
+classDecl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW conidUsage typedVarid)?  whereSection? {
+    pin=1
+    implements="com.plugin.frege.psi.FregePsiClass"
+    mixin="com.plugin.frege.psi.mixin.FregeClassDeclMixin"
+    stubClass="com.plugin.frege.stubs.FregeClassStub"
+}
+
+
+/* Instance Declarations */
+instanceDecl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? conidUsage typeApplications whereSection? {
+    pin=1
+}
+
+
+/* Derived Instances */
+deriveDecl ::= DERIVE conidUsage (constraints DOUBLE_RIGHT_ARROW)? typeApplications {
+    pin=1
+}
+
+
+/* Data Declarations */
+dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructors whereSection? deriveDecl? {
+    pin=6
+}
+constructors ::= constructor (VERT_BAR constructor)*
+constructor ::= accessModifier? (EXLAMATION_MARK? conidUsage) (
+          LEFT_BRACE <<commaSequence (labels DOUBLE_COLON sigma)>> RIGHT_BRACE | simpleType*)
+labels ::= <<commaSequence label>>
+label ::= EXLAMATION_MARK? extendedVarid
+
+
+/* Native Data Declarations */
+nativeDataDecl ::= DATA conidUsage typedVarid* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection? deriveDecl? {
+    pin=6
+    implements="com.plugin.frege.psi.FregePsiClass"
+    mixin="com.plugin.frege.psi.mixin.FregeNativeDataDeclMixin"
+    stubClass="com.plugin.frege.stubs.FregeClassStub"
+}
+nativeName ::= (extendedVarid | CONID) (DOT (extendedVarid | CONID))* {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeNativeNameMixin"
+}
+
+
+/* Expression */
+expr ::= binaryExpression (DOUBLE_COLON (FORALL | rho))?
+binaryExpression ::= topExpression (qLexOperator topExpression)*
+topExpression ::= condition
+                | letInExpression
+                | caseExpression
+                | lambda
+                | ((EXLAMATION_MARK | QUESTION_MARK)* primary)+
+                
+/* Lambda Expressions */
+lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
+
+/* Do Expressions */
+doExpression ::= DO <<indentSection (doDecl | qConid LEFT_BRACE fieldsOrVaridInit RIGHT_BRACE)>>
+doDecl ::= letExpression | expr ((LEFT_ARROW | EQUAL) expr)? {
+    implements="com.plugin.frege.psi.FregeSubprogramsHolder"
+}
+
+/* Case Expressions */
+caseExpression ::= CASE expr OF <<indentSection caseDecl>> {
+    pin=1
+}
+caseDecl ::= pattern ((RIGHT_ARROW | EQUAL) expr | guardedExpressions) whereSection? {
+    pin=2
+    implements="com.plugin.frege.psi.FregeSubprogramsHolder"
+}
+
+/* If Condition Expressions */
+condition ::= IF expr (VIRTUAL_END_DECL | SEMICOLON)? THEN expr (VIRTUAL_END_DECL | SEMICOLON)? ELSE expr {
+    pin=1
+}
+
+/* Let Expressions */
+letExpression ::= LET <<indentSection decl>> {
+    pin=1
+}
+letInExpression ::= letExpression IN expr {
+    pin=1
+    implements="com.plugin.frege.psi.FregeScopeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeLetInExpressionMixin"
+}
+
+/* Guarded Expressions */
+guardedExpressions ::= guardedExpression+
+guardedExpression ::= VERT_BAR guardDecls (RIGHT_ARROW | EQUAL) expr
+guardDecls ::= <<commaSequence guardDecl>> COMMA?
+guardDecl ::= expr (LEFT_ARROW expr)?
+
+
+/* Primary Expression */
+primary ::= (term | doExpression) (DOT (
+                extendedVarid
+              | qLexOperator
+              | EXLAMATION_MARK
+              | QUESTION_MARK
+              | LEFT_BRACE fieldsOrVaridInit RIGHT_BRACE
+              | LEFT_BRACKET expr RIGHT_BRACKET))*
+fieldsOrVaridInit ::= extendedVarid (QUESTION_MARK | EQUAL | LEFT_ARROW) (
+    expr (COMMA getField)* COMMA?)?
+getField ::= extendedVarid ((LEFT_ARROW | EQUAL) expr)?
+
+/* Terms */
+term ::= qVarid
+       | qConid LEFT_BRACE initFields? RIGHT_BRACE
+       | qConid
+       | literal
+       | LEFT_PAREN expr RIGHT_PAREN
+       | list
+       | slice
+       | unit
+       | tuple
+       | UNDERSCORE
+       | LEFT_PAREN qLexOperator RIGHT_PAREN
+       | LEFT_PAREN unaryOperator RIGHT_PAREN
+initFields ::= <<commaSequence initField>>
+initField ::= extendedVarid (EQUAL expr)?
+slice ::= LEFT_PAREN (binaryExpression lexOperator | lexOperator expr) RIGHT_PAREN
+unit ::= LEFT_PAREN RIGHT_PAREN
+tuple ::= tupleConstructor | nTuple | strictNTuple
+tupleConstructor ::= LEFT_PAREN COMMA* RIGHT_PAREN
+nTuple ::= LEFT_PAREN expr COMMA <<commaSequence expr>> RIGHT_PAREN
+strictNTuple ::= LEFT_PAREN expr SEMICOLON <<semicolonSequence expr>> RIGHT_PAREN
+
+/* Lists */
+list ::= emptyList
+       | LEFT_BRACKET <<commaSequence expr>> COMMA? RIGHT_BRACKET
+       | LEFT_BRACKET expr (COMMA expr)? DOUBLE_DOT expr? RIGHT_BRACKET
+       | LEFT_BRACKET expr VERT_BAR <<commaSequence doDecl>> COMMA? RIGHT_BRACKET
+emptyList ::= LEFT_BRACKET RIGHT_BRACKET
+
+/* Patterns */
+pattern ::= atPattern (DOUBLE_COLON sigma)* {
+    pin=1
+}
+atPattern ::= parameterPattern AT atPattern
+            | matcherPattern (COLON matcherPattern)*
+matcherPattern ::= parameterPattern TILDA REGEX | strictPatterns
+strictPatterns ::= strictPattern+
+strictPattern ::= EXLAMATION_MARK? patternTerm
+patternTerm ::= conidUsage LEFT_BRACE patternFields? RIGHT_BRACE
+              | conidUsage
+              | parameterPattern
+              | literal
+              | unit
+              | emptyList
+              | LEFT_BRACKET pattern (COMMA pattern)* RIGHT_BRACKET
+              | LEFT_PAREN parameterPattern SUPER_OR_SUBSCRIPT RIGHT_PAREN
+              | LEFT_PAREN pattern (COMMA pattern)* RIGHT_PAREN
+parameterPattern ::= parameter | UNDERSCORE
+patternFields ::= <<commaSequence patternField>>
+patternField ::= parameter (EQUAL pattern)?
+parameter ::= extendedVarid {
+    mixin="com.plugin.frege.psi.mixin.FregeParamMixin"
+    implements="com.plugin.frege.psi.FregeNamedElement"
+}
+
+
+/* Types */
+sigma ::= (FORALL typedVarid (typedVarid)* DOT)? (constraints DOUBLE_RIGHT_ARROW)? rho
+rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
+      | typeApplication RIGHT_ARROW rho
+      | typeApplication
+constraints ::= constraint | LEFT_PAREN <<commaSequence constraint>> COMMA? RIGHT_PAREN
+constraint ::= conidUsage typeApplication+
+typeApplications ::= typeApplication (RIGHT_ARROW typeApplication)*
+typeApplication ::= simpleType+
+
+simpleType ::= typedVarid
+             | typedConid
+             | LEFT_PAREN typeApplications RIGHT_PAREN
+             | LEFT_PAREN typeApplications COMMA typeApplications (COMMA typeApplications)* RIGHT_PAREN
+             | LEFT_BRACKET typeApplications RIGHT_BRACKET
+             | LEFT_PAREN typeApplications VERT_BAR typeApplications (VERT_BAR typeApplications)* RIGHT_PAREN
+typedVarid ::= extendedVarid | LEFT_PAREN extendedVarid DOUBLE_COLON kind RIGHT_PAREN
+typedConid ::= qConid
+             | emptyList
+             | unit
+             | tupleConstructor
+             | RIGHT_ARROW
+kind ::= simpleKind (RIGHT_ARROW kind)?
+simpleKind ::= STAR | LEFT_PAREN kind RIGHT_PAREN
+
+
+/* Operators */
+private aloneOperatorChars ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA | PLUS |
+            DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
+            RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON |
+            AMPERSAND | DEGREE_SIGN | CARRET | PERCENT | SUPER_OR_SUBSCRIPT | UNKNOWN_SYMBOL)
+private notAloneOperatorChars ::= EQUAL | VERT_BAR | DOUBLE_COLON
+symbolOperator ::= (aloneOperatorChars (aloneOperatorChars | notAloneOperatorChars)*
+                 | notAloneOperatorChars (aloneOperatorChars | notAloneOperatorChars)+) {
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
+    mixin="com.plugin.frege.psi.mixin.FregeSymbolOperatorMixin"
+}
+lexOperator ::= WORD_OPERATOR | symbolOperator
+unaryOperator ::= EXLAMATION_MARK | QUESTION_MARK
+
+
+todo ::= NEW_LINE | LESS | GREATER | LINE_COMMENT | BLOCK_COMMENT | DEFAULT | FOREIGN | NEWTYPE | DERIVING

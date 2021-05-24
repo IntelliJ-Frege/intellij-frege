@@ -6,18 +6,18 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.stubs.IStubElementType
-import com.plugin.frege.psi.FregeDataDclNative
+import com.plugin.frege.psi.FregeNativeDataDecl
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
 @Suppress("UnstableApiUsage")
-abstract class FregeDataDclNativeMixin : FregePsiClassImpl, FregeDataDclNative {
+abstract class FregeNativeDataDeclMixin : FregePsiClassImpl, FregeNativeDataDecl {
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     override fun getName(): String {
-        return dataNameUsage.text
+        return conidUsage.text
     }
 
     override fun isInterface(): Boolean {
@@ -29,7 +29,7 @@ abstract class FregeDataDclNativeMixin : FregePsiClassImpl, FregeDataDclNative {
     }
 
     override fun getNameIdentifier(): PsiIdentifier {
-        return dataNameUsage
+        return conidUsage
     }
 
     override fun getScope(): PsiElement {

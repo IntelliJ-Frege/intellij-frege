@@ -5,13 +5,13 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.stubs.IStubElementType
 import com.plugin.frege.FregeLanguage
-import com.plugin.frege.psi.FregeClassDcl
+import com.plugin.frege.psi.FregeClassDecl
 import com.plugin.frege.psi.FregeDecl
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
 @Suppress("UnstableApiUsage")
-abstract class FregeClassDclMixin : FregePsiClassImpl, FregeClassDcl {
+abstract class FregeClassDeclMixin : FregePsiClassImpl, FregeClassDecl {
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
@@ -25,14 +25,14 @@ abstract class FregeClassDclMixin : FregePsiClassImpl, FregeClassDcl {
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {
-        return constraints?.constraintList?.firstOrNull()?.className?.dataNameUsage
+        return constraints?.constraintList?.firstOrNull()?.conidUsage
     }
 
     override fun getMethods(): Array<PsiMethod> {
         val subprograms = whereSection?.subprogramsFromScope ?: return PsiMethod.EMPTY_ARRAY
         return subprograms
             .mapNotNull { (it as? FregeDecl)?.annotation }
-            .flatMap { it.annoItemList }
+            .flatMap { it.annotationItemList }
             .toTypedArray()
     }
 

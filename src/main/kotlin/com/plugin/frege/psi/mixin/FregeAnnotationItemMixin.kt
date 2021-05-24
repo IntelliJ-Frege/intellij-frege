@@ -6,13 +6,13 @@ import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.plugin.frege.FregeLanguage
-import com.plugin.frege.psi.FregeAnnoItem
+import com.plugin.frege.psi.FregeAnnotationItem
 import com.plugin.frege.psi.FregeAnnotation
 import com.plugin.frege.psi.FregeSimpleType
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
 import com.plugin.frege.stubs.FregeMethodStub
 
-abstract class FregeAnnoItemMixin : FregePsiMethodImpl, FregeAnnoItem {
+abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationItem {
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeMethodStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
@@ -31,7 +31,7 @@ abstract class FregeAnnoItemMixin : FregePsiMethodImpl, FregeAnnoItem {
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {
-        return annotationName ?: symOp
+        return annotationName ?: symbolOperator
     }
 
     override fun getBody(): PsiCodeBlock? {

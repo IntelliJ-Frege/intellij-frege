@@ -8,7 +8,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.findClassesInCurrentFile
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
 import com.plugin.frege.resolve.FregeResolveUtil.findClassesByQualifiedName
 
-class FregeDataNameUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
+class FregeConidUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
     public override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
         val currentFileData = tryFindClassesInCurrentFile(incompleteCode)
         return currentFileData.ifEmpty { tryFindDataByImports() } // TODO support incomplete code

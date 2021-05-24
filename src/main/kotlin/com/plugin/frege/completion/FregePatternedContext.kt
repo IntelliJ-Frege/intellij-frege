@@ -18,17 +18,17 @@ abstract class FregePatternedContext(idSuffix: String, presentableName: String) 
 
     class FregeIf : FregePatternedContext("IF", "If") {
         override val pattern: PsiElementPattern.Capture<PsiElement>
-            get() = FregePatterns.CondPatterns.ifPattern()
+            get() = FregePatterns.ConditionPatterns.ifPattern()
     }
 
     class FregeClassDecl : FregePatternedContext("CLASSDECL", "Class declaration") {
         override val pattern: PsiElementPattern.Capture<PsiElement>
-            get() = FregePatterns.ClassDclPatterns.classOrInterfacePattern()
+            get() = FregePatterns.ClassDeclPatterns.classOrInterfacePattern()
     }
 
     class FregeInstanceDecl : FregePatternedContext("INSTANCEDECL", "Instance declaration") {
         override val pattern: PsiElementPattern.Capture<PsiElement>
-            get() = FregePatterns.InstDclPatterns.instancePattern()
+            get() = FregePatterns.InstanceDeclPatterns.instancePattern()
     }
 
     class FregeDecl : FregePatternedContext("DECL", "Declaration") {

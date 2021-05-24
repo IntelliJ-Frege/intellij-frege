@@ -25,20 +25,20 @@ object FregePatterns {
     object CaseExpressionPatterns : PlatformPatterns() {
         @JvmStatic
         fun casePattern(): PsiElementPattern.Capture<PsiElement> {
-            return psiElement().atStartOf(psiElement(FregeTopEx::class.java))
+            return psiElement().atStartOf(psiElement(FregeTopExpression::class.java))
         }
 
         @JvmStatic
         fun ofPattern(): PsiElementPattern.Capture<PsiElement> {
             return psiElement().inside(
                 true,
-                psiElement(FregeCaseEx::class.java),
+                psiElement(FregeCaseExpression::class.java),
                 psiElement().afterLeaf(FregeKeywords.OF)
             )
         }
     }
 
-    object ClassDclPatterns {
+    object ClassDeclPatterns {
         @JvmStatic
         fun classOrInterfacePattern(): PsiElementPattern.Capture<PsiElement> {
             return PlatformPatterns.psiElement().andOr(
@@ -48,17 +48,17 @@ object FregePatterns {
         }
     }
 
-    object CondPatterns : PlatformPatterns() {
+    object ConditionPatterns : PlatformPatterns() {
         @JvmStatic
         fun ifPattern(): PsiElementPattern.Capture<PsiElement> {
-            return psiElement().atStartOf(psiElement(FregeTopEx::class.java))
+            return psiElement().atStartOf(psiElement(FregeTopExpression::class.java))
         }
 
         @JvmStatic
         fun thenPattern(): PsiElementPattern.Capture<PsiElement> {
             return psiElement().inside(
                 true,
-                psiElement(FregeCond::class.java),
+                psiElement(FregeCondition::class.java),
                 psiElement().afterLeaf(FregeKeywords.THEN)
             )
         }
@@ -67,7 +67,7 @@ object FregePatterns {
         fun elsePattern(): PsiElementPattern.Capture<PsiElement> {
             return psiElement().inside(
                 true,
-                psiElement(FregeCond::class.java),
+                psiElement(FregeCondition::class.java),
                 or(
                     psiElement().afterLeaf(FregeKeywords.IF),
                     psiElement().afterLeaf(FregeKeywords.ELSE)
@@ -76,7 +76,7 @@ object FregePatterns {
         }
     }
 
-    object DataDclConstructorsPatterns : PlatformPatterns() {
+    object DataDeclConstructorsPatterns : PlatformPatterns() {
         @JvmStatic
         fun abstractPattern(): PsiElementPattern.Capture<PsiElement> {
             return psiElement().andOr(
@@ -93,7 +93,7 @@ object FregePatterns {
         }
     }
 
-    object DataDclNativePatterns : PlatformPatterns() {
+    object DataDeclNativePatterns : PlatformPatterns() {
         @JvmStatic
         fun dataPattern(): PsiElementPattern.Capture<PsiElement> {
             return psiElement().andOr(
@@ -123,7 +123,7 @@ object FregePatterns {
         }
     }
 
-    object DeriveDclPatterns : PlatformPatterns() {
+    object DeriveDeclPatterns : PlatformPatterns() {
         @JvmStatic
         fun derivePattern(): PsiElementPattern.Capture<PsiElement> {
             return psiElement().andOr(
@@ -131,8 +131,8 @@ object FregePatterns {
                 psiElement().afterLeaf(AccessModifierPatterns.accessModifierPattern()),
                 psiElement().inside(
                     true,
-                    psiElement(FregeDataDclNative::class.java), // TODO add constructors
-                    psiElement(FregeDeriveDcl::class.java)
+                    psiElement(FregeNativeDataDecl::class.java), // TODO add constructors
+                    psiElement(FregeDeriveDecl::class.java)
                 )
             )
         }
@@ -141,11 +141,11 @@ object FregePatterns {
     object DoExpressionPatterns : PlatformPatterns() {
         @JvmStatic
         fun doExpressionPattern(): PsiElementPattern.Capture<PsiElement> {
-            return psiElement().atStartOf(psiElement(FregeTopEx::class.java))
+            return psiElement().atStartOf(psiElement(FregeTopExpression::class.java))
         }
     }
 
-    object ImportDclPatterns : PlatformPatterns() {
+    object ImportDeclPatterns : PlatformPatterns() {
         @JvmStatic
         fun importPattern(): PsiElementPattern.Capture<PsiElement> {
             return psiElement().atStartOf(psiElement(FregeTopDecl::class.java))
@@ -161,7 +161,7 @@ object FregePatterns {
         }
     }
 
-    object InstDclPatterns : PlatformPatterns() {
+    object InstanceDeclPatterns : PlatformPatterns() {
         @JvmStatic
         fun instancePattern(): PsiElementPattern.Capture<PsiElement> {
             return psiElement().andOr(
@@ -174,7 +174,7 @@ object FregePatterns {
     object LetExpressionPatterns {
         @JvmStatic
         fun letPattern(): PsiElementPattern.Capture<PsiElement> {
-            return PlatformPatterns.psiElement().atStartOf(PlatformPatterns.psiElement(FregeTopEx::class.java))
+            return PlatformPatterns.psiElement().atStartOf(PlatformPatterns.psiElement(FregeTopExpression::class.java))
         }
     }
 
@@ -211,11 +211,11 @@ object FregePatterns {
         @JvmStatic
         fun whereSectionPattern(): PsiElementPattern.Capture<PsiElement> {
             val wherePattern = psiElement().andOr(
-                psiElement().withParent(FregeAlt::class.java),
-                psiElement().withParent(FregeDataDclConstructors::class.java),
-                psiElement().withParent(FregeDataDclNative::class.java),
-                psiElement().withParent(FregeClassDcl::class.java),
-                psiElement().withParent(FregeInstDcl::class.java),
+                psiElement().withParent(FregeCaseDecl::class.java),
+                psiElement().withParent(FregeDataDecl::class.java),
+                psiElement().withParent(FregeNativeDataDecl::class.java),
+                psiElement().withParent(FregeClassDecl::class.java),
+                psiElement().withParent(FregeInstanceDecl::class.java),
                 psiElement().withParent(FregeRhs::class.java)
             )
             return psiElement().inside(true, wherePattern, psiElement().beforeLeaf(FregeKeywords.WHERE))

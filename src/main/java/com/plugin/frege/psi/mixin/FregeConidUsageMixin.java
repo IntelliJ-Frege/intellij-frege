@@ -6,21 +6,21 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.tree.IElementType;
 import com.plugin.frege.psi.FregeTypes;
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl;
-import com.plugin.frege.resolve.FregeDataNameUsageReference;
+import com.plugin.frege.resolve.FregeConidUsageReference;
 import org.jetbrains.annotations.NotNull;
 
-public class FregeDataNameUsageMixin extends FregeCompositeElementImpl implements PsiIdentifier {
-    public FregeDataNameUsageMixin(@NotNull ASTNode node) {
+public class FregeConidUsageMixin extends FregeCompositeElementImpl implements PsiIdentifier {
+    public FregeConidUsageMixin(@NotNull ASTNode node) {
         super(node);
     }
 
     @Override
     public PsiReference getReference() {
-        return new FregeDataNameUsageReference(this);
+        return new FregeConidUsageReference(this);
     }
 
     @Override
     public IElementType getTokenType() {
-        return FregeTypes.DATA_NAME_USAGE;
+        return FregeTypes.CONID_USAGE;
     }
 }

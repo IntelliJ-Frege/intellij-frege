@@ -29,15 +29,15 @@ object FregeElementFactory {
     }
 
     @JvmStatic
-    fun createParam(project: Project, name: String): FregeParam {
+    fun createParam(project: Project, name: String): FregeParameter {
         val fakeParam = fakeProgram + "function " + name + " = undefined"
-        return createElement(project, fakeParam, FregeParam::class)
+        return createElement(project, fakeParam, FregeParameter::class)
     }
 
     @JvmStatic
-    fun createVarId(project: Project, name: String): FregeQVarId {
+    fun createVarId(project: Project, name: String): FregeQVarid {
         val fakeVarId = fakeProgram + "function = " + name
-        return createElement(project, fakeVarId, FregeQVarId::class)
+        return createElement(project, fakeVarId, FregeQVarid::class)
     }
 
     @JvmStatic
@@ -47,9 +47,9 @@ object FregeElementFactory {
     }
 
     @JvmStatic
-    fun createDataNameUsage(project: Project, name: String): FregeDataNameUsage {
+    fun createDataNameUsage(project: Project, name: String): FregeConidUsage {
         val fakeDataNameUsage = "${fakeProgram}func :: $name"
-        return createElement(project, fakeDataNameUsage, FregeDataNameUsage::class)
+        return createElement(project, fakeDataNameUsage, FregeConidUsage::class)
     }
 
     @JvmStatic
