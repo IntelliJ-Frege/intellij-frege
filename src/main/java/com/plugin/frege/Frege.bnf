@@ -175,7 +175,7 @@ annotationName ::= extendedVarid {
 
 
 /* Native Bindings */
-nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? DOUBLE_COLON sigma (VERT_BAR sigma)* throwsSequence? {
+nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? DOUBLE_COLON sigma (VERTICAL_BAR sigma)* throwsSequence? {
     pin=2
 }
 javaItem ::= nativeName | unaryOperator | symbolOperator | STRING
@@ -226,7 +226,7 @@ deriveDecl ::= DERIVE conidUsage (constraints DOUBLE_RIGHT_ARROW)? typeApplicati
 dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructors whereSection? deriveDecl? {
     pin=6
 }
-constructors ::= constructor (VERT_BAR constructor)*
+constructors ::= constructor (VERTICAL_BAR constructor)*
 constructor ::= accessModifier? (EXLAMATION_MARK? conidUsage) (
           LEFT_BRACE <<commaSequence (labels DOUBLE_COLON sigma)>> RIGHT_BRACE | simpleType*)
 labels ::= <<commaSequence label>>
@@ -290,7 +290,7 @@ letInExpression ::= letExpression IN expr {
 
 /* Guarded Expressions */
 guardedExpressions ::= guardedExpression+
-guardedExpression ::= VERT_BAR guardDecls (RIGHT_ARROW | EQUAL) expr
+guardedExpression ::= VERTICAL_BAR guardDecls (RIGHT_ARROW | EQUAL) expr
 guardDecls ::= <<commaSequence guardDecl>> COMMA?
 guardDecl ::= expr (LEFT_ARROW expr)?
 
@@ -333,7 +333,7 @@ strictNTuple ::= LEFT_PAREN expr SEMICOLON <<semicolonSequence expr>> RIGHT_PARE
 list ::= emptyList
        | LEFT_BRACKET <<commaSequence expr>> COMMA? RIGHT_BRACKET
        | LEFT_BRACKET expr (COMMA expr)? DOUBLE_DOT expr? RIGHT_BRACKET
-       | LEFT_BRACKET expr VERT_BAR <<commaSequence doDecl>> COMMA? RIGHT_BRACKET
+       | LEFT_BRACKET expr VERTICAL_BAR <<commaSequence doDecl>> COMMA? RIGHT_BRACKET
 emptyList ::= LEFT_BRACKET RIGHT_BRACKET
 
 /* Patterns */
@@ -378,7 +378,7 @@ simpleType ::= typedVarid
              | LEFT_PAREN typeApplications RIGHT_PAREN
              | LEFT_PAREN typeApplications COMMA typeApplications (COMMA typeApplications)* RIGHT_PAREN
              | LEFT_BRACKET typeApplications RIGHT_BRACKET
-             | LEFT_PAREN typeApplications VERT_BAR typeApplications (VERT_BAR typeApplications)* RIGHT_PAREN
+             | LEFT_PAREN typeApplications VERTICAL_BAR typeApplications (VERTICAL_BAR typeApplications)* RIGHT_PAREN
 typedVarid ::= extendedVarid | LEFT_PAREN extendedVarid DOUBLE_COLON kind RIGHT_PAREN
 typedConid ::= qConid
              | emptyList
@@ -394,7 +394,7 @@ private aloneOperatorChars ::= (EXLAMATION_MARK | QUESTION_MARK | HASH | TILDA |
             DOT | STAR | AT | DASH | SLASH | BACK_SLASH | DOLLAR |
             RIGHT_ARROW | LEFT_ARROW | DOUBLE_RIGHT_ARROW | LESS | GREATER | COLON |
             AMPERSAND | DEGREE_SIGN | CARRET | PERCENT | SUPER_OR_SUBSCRIPT | UNKNOWN_SYMBOL)
-private notAloneOperatorChars ::= EQUAL | VERT_BAR | DOUBLE_COLON
+private notAloneOperatorChars ::= EQUAL | VERTICAL_BAR | DOUBLE_COLON
 symbolOperator ::= (aloneOperatorChars (aloneOperatorChars | notAloneOperatorChars)*
                  | notAloneOperatorChars (aloneOperatorChars | notAloneOperatorChars)+) {
     implements=["com.plugin.frege.psi.FregeCompositeElement"

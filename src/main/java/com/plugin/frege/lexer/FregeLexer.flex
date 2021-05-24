@@ -18,7 +18,7 @@ import com.plugin.frege.psi.FregeTypes;
 newline              = \r|\n|\r\n
 whitespace           = \s
 
-/* number literals */
+/* Number Literals */
 digit                = \d
 digits               = {digit}+
 digitNonZero         = [1-9]
@@ -38,36 +38,36 @@ exponentIndicator    = [eE]
 exponentPart         = {exponentIndicator}{signs}{digits}
 floatSuffix          = [fFdD]
 float                = {digits}{dot}{whitespace}
-                       | {digits}{dot}{floatSuffix}
-                       | {digits}{dot}{exponentPart}{floatSuffix}?
-                       | {digits}{dot}{digits}{exponentPart}?{floatSuffix}?
-                       | {digits}{exponentPart}{floatSuffix}?
-                       | {digits}{exponentPart}?{floatSuffix}
+                     | {digits}{dot}{floatSuffix}
+                     | {digits}{dot}{exponentPart}{floatSuffix}?
+                     | {digits}{dot}{digits}{exponentPart}?{floatSuffix}?
+                     | {digits}{exponentPart}{floatSuffix}?
+                     | {digits}{exponentPart}?{floatSuffix}
 
-/* char literal */
+/* Char Literals */
 octalEscape          = {backSlash}{octalChar} | {backSlash}{octalChar}{octalChar}
-                       | {backSlash}[0-3]{octalChar}{octalChar}
+                     | {backSlash}[0-3]{octalChar}{octalChar}
 escapeSequence       = {backSlash}\S
 char                 = {quote}([^\'\\\n] | {escapeSequence}){quote}
 
-/* string literal */
+/* String Literal */
 string               = {doubleQuote}([^\"\\] | {escapeSequence})*{doubleQuote}
 
-/* regex literal */
+/* Regex Literal */
 regex                = \u00B4([^\u00B4\\] | {escapeSequence})*\u00B4
 
-/* comments */
+/* Comments */
 lineCommentStart     = {dash}{dash}{dash}?
 lineComment          = {lineCommentStart}[^\n]*
 blockCommentStart    = {leftBrace}{dash}
 blockCommentEnd      = {dash}{rightBrace}
 blockComment         = {blockCommentStart}~{blockCommentEnd}
 
-/* identifiers */
+/* Identifiers */
 conid                = \p{Lu}(\d | {underscore} | \p{L})*
 varid                = \p{Ll}(\d | {underscore} | \p{L})*{quote}*
 
-/* operators */
+/* Operators */
 wordop               = {backQuote}\w+{backQuote}
 
 colon                = :
@@ -75,7 +75,7 @@ doubleColon          = :: | \u2237
 rightArrow           = -> | \u2192
 leftArrow            = <- | \u2190
 doubleRightArrow     = => | \u21D2
-vertBar              = \|
+verticalBar          = \|
 ampersand            = \&
 equal                = =
 dash                 = -
@@ -185,7 +185,7 @@ backQuote            = \`
       {rightArrow}            { return FregeTypes.RIGHT_ARROW; }
       {leftArrow}             { return FregeTypes.LEFT_ARROW; }
       {doubleRightArrow}      { return FregeTypes.DOUBLE_RIGHT_ARROW; }
-      {vertBar}               { return FregeTypes.VERT_BAR; }
+      {verticalBar}           { return FregeTypes.VERTICAL_BAR; }
       {ampersand}             { return FregeTypes.AMPERSAND; }
       {equal}                 { return FregeTypes.EQUAL; }
       {dash}                  { return FregeTypes.DASH; }
