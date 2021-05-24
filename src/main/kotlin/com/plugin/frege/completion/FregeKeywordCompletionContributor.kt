@@ -26,24 +26,24 @@ class FregeKeywordCompletionContributor : CompletionContributor() {
         registerStandardCompletion(FregePatterns.CaseExpressionPatterns.casePattern(), FregeKeywords.CASE)
         registerStandardCompletion(FregePatterns.CaseExpressionPatterns.ofPattern(), FregeKeywords.OF)
         registerStandardCompletion(
-            FregePatterns.ClassDclPatterns.classOrInterfacePattern(),
+            FregePatterns.ClassDeclPatterns.classOrInterfacePattern(),
             FregeKeywords.CLASS, FregeKeywords.INTERFACE
         )
-        registerStandardCompletion(FregePatterns.CondPatterns.ifPattern(), FregeKeywords.IF)
-        registerStandardCompletion(FregePatterns.CondPatterns.thenPattern(), FregeKeywords.THEN)
-        registerStandardCompletion(FregePatterns.CondPatterns.elsePattern(), FregeKeywords.ELSE)
-        registerStandardCompletion(FregePatterns.DataDclConstructorsPatterns.abstractPattern(), FregeKeywords.ABSTRACT)
-        registerStandardCompletion(FregePatterns.DataDclConstructorsPatterns.dataPattern(), FregeKeywords.DATA)
-        registerStandardCompletion(FregePatterns.DataDclNativePatterns.dataPattern(), FregeKeywords.DATA)
-        registerStandardCompletion(FregePatterns.DataDclNativePatterns.nativePattern(), FregeKeywords.NATIVE)
-        registerStandardCompletion(FregePatterns.DeriveDclPatterns.derivePattern(), FregeKeywords.DERIVE)
+        registerStandardCompletion(FregePatterns.ConditionPatterns.ifPattern(), FregeKeywords.IF)
+        registerStandardCompletion(FregePatterns.ConditionPatterns.thenPattern(), FregeKeywords.THEN)
+        registerStandardCompletion(FregePatterns.ConditionPatterns.elsePattern(), FregeKeywords.ELSE)
+        registerStandardCompletion(FregePatterns.DataDeclConstructorsPatterns.abstractPattern(), FregeKeywords.ABSTRACT)
+        registerStandardCompletion(FregePatterns.DataDeclConstructorsPatterns.dataPattern(), FregeKeywords.DATA)
+        registerStandardCompletion(FregePatterns.DataDeclNativePatterns.dataPattern(), FregeKeywords.DATA)
+        registerStandardCompletion(FregePatterns.DataDeclNativePatterns.nativePattern(), FregeKeywords.NATIVE)
+        registerStandardCompletion(FregePatterns.DeriveDeclPatterns.derivePattern(), FregeKeywords.DERIVE)
         registerStandardCompletion(FregePatterns.DoExpressionPatterns.doExpressionPattern(), FregeKeywords.DO)
-        registerStandardCompletion(FregePatterns.ImportDclPatterns.importPattern(), FregeKeywords.IMPORT)
+        registerStandardCompletion(FregePatterns.ImportDeclPatterns.importPattern(), FregeKeywords.IMPORT)
         registerStandardCompletion(
             FregePatterns.InfixRulePatterns.infixRulePattern(),
             FregeKeywords.INFIX, FregeKeywords.INFIXL, FregeKeywords.INFIXR
         )
-        registerStandardCompletion(FregePatterns.InstDclPatterns.instancePattern(), FregeKeywords.INSTANCE)
+        registerStandardCompletion(FregePatterns.InstanceDeclPatterns.instancePattern(), FregeKeywords.INSTANCE)
         registerStandardCompletion(FregePatterns.LetExpressionPatterns.letPattern(), FregeKeywords.LET)
         registerStandardCompletion(FregePatterns.LetInExpressionPatterns.inPattern(), FregeKeywords.IN)
         registerStandardCompletion(FregePatterns.NativeFunPatterns.purePattern(), FregeKeywords.PURE)

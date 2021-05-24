@@ -23,17 +23,17 @@ class FregeFindUsagesProvider : FindUsagesProvider {
 
     override fun getType(element: PsiElement): @Nls String {
         return when (element) {
-            is FregeAnnotation -> "annotation"
+            is FregeAnnotationItem -> "annotation"
             is FregeBinding -> {
                 when (element.nameIdentifier) {
-                    is FregeSymOp -> "operator binding"
+                    is FregeSymbolOperator -> "operator binding"
                     else -> "function binding"
                 }
             }
-            is FregeDataDclNative -> "native data"
-            is FregeClassDcl -> "class"
+            is FregeNativeDataDecl -> "native data"
+            is FregeClassDecl -> "class"
             is FregeProgram -> "module"
-            is FregeParam -> "parameter"
+            is FregeParameter -> "parameter"
             else -> "" // TODO
         }
     }

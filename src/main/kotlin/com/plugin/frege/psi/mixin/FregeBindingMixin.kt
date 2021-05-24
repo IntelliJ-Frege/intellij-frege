@@ -8,9 +8,9 @@ import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.FregeLanguage
-import com.plugin.frege.psi.FregeAnnoItem
+import com.plugin.frege.psi.FregeAnnotationItem
 import com.plugin.frege.psi.FregeBinding
-import com.plugin.frege.psi.FregeParam
+import com.plugin.frege.psi.FregeParameter
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeMethodStub
@@ -40,15 +40,15 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeBinding {
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {
-        val functionName = lhs.funLhs?.functionName
+        val functionName = lhs.functionLhs?.functionName
         if (functionName != null) {
             return functionName
         }
-        val symop = lhs.funLhs?.symOp
+        val symop = lhs.functionLhs?.symbolOperator
         if (symop != null) {
             return symop
         }
-        val symopFromLexop = lhs.funLhs?.lexOp?.symOp
+        val symopFromLexop = lhs.functionLhs?.lexOperator?.symbolOperator
         if (symopFromLexop != null) {
             return symopFromLexop
         }
@@ -65,15 +65,15 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeBinding {
 
     // TODO
     override fun getParamsNumber(): Int {
-        val funLhs = lhs.funLhs ?: return 0
-        return PsiTreeUtil.findChildrenOfType(funLhs, FregeParam::class.java).size
+        val funLhs = lhs.functionLhs ?: return 0
+        return PsiTreeUtil.findChildrenOfType(funLhs, FregeParameter::class.java).size
     }
 
-    fun getAnnoItem(): FregeAnnoItem? {
+    fun getAnnoItem(): FregeAnnotationItem? {
         val referenceText = name
         return FregePsiUtilImpl.findElementsWithinScope(this) { elem ->
-            elem is FregeAnnoItem && elem.name == referenceText
-        }.firstOrNull() as? FregeAnnoItem
+            elem is FregeAnnotationItem && elem.name == referenceText
+        }.firstOrNull() as? FregeAnnotationItem
     }
 
     fun isMainFunctionBinding(): Boolean {

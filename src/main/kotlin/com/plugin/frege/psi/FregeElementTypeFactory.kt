@@ -7,11 +7,11 @@ object FregeElementTypeFactory {
     @JvmStatic
     fun factory(name: String): IElementType {
         return when (name) {
-            "DATA_DCL_NATIVE" -> FregeDataDclNativeElementType(name)
+            "NATIVE_DATA_DECL" -> FregeNativeDataDeclElementType(name)
             "PROGRAM" -> FregeProgramElementType(name)
-            "CLASS_DCL" -> FregeClassDclElementType(name)
+            "CLASS_DECL" -> FregeClassDeclElementType(name)
             "BINDING" -> FregeBindingElementType(name)
-            "ANNO_ITEM" -> FregeAnnoItemElementType(name)
+            "ANNOTATION_ITEM" -> FregeAnnotationItemElementType(name)
             else -> throw IllegalStateException("Unknown element name: $name")
         }
     }

@@ -3,7 +3,7 @@ package com.plugin.frege.resolve
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.plugin.frege.psi.FregeElementFactory.createVarId
-import com.plugin.frege.psi.FregeParam
+import com.plugin.frege.psi.FregeParameter
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findWhereInExpression
@@ -27,7 +27,7 @@ class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element
     }
 
     private fun findParameters(incompleteCode: Boolean): List<PsiElement> { // TODO copy/paste from resolve util
-        val predicate = getByTypePredicateCheckingName(FregeParam::class, psiElement.text, incompleteCode)
+        val predicate = getByTypePredicateCheckingName(FregeParameter::class, psiElement.text, incompleteCode)
         val where = findWhereInExpression(psiElement)
         if (where != null) {
             val params = findElementsWithinScope(where, predicate)

@@ -13,7 +13,7 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
 
     // TODO take into account: signatures
     override fun resolveInner(incompleteCode: Boolean): List<PsiElement> { // TODO support incomplete code
-        val nativeFunction = psiElement.parentOfTypes(FregeNativeFun::class) ?: return emptyList()
+        val nativeFunction = psiElement.parentOfTypes(FregeNativeFunction::class) ?: return emptyList()
 
         val nativeNames: List<String>
         val methodName: String
@@ -34,7 +34,7 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
             }
 
             val sigma = sigmas[0]
-            val dataNameUsage = PsiTreeUtil.findChildOfType(sigma, FregeDataNameUsage::class.java)
+            val dataNameUsage = PsiTreeUtil.findChildOfType(sigma, FregeConidUsage::class.java)
             nativeNames = getNativeNamesFromDataNameUsage(dataNameUsage, incompleteCode)
             methodName = psiElement.text
         }
@@ -47,11 +47,11 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
     }
 
     private fun getNativeNamesFromDataNameUsage(
-        dataNameUsage: FregeDataNameUsage?,
+        dataNameUsage: FregeConidUsage?,
         incompleteCode: Boolean
     ): List<String> {
         return if (dataNameUsage != null) {
-            FregeDataNameUsageReference(dataNameUsage).resolveInner(incompleteCode)
+            FregeConidUsageReference(dataNameUsage).resolveInner(incompleteCode)
                 .mapNotNull { getNativeNameFromData(it)?.text }
         } else {
             emptyList()
@@ -63,7 +63,7 @@ class FregeNativeFunctionNameReference(element: PsiElement) : FregeReferenceBase
     }
 
     private fun getNativeNameFromData(dataNative: PsiElement): FregeNativeName? {
-        return if (dataNative is FregeDataDclNative) {
+        return if (dataNative is FregeNativeDataDecl) {
             PsiTreeUtil.getChildOfType(dataNative, FregeNativeName::class.java)
         } else {
             null
