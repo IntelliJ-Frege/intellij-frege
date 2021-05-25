@@ -31,7 +31,7 @@ public class FregeParserDefinition implements ParserDefinition {
             FregeTypes.VERTICAL_BAR, FregeTypes.EQUAL, FregeTypes.EXLAMATION_MARK,
             FregeTypes.QUESTION_MARK, FregeTypes.COMMA, FregeTypes.SEMICOLON, FregeTypes.DOT,
             FregeTypes.BACK_SLASH, FregeTypes.STAR, FregeTypes.AT, FregeTypes.TILDA,
-            FregeTypes.SYM_OPERATOR);
+            FregeTypes.SYM_OPERATOR_NO_FIRST_DOT);
 
     public static final TokenSet KEYWORDS = TokenSet.create(FregeTypes.ABSTRACT, FregeTypes.CASE, FregeTypes.CLASS,
             FregeTypes.INTERFACE, FregeTypes.DATA, FregeTypes.DEFAULT, FregeTypes.DERIVING, FregeTypes.DERIVE, FregeTypes.DO, FregeTypes.ELSE,

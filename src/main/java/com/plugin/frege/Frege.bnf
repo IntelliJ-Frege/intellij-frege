@@ -100,14 +100,14 @@ importList ::= strongHiding? LEFT_PAREN (<<commaSequence importSpec>>)? RIGHT_PA
 importSpec ::= PUBLIC_MODIFIER? importItem importAlias?
 importItem ::= extendedVarid
              | conidUsage importMembers?
-             | symbolOperator
-             | LEFT_PAREN symbolOperator RIGHT_PAREN
-             | BACK_QUOTE symbolOperator BACK_QUOTE
-             | conidUsage DOT (extendedVarid | conidUsage | symbolOperator)
-importAlias ::= extendedVarid | CONID | symbolOperator
+             | symbolOperatorQuoted
+             | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN
+             | BACK_QUOTE symbolOperatorQuoted BACK_QUOTE
+             | conidUsage DOT (extendedVarid | conidUsage | symbolOperatorQuoted)
+importAlias ::= extendedVarid | CONID | symbolOperatorQuoted
 importMembers ::= LEFT_PAREN (<<commaSequence importMemberSpec>>)? RIGHT_PAREN
 importMemberSpec ::= PUBLIC_MODIFIER? importMember importAlias?
-importMember ::= extendedVarid | symbolOperator | conidUsage
+importMember ::= extendedVarid | symbolOperatorQuoted | conidUsage
 
 
 /* Main part of program */
@@ -157,7 +157,7 @@ binding ::= lhs rhs {
 }
 lhs ::= functionLhs | pattern
 functionLhs ::= strictPatterns lexOperator strictPatterns
-              | (functionName | LEFT_PAREN symbolOperator RIGHT_PAREN) strictPattern* // TODO UNOP?
+              | (functionName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN) strictPattern* // TODO UNOP?
 rhs ::= (EQUAL expr | guardedExpressions) whereSection? {
     pin=1
 }
@@ -172,7 +172,7 @@ functionName ::= extendedVarid {
 annotation ::= annotationItem (COMMA annotationItem)* DOUBLE_COLON sigma {
     pin=3
 }
-annotationItem ::= annotationName | LEFT_PAREN symbolOperator RIGHT_PAREN | UNOP {
+annotationItem ::= annotationName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN | UNOP {
     implements="com.plugin.frege.psi.FregePsiMethod"
     mixin="com.plugin.frege.psi.mixin.FregeAnnotationItemMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
@@ -188,9 +188,9 @@ annotationName ::= extendedVarid {
 nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? DOUBLE_COLON sigma (VERTICAL_BAR sigma)* throwsSequence? {
     pin=2
 }
-javaItem ::= nativeName | unaryOperator | symbolOperator | STRING
+javaItem ::= nativeName | unaryOperator | symbolOperatorQuoted | STRING
 throwsSequence ::= THROWS <<commaSequence typeApplications>>
-nativeAnnotationItem ::= nativeFunctionName | LEFT_PAREN (symbolOperator | UNOP) RIGHT_PAREN | (symbolOperator | UNOP)
+nativeAnnotationItem ::= nativeFunctionName | LEFT_PAREN (symbolOperatorQuoted | UNOP) RIGHT_PAREN | (symbolOperatorQuoted | UNOP)
 nativeFunctionName ::= extendedVarid {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeNativeFunctionNameMixin"
@@ -198,7 +198,7 @@ nativeFunctionName ::= extendedVarid {
 
 
 /* Fixity */
-fixity ::= infixRule precedence (lexOperator | BACK_QUOTE lexOperator BACK_QUOTE | extendedVarid)+ {
+fixity ::= infixRule precedence (lexOperator | extendedVarid)+ {
     pin=1
 }
 precedence ::= INTEGER
@@ -402,12 +402,13 @@ simpleKind ::= STAR | LEFT_PAREN kind RIGHT_PAREN
 /* Operators */
 private preservedAloneOperators ::= STAR | COLON | SUPER_OR_SUBSCRIPT
                                   | DOT | AT | TILDA | EXLAMATION_MARK | QUESTION_MARK // TODO AT is not an operator
-symbolOperator ::= SYM_OPERATOR | preservedAloneOperators {
+symbolOperator ::= SYM_OPERATOR_NO_FIRST_DOT | DOT+ SYM_OPERATOR_NO_FIRST_DOT | preservedAloneOperators {
     implements=["com.plugin.frege.psi.FregeCompositeElement"
                 "com.intellij.psi.PsiIdentifier"]
     mixin="com.plugin.frege.psi.mixin.FregeSymbolOperatorMixin"
 }
-lexOperator ::= WORD_OPERATOR | symbolOperator
+symbolOperatorQuoted ::= symbolOperator | BACK_QUOTE symbolOperator BACK_QUOTE
+lexOperator ::= WORD_OPERATOR | symbolOperatorQuoted
 unaryOperator ::= EXLAMATION_MARK | QUESTION_MARK
 
 
