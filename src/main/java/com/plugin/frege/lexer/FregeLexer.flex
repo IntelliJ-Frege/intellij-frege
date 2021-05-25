@@ -73,7 +73,8 @@ aloneOps             = {exlamationMark} | {questionMark} | {hash} | {tilda} | {p
                         | {less} | {greater} | {colon} | {degreeSign} | {ampersand} | {carret}
                         | {percent} | {superOrSubscript} | [\u2201-\u22FF]
 notAloneOps          = {equal} | {verticalBar} | {doubleColon}
-symop                = {aloneOps} ({aloneOps} | {notAloneOps} | {dot})* | {notAloneOps} ({aloneOps} | {notAloneOps} | {dot})+
+symop_no_first_dot   = {aloneOps} ({aloneOps} | {notAloneOps} | {dot})* | {notAloneOps} ({aloneOps} | {notAloneOps} | {dot})+
+symop_first_dot      = {dot}+ {symop_no_first_dot}
 
 wordop               = {backQuote}\w+{backQuote}
 
@@ -208,7 +209,7 @@ backQuote            = \`
       {superOrSubscript}      { return FregeTypes.SUPER_OR_SUBSCRIPT; }
 
    /* operators */
-      {symop}                 { return FregeTypes.SYM_OPERATOR; }
+      {symop_no_first_dot}    { return FregeTypes.SYM_OPERATOR_NO_FIRST_DOT; }
       {wordop}                { return FregeTypes.WORD_OPERATOR; }
 
    /* identifiers */

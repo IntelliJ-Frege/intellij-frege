@@ -44,11 +44,11 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeBinding {
         if (functionName != null) {
             return functionName
         }
-        val symop = lhs.functionLhs?.symbolOperator
+        val symop = lhs.functionLhs?.symbolOperatorQuoted?.symbolOperator
         if (symop != null) {
             return symop
         }
-        val symopFromLexop = lhs.functionLhs?.lexOperator?.symbolOperator
+        val symopFromLexop = lhs.functionLhs?.lexOperator?.symbolOperatorQuoted?.symbolOperator
         if (symopFromLexop != null) {
             return symopFromLexop
         }

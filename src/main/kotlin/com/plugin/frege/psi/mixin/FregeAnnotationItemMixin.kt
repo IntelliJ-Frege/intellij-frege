@@ -31,7 +31,7 @@ abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationIte
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {
-        return annotationName ?: symbolOperator
+        return annotationName ?: symbolOperatorQuoted?.symbolOperator
     }
 
     override fun getBody(): PsiCodeBlock? {
