@@ -185,9 +185,10 @@ annotationName ::= extendedVarid {
 
 
 /* Native Bindings */
-nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? DOUBLE_COLON sigma (VERTICAL_BAR sigma)* throwsSequence? {
+nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? nativeTypeApplications? DOUBLE_COLON sigma (VERTICAL_BAR sigma)* throwsSequence? {
     pin=2
 }
+nativeTypeApplications ::= LEFT_BRACE typeApplications? RIGHT_BRACE
 javaItem ::= nativeName | unaryOperator | symbolOperatorQuoted | STRING
 throwsSequence ::= THROWS <<commaSequence typeApplications>>
 nativeAnnotationItem ::= nativeFunctionName | LEFT_PAREN (symbolOperatorQuoted | UNOP) RIGHT_PAREN | (symbolOperatorQuoted | UNOP)
@@ -244,7 +245,7 @@ label ::= EXLAMATION_MARK? extendedVarid
 
 
 /* Native Data Declarations */
-nativeDataDecl ::= DATA conidUsage typedVarid* EQUAL (strongMutable|strongPure)? NATIVE nativeName whereSection? deriveDecl? {
+nativeDataDecl ::= DATA conidUsage typedVarid* EQUAL (strongMutable|strongPure)? NATIVE nativeName nativeTypeApplications? whereSection? deriveDecl? {
     pin=6
     implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.FregeNativeDataDeclMixin"
