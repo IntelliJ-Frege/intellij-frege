@@ -21,19 +21,19 @@ fregeFile ::= !<<eof>> program
 private meta commaSequence ::= <<rule>> (COMMA <<rule>>)*
 private meta semicolonSequence ::= <<rule>> (SEMICOLON <<rule>>)*
 
-meta linearIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<rule>>)*
+meta linearIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON VIRTUAL_END_DECL?) <<rule>>)*
 meta linearIndentSectionItemsSemicolon ::= <<rule>> (SEMICOLON <<rule>>)*
-meta linearIndentSection ::= VIRTUAL_OPEN_SECTION <<linearIndentSectionItemsVirtual <<rule>> >> VIRTUAL_END_SECTION
-                        | LEFT_BRACE <<linearIndentSectionItemsSemicolon <<rule>> >> RIGHT_BRACE
+meta linearIndentSection ::= VIRTUAL_OPEN_SECTION <<linearIndentSectionItemsVirtual <<rule>> >> SEMICOLON? VIRTUAL_END_SECTION
+                        | LEFT_BRACE <<linearIndentSectionItemsSemicolon <<rule>> >> SEMICOLON? RIGHT_BRACE
                         | <<rule>> {
     implements="com.plugin.frege.psi.FregeScopeElement"
     mixin="com.plugin.frege.psi.mixin.indentsection.FregeLinearIndentSectionMixin"
 }
 
-meta nestedIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON) <<nestedIndentSectionItemsVirtual <<rule>> >>)?
+meta nestedIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON VIRTUAL_END_DECL?) <<nestedIndentSectionItemsVirtual <<rule>> >>)?
 meta nestedIndentSectionItemsSemicolon ::= <<rule>> (SEMICOLON <<nestedIndentSectionItemsSemicolon <<rule>> >>)?
-meta nestedIndentSection ::= VIRTUAL_OPEN_SECTION <<nestedIndentSectionItemsVirtual <<rule>> >> VIRTUAL_END_SECTION
-                        | LEFT_BRACE <<nestedIndentSectionItemsSemicolon <<rule>> >> RIGHT_BRACE
+meta nestedIndentSection ::= VIRTUAL_OPEN_SECTION <<nestedIndentSectionItemsVirtual <<rule>> >> SEMICOLON? VIRTUAL_END_SECTION
+                        | LEFT_BRACE <<nestedIndentSectionItemsSemicolon <<rule>> >> SEMICOLON? RIGHT_BRACE
                         | <<rule>>
 
 
@@ -127,7 +127,7 @@ topDecl ::= !<<eof>> (
             | accessModifier? classDecl
             | accessModifier? instanceDecl
             | accessModifier? deriveDecl
-            | decl) {
+            | decl) SEMICOLON? {
     pin=1
     recoverWhile=declRecover
 }

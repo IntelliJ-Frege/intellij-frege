@@ -56,4 +56,8 @@ public class FregeSuccessfulParsingValidProgramsTest extends FregeParsingTestAbs
     public void testDataRecord() throws IOException {
         doSuccessfulParsingTest();
     }
+
+    public void testExtraSemicolons() throws IOException {
+        doSuccessfulParsingTest();
+    }
 }
