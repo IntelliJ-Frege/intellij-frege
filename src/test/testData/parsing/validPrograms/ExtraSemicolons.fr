@@ -1,0 +1,13 @@
+package psi.ExtraSemicolons where
+
+f :: a -> a;
+f x = y where
+    y = z;
+    z = x;
+
+g = do
+    x <- Just 1;
+    y <- Just 2;
+    return y;
+
+main x = print 1;
