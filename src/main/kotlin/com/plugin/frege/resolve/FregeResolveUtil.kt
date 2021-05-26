@@ -34,7 +34,7 @@ object FregeResolveUtil {
      */
     @JvmStatic
     fun findClassesByQualifiedName(project: Project, qualifiedName: String): List<PsiClass> {
-        val classes = FregeClassNameIndex.getInstance().get(
+        val classes = FregeClassNameIndex.INSTANCE.get(
             qualifiedName, project, GlobalSearchScope.everythingScope(project)
         ).toList()
 
@@ -84,7 +84,7 @@ object FregeResolveUtil {
             return emptyList()
         }
 
-        return FregeMethodNameIndex.getInstance().get(name, project, GlobalSearchScope.everythingScope(project))
+        return FregeMethodNameIndex.INSTANCE.get(name, project, GlobalSearchScope.everythingScope(project))
             .filter { method ->
                 val containingClass = method.containingClass // TODO store this in stub
                 containingClass?.qualifiedName == qualifier
