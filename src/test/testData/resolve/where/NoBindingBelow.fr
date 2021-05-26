@@ -1,0 +1,6 @@
+package NoBindingBelow where
+
+firstA x = secondB
+    where secondB = (calcula<caret>te x) + getChild
+          getChild = calculate 10
+              where calculate n = n

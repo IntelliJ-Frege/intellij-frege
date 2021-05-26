@@ -1,0 +1,9 @@
+module FromFunctionUsage where
+
+class Petya j where
+    checkIfPetya :: j -> Boolean
+
+instance Petya Int where
+    checkIfPetya _ = false
+
+hello = Petya.c<caret>heckIfPetya 33

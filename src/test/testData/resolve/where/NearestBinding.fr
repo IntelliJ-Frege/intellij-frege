@@ -1,0 +1,7 @@
+package NearestBinding where
+
+binding x y z = bindingImpl (x + y) (y + z)
+    where bindingImpl a b = calc (a + b)
+          calc n = calcImpl (n * 2)
+              where calcImpl q = q - 2 * (b<caret>indingImpl q q)
+                    bindingImpl a b = a - b

@@ -1,0 +1,5 @@
+module NearestParameter where
+
+heyHey x = checkCheck
+    where checkCheck = x + saySmth
+          saySmth x = <caret>x + 10

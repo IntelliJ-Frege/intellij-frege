@@ -1,0 +1,3 @@
+module pack.First where
+
+sayHello str = "hello, " ++ str ++ "!"

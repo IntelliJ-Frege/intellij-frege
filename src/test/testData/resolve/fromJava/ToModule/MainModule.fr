@@ -1,0 +1,3 @@
+package main.MainModule where
+
+hello x = 10 + x

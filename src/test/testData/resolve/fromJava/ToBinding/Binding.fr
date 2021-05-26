@@ -1,0 +1,3 @@
+package hello.Binding where
+
+sayHello x = x ++ "Hello"

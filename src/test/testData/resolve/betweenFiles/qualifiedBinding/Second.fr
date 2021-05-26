@@ -1,0 +1,4 @@
+module Second where
+
+hey x y z = x - y + z
+check x y z = hey (x + z) (x - z) y

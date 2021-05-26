@@ -1,0 +1,3 @@
+package NoParameter where
+
+hello x y = x + y + <caret>z

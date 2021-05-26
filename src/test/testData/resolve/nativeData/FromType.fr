@@ -1,0 +1,4 @@
+module FromType where
+
+data JRandom = native java.util.List where
+    native nextBoolean :: Mutable s J<caret>Random -> ST s  Bool

@@ -1,0 +1,6 @@
+package FromUsage where
+
+(++***+) :: Int -> Int -> Int
+a ++***+ b = a + b * a
+
+func = 1 ++**<caret>*+ b

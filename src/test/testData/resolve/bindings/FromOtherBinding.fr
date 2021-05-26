@@ -1,0 +1,7 @@
+module FromOtherBinding where
+
+binding :: Long -> Long -> Long
+binding 1 2 = 10
+binding 1 x = x - 1
+bindi<caret>ng x 1 = 1 - x
+binding x y = x + y

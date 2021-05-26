@@ -1,0 +1,5 @@
+module MultipleAnnotations where
+
+first, seco<caret>nd :: Int -> String
+first _ = "first"
+second _ = "second"

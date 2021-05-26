@@ -1,0 +1,6 @@
+module SingleCharOperator where
+
+($) :: Int -> Int -> Int
+a $ b = b - a
+
+hello x y = (x <caret>$ 1) + y

@@ -1,0 +1,6 @@
+package ClassUsage where
+
+import ClassDeclaration
+
+instance MyClas<caret>s String where
+    func _ _ _ = "hello world!"

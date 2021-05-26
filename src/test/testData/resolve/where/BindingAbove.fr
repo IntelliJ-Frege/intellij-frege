@@ -1,0 +1,7 @@
+package BindingAbove where
+
+sayHello :: String
+sayHello = "hello"
+
+checkHello str = ifHello str
+    where ifHello = str == sayHel<caret>lo

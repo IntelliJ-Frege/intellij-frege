@@ -1,0 +1,4 @@
+module ClassDeclaration where
+
+class MyClass a where
+    func :: String -> String -> a -> String

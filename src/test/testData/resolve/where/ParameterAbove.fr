@@ -1,0 +1,5 @@
+package ParameterAbove where
+
+jury x y = (first x) + second
+    where first n = n - 10
+          second = y - (first $ x + <caret>y)
