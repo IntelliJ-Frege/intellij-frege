@@ -1,0 +1,3 @@
+package psi.NewtypeTwoConstructors where
+
+newtype Fail = A | B

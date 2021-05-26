@@ -123,6 +123,7 @@ topDecl ::= !<<eof>> (
             | importDecl
             | accessModifier? typeDecl
             | accessModifier? dataDecl
+            | accessModifier? newtypeDecl
             | accessModifier? nativeDataDecl
             | accessModifier? classDecl
             | accessModifier? instanceDecl
@@ -242,6 +243,11 @@ constructor ::= accessModifier? (EXLAMATION_MARK? conidUsage) (
           LEFT_BRACE <<commaSequence (labels DOUBLE_COLON sigma)>> RIGHT_BRACE | simpleType*)
 labels ::= <<commaSequence label>>
 label ::= EXLAMATION_MARK? extendedVarid
+
+/* Newtype Declarations */
+newtypeDecl ::= ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL constructor whereSection? {
+    pin=2
+}
 
 
 /* Native Data Declarations */
