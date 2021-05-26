@@ -60,4 +60,8 @@ public class FregeSuccessfulParsingValidProgramsTest extends FregeParsingTestAbs
     public void testExtraSemicolons() throws IOException {
         doSuccessfulParsingTest();
     }
+
+    public void testNewtype() throws IOException {
+        doSuccessfulParsingTest();
+    }
 }

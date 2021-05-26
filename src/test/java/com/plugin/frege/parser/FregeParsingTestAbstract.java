@@ -20,7 +20,7 @@ public abstract class FregeParsingTestAbstract extends ParsingTestCase {
         boolean parsingFail = false;
         try {
             doSuccessfulParsingTest();
-        } catch (ComparisonFailure ignored) {
+        } catch (AssertionError ignored) {
             parsingFail = true;
         }
         if (!parsingFail) {

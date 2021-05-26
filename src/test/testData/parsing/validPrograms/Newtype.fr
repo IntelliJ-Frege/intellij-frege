@@ -1,0 +1,10 @@
+package psi.Newtype where
+
+newtype Simple = Simple
+
+abstract newtype A b c = A (b -> c)   where
+    public run :: forall a . (forall ß. ST ß a) -> a
+    public run stx = case  stx of
+        ST x   → x ()
+
+
