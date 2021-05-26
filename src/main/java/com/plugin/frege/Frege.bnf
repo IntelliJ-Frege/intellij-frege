@@ -1,5 +1,6 @@
 {
     parserClass="com.plugin.frege.parser.FregeParser"
+    parserUtilClass="com.plugin.frege.parser.FregeParserUtil"
 
     extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -98,7 +99,7 @@ importDecl ::= IMPORT packageName (strongAs? conidUsage)? PUBLIC_MODIFIER? impor
 }
 importList ::= strongHiding? LEFT_PAREN (<<commaSequence importSpec>>)? RIGHT_PAREN
 importSpec ::= PUBLIC_MODIFIER? importItem importAlias?
-importItem ::= extendedVarid
+importItem ::= qVarid
              | conidUsage importMembers?
              | symbolOperatorQuoted
              | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN
@@ -128,6 +129,7 @@ topDecl ::= !<<eof>> (
             | accessModifier? classDecl
             | accessModifier? instanceDecl
             | accessModifier? deriveDecl
+            | nativeModule
             | decl) SEMICOLON? {
     pin=1
     recoverWhile=declRecover
@@ -187,7 +189,7 @@ annotationName ::= extendedVarid {
 
 /* Native Bindings */
 nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? nativeTypeApplications? DOUBLE_COLON sigma (VERTICAL_BAR sigma)* throwsSequence? {
-    pin=2
+    pin=4
 }
 nativeTypeApplications ::= LEFT_BRACE typeApplications? RIGHT_BRACE
 javaItem ::= nativeName | unaryOperator | symbolOperatorQuoted | STRING
@@ -261,6 +263,12 @@ nativeName ::= (extendedVarid | CONID) (DOT (extendedVarid | CONID))* {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeNativeNameMixin"
 }
+
+/* Native module */
+nativeModule ::= NATIVE MODULE (TYPE typeApplications)? (CLASS <<commaSequence constraint>>)? WHERE LEFT_BRACE javaCode RIGHT_BRACE {
+    pin=2
+}
+external javaCode ::= javaCodeParseExternal
 
 
 /* Expression */

@@ -117,9 +117,9 @@ public class FregeSuccessfulParsingFregeExamplesTest extends FregeParsingTestAbs
         doSuccessfulParsingTest();
     }
 
-//    public void testMapTest() throws IOException {
-//        doSuccessfulParsingTest(); TODO support native modules
-//    }
+    public void testMapTest() throws IOException {
+        doSuccessfulParsingTest();
+    }
 
     public void testMoreTailCall() throws IOException {
         doSuccessfulParsingTest();
