@@ -55,6 +55,7 @@ string               = {doubleQuote}([^\"\\] | {escapeSequence})*{doubleQuote}
 
 /* Regex Literal */
 regex                = \u00B4([^\u00B4\\] | {escapeSequence})*\u00B4
+                     | \u0027([^\u0027\\] | {escapeSequence})*\u0027
 
 /* Comments */
 lineCommentStart     = {dash}{dash}{dash}?
