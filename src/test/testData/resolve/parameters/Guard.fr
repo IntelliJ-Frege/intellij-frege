@@ -1,0 +1,5 @@
+module Guard where
+
+abs :: Int -> Int
+abs n | n <= 0 = (-n)
+      | <caret>n >  0 =  n

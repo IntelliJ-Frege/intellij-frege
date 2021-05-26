@@ -1,0 +1,7 @@
+module FromInstance where
+
+class SuperClass a where
+    checkSuper :: a -> Int
+
+instance SuperClas<caret>s Int where
+    checkSuper x = x + 1

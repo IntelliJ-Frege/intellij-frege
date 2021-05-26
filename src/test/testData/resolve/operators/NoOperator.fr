@@ -1,0 +1,6 @@
+package NoOperator where
+
+(++) :: Int -> Int -> Int
+a ++ b = 10
+
+check = 10 +<caret>++ 11

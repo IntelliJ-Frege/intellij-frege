@@ -1,0 +1,7 @@
+package FromAnnotation where
+
+functi<caret>on :: Int -> String -> String
+function _ x = x ++ "hello world!"
+
+anotherFunction :: Int
+anotherFunction = 10

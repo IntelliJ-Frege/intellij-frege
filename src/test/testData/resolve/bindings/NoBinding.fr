@@ -1,0 +1,6 @@
+module NoBinding where
+
+exists :: String -> Boolean
+exists str = (length str) > 0
+
+hello = 10 + (nonexist<caret>ent "hello")

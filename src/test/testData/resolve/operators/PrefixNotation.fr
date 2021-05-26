@@ -1,0 +1,6 @@
+package PrefixNotation where
+
+($+*+) :: String -> Int -> Int
+($+*+) str x = (length str) + x
+
+main = println $ "hello, world!" $<caret>+*+ 1234

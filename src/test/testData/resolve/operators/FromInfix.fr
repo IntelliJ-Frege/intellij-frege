@@ -1,0 +1,9 @@
+module FromInfix where
+
+infixl 9 +*<caret>+
+
+
+(+*+) :: String -> String -> Int
+s +*+ t = (length s) * (length t)
+
+result = "hello" +*+ "world"

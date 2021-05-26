@@ -1,0 +1,5 @@
+module FromUsage where
+
+func x y = x + y - x * 10
+hello x = fun<caret>c x x
+world = hello 3

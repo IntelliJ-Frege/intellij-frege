@@ -1,0 +1,5 @@
+module pack.Second where
+
+import pack.First
+
+hello = sayH<caret>ello "Kirill"

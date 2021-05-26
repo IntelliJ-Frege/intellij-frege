@@ -1,0 +1,9 @@
+package Parameters where
+
+import frege.data.Maybe
+
+petya :: Kirill -> Jury -> Maybe Petya
+petya kirill jury = if (kirill /= getDefault) then Just (fromJuryToPetya j<caret>ury) else Nothing
+
+getDefault = undefined
+fromJuryToPetya = undefined

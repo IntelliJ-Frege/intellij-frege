@@ -1,9 +1,11 @@
 package com.plugin.frege.resolve
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.parentOfTypes
 import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 import com.intellij.util.io.exists
+import com.plugin.frege.psi.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path
@@ -41,6 +43,138 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
     override fun getTestDataPath(): String {
         return getTestDataPathValue().toString()
     }
+
+    // Testing bindings
+
+    fun `test file bindings FromUsage`() = doTest {
+        it is FregeBinding && it.name == "func"
+    }
+
+    fun `test file bindings FromAnnotation`() = doTest {
+        it is FregeBinding && it.name == "function"
+    }
+
+    fun `test file bindings FromOtherBinding`() = doTest {
+        it is FregeBinding && it.text == "binding 1 2 = 10"
+    }
+
+    fun `test file bindings MultipleAnnotations`() = doTest {
+        it is FregeBinding && it.name == "second"
+    }
+
+    fun `test file bindings NoBinding`() = doTest {
+        it == null
+    }
+
+    // Testing parameters
+
+    fun `test file parameters Parameters`() = doTest {
+        it is FregeParameter && it.name == "jury"
+    }
+
+    fun `test file parameters Guard`() = doTest {
+        it is FregeParameter && it.name == "n"
+    }
+
+    fun `test file parameters Lambda`() = doTest {
+        it is FregeParameter && it.text == "x" && it.parentOfTypes(FregeLambda::class) != null
+    }
+
+    fun `test file parameters NoParameter`() = doTest {
+        it == null
+    }
+
+    // Testing operators
+
+    fun `test file operators FromUsage`() = doTest {
+        it is FregeBinding && it.name == "++***+"
+    }
+
+    fun `test file operators SingleCharOperator`() = doTest {
+        it is FregeBinding && it.name == "$"
+    }
+
+    fun `test file operators FromInfix`() = doTest {
+        it is FregeBinding && it.name == "+*+"
+    }
+
+    fun `test file operators PrefixNotation`() = doTest {
+        it is FregeBinding && it.name == "$+*+"
+    }
+
+    fun `test file operators NoOperator`() = doTest {
+        it == null
+    }
+
+    // Testing where
+
+    fun `test file where BindingBelow`() = doTest {
+        it is FregeBinding && it.name == "calculate"
+    }
+
+    fun `test file where BindingAbove`() = doTest {
+        it is FregeBinding && it.name == "sayHello"
+    }
+
+    fun `test file where ParameterAbove`() = doTest {
+        it is FregeParameter && it.name == "y"
+    }
+
+    fun `test file where NoBindingBelow`() = doTest {
+        it == null
+    }
+
+    fun `test file where NearestParameter`() = doTest {
+        it is FregeParameter && it.name == "x" && it.parentOfTypes(FregeBinding::class)?.name == "saySmth"
+    }
+
+    fun `test file where NearestBinding`() = doTest {
+        it is FregeBinding && it.text == "bindingImpl a b = a - b"
+    }
+
+    // Testing classes
+
+    fun `test file classes FromInstance`() = doTest {
+        it is FregeClassDecl && it.qualifiedName == "FromInstance.SuperClass"
+    }
+
+    fun `test file classes FromFunctionUsage`() = doTest {
+        it is FregeAnnotationItem && it.name == "checkIfPetya"
+                && it.containingClass?.qualifiedName == "FromFunctionUsage.Petya"
+    }
+
+    // Testing native data
+
+    fun `test file nativeData FromType`() = doTest {
+        it is FregeNativeDataDecl && it.qualifiedName == "FromType.JRandom"
+    }
+
+    // TODO methods are not supported yet
+
+    // Testing between files
+
+    fun `test dir betweenFiles binding Second`() = doTest {
+        it is FregeBinding && it.name == "sayHello" && it.containingClass?.qualifiedName == "pack.First"
+    }
+
+    fun `test dir betweenFiles qualifiedBinding First`() = doTest {
+        it is FregeBinding && it.name == "check" && it.containingClass?.qualifiedName == "Second"
+    }
+
+    fun `test dir betweenFiles class ClassUsage`() = doTest {
+        it is FregeClassDecl && it.qualifiedName == "ClassDeclaration.MyClass"
+    }
+
+    // Testing from Java
+
+    fun `test dir fromJava ToModule JavaClass`() = doTest {
+        it is FregeProgram && it.qualifiedName == "main.MainModule"
+    }
+
+    fun `test dir fromJava ToBinding BindingUsage`() = doTest {
+        it is FregeBinding && it.name == "sayHello" && it.containingClass?.qualifiedName == "hello.Binding"
+    }
+
 
     private fun getTestDataPathValue(): Path {
         return Paths.get("src", "test", "testData", "resolve").toAbsolutePath()

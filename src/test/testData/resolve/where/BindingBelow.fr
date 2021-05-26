@@ -1,0 +1,4 @@
+package BindingBelow where
+
+checkResults x y = c<caret>alculate (x + y)
+    where calculate n = n * 10
