@@ -6,12 +6,13 @@ import com.plugin.frege.psi.FregeElementFactory.createDataNameUsage
 import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findClassesInCurrentFile
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.mergeQualifiedNames
 import com.plugin.frege.resolve.FregeResolveUtil.findClassesByQualifiedName
 
 class FregeConidUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
     public override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
         val currentFileData = tryFindClassesInCurrentFile(incompleteCode)
-        return currentFileData.ifEmpty { tryFindDataByImports() } // TODO support incomplete code
+        return currentFileData.ifEmpty { tryFindClassesByImports() } // TODO support incomplete code
     }
 
     override fun handleElementRename(name: String): PsiElement {
@@ -27,12 +28,12 @@ class FregeConidUsageReference(element: PsiElement) : FregeReferenceBase(element
         return classes
     }
 
-    private fun tryFindDataByImports(): List<PsiElement> {
+    private fun tryFindClassesByImports(): List<PsiElement> {
         val className = psiElement.text
         val project = psiElement.project
         val imports = findImportsNamesForElement(psiElement, true)
         for (currentImport in imports) {
-            val qualifiedName = "$currentImport.$className"
+            val qualifiedName = mergeQualifiedNames(currentImport, className)
             val classes = findClassesByQualifiedName(project, qualifiedName)
             if (classes.isNotEmpty()) {
                 return classes
