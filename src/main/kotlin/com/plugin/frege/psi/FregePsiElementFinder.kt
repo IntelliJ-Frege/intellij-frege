@@ -9,6 +9,7 @@ import com.intellij.psi.PsiPackage
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.resolve.FregeResolveUtil
+import com.plugin.frege.stubs.index.FregeClassNameIndex
 
 class FregePsiElementFinder : PsiElementFinder() {
     override fun findClass(qualifiedName: String, scope: GlobalSearchScope): PsiClass? {
@@ -17,23 +18,18 @@ class FregePsiElementFinder : PsiElementFinder() {
     }
 
     override fun findClasses(qualifiedName: String, scope: GlobalSearchScope): Array<PsiClass> {
-        return getClasses(
-            { it.qualifiedName == qualifiedName },
-            scope, isInFregeLibrary(qualifiedName)
-        )
+        val project = scope.project ?: return PsiClass.EMPTY_ARRAY
+        return FregeClassNameIndex.INSTANCE.findByName(qualifiedName, project, scope).toTypedArray()
     }
 
-    override fun getClasses(psiPackage: PsiPackage, scope: GlobalSearchScope): Array<PsiClass> {
+    override fun getClasses(psiPackage: PsiPackage, scope: GlobalSearchScope): Array<PsiClass> { // TODO improve
         return getClasses({ clazz ->
             val clazzName = clazz.name
             clazzName != null && psiPackage.containsClassNamed(clazzName)
-        }, scope, isInFregeLibrary(psiPackage.qualifiedName))
+        }, scope)
     }
 
-    private fun getClasses(
-        predicate: (clazz: PsiClass) -> Boolean, scope: GlobalSearchScope,
-        includingLibrary: Boolean
-    ): Array<PsiClass> {
+    private fun getClasses(predicate: (clazz: PsiClass) -> Boolean, scope: GlobalSearchScope): Array<PsiClass> {
         val project = scope.project ?: return PsiClass.EMPTY_ARRAY
         val manager = PsiManager.getInstance(project)
         val classes: MutableList<PsiClass> = ArrayList()
@@ -46,11 +42,7 @@ class FregePsiElementFinder : PsiElementFinder() {
         }
         val filter = VirtualFileFilter { true }
 
-        FregeResolveUtil.iterateFregeFiles(processor, scope, filter, includingLibrary)
+        FregeResolveUtil.iterateFregeFiles(processor, scope, filter)
         return classes.toTypedArray()
-    }
-
-    private fun isInFregeLibrary(qualifiedName: String): Boolean {
-        return qualifiedName.startsWith("frege")
     }
 }

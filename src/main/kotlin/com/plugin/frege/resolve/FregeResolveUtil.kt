@@ -1,12 +1,9 @@
 package com.plugin.frege.resolve
 
-import com.intellij.openapi.module.impl.scopes.LibraryScope
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
-import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFileFilter
-import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
@@ -16,6 +13,7 @@ import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.FregeFileType
 import com.plugin.frege.psi.FregeBinding
 import com.plugin.frege.psi.FregePsiClass
+import com.plugin.frege.psi.impl.FregeNamedStubBasedPsiElementBase
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findClassesInCurrentFile
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
@@ -34,22 +32,9 @@ object FregeResolveUtil {
      */
     @JvmStatic
     fun findClassesByQualifiedName(project: Project, qualifiedName: String): List<PsiClass> {
-        val classes = FregeClassNameIndex.INSTANCE.findByName(
+        return FregeClassNameIndex.INSTANCE.findByName(
             qualifiedName, project, GlobalSearchScope.everythingScope(project)
         )
-
-        if (classes.isNotEmpty()) {
-            return classes
-        }
-        val inProject = doFindClasses(qualifiedName, GlobalSearchScope.projectScope(project))
-        return inProject.ifEmpty {
-            doFindClasses(qualifiedName, LibraryScope.everythingScope(project))
-        }
-    }
-
-    private fun doFindClasses(qualifiedName: String, scope: GlobalSearchScope): List<PsiClass> {
-        val project = scope.project ?: return emptyList()
-        return JavaPsiFacade.getInstance(project).findClasses(qualifiedName, scope).toList()
     }
 
     /**
@@ -70,7 +55,8 @@ object FregeResolveUtil {
      */
     @JvmStatic
     fun findContainingFregeClass(element: PsiElement): FregePsiClass? {
-        return element.parentOfTypes(FregePsiClass::class, withSelf = false)
+        return (element as? FregeNamedStubBasedPsiElementBase<*>)?.greenStub?.parentStub?.psi as? FregePsiClass
+            ?: element.parentOfTypes(FregePsiClass::class, withSelf = false)
     }
 
     /**
@@ -86,7 +72,7 @@ object FregeResolveUtil {
 
         return FregeMethodNameIndex.INSTANCE.findByName(name, project, GlobalSearchScope.everythingScope(project))
             .filter { method ->
-                val containingClass = method.containingClass // TODO store this in stub
+                val containingClass = method.containingClass
                 containingClass?.qualifiedName == qualifier
             }.ifEmpty {
                 findClassesByQualifiedName(project, qualifier)
@@ -114,20 +100,15 @@ object FregeResolveUtil {
     fun iterateFregeFiles(
         processor: ContentIterator,
         scope: GlobalSearchScope,
-        filter: VirtualFileFilter,
-        includingLibraries: Boolean
+        filter: VirtualFileFilter
     ) {
         val project = scope.project ?: return
         DumbService.getInstance(project).runReadActionInSmartMode {
-            if (includingLibraries) {
-                val files = FileTypeIndex.getFiles(FregeFileType.INSTANCE, scope)
-                for (virtualFile in files) {
-                    if (filter.accept(virtualFile!!) && !processor.processFile(virtualFile)) {
-                        break
-                    }
+            val files = FileTypeIndex.getFiles(FregeFileType.INSTANCE, scope)
+            for (virtualFile in files) {
+                if (filter.accept(virtualFile!!) && !processor.processFile(virtualFile)) {
+                    break
                 }
-            } else {
-                ProjectFileIndex.getInstance(project).iterateContent(processor, filter)
             }
         }
     }
