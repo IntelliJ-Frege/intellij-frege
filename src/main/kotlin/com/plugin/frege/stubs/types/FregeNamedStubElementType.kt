@@ -9,7 +9,7 @@ import com.plugin.frege.psi.FregeNamedElement
 abstract class FregeNamedStubElementType<StubT : NamedStubBase<*>, PsiT : FregeNamedElement?>(debugName: String) :
     FregeStubElementType<StubT, PsiT>(debugName) {
 
-    protected abstract val key: StubIndexKey<String, PsiT>
+    protected abstract val key: StubIndexKey<Int, PsiT>
 
     override fun serialize(stub: StubT, dataStream: StubOutputStream) {
         dataStream.writeName(stub.name)
@@ -18,7 +18,7 @@ abstract class FregeNamedStubElementType<StubT : NamedStubBase<*>, PsiT : FregeN
     override fun indexStub(stub: StubT, sink: IndexSink) {
         val name = stub.name
         if (name != null) {
-            sink.occurrence(key, name)
+            sink.occurrence(key, name.hashCode())
         }
     }
 }
