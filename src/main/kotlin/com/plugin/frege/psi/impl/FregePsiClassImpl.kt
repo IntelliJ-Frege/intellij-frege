@@ -1,6 +1,7 @@
 package com.plugin.frege.psi.impl
 
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.Pair
 import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightModifierList
@@ -27,12 +28,15 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
         modifierList = LightModifierList(manager, FregeLanguage.INSTANCE)
     }
 
+    protected abstract fun getNameWithoutStub(): @NlsSafe String
+
     override fun getName(): String {
-        val qualifiedName = qualifiedName
-        return if (qualifiedName != null)
-            FregePsiUtilImpl.nameFromQualifiedName(qualifiedName)
-        else
-            text
+        val nameFromStub = greenStub?.name
+        return if (nameFromStub != null) {
+            FregePsiUtilImpl.nameFromQualifiedName(nameFromStub)
+        } else {
+            getNameWithoutStub()
+        }
     }
 
     override fun getQualifiedName(): String? {

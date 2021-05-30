@@ -30,7 +30,7 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
         return packageName?.text ?: DEFAULT_MODULE_NAME
     }
 
-    override fun getName(): @NlsSafe String {
+    override fun getNameWithoutStub(): @NlsSafe String {
         return nameIdentifier?.text ?: DEFAULT_MODULE_NAME
     }
 

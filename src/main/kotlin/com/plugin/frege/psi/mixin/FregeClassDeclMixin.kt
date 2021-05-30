@@ -1,6 +1,7 @@
 package com.plugin.frege.psi.mixin
 
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.stubs.IStubElementType
@@ -20,7 +21,7 @@ abstract class FregeClassDeclMixin : FregePsiClassImpl, FregeClassDecl {
         return this // TODO
     }
 
-    override fun getName(): String {
+    override fun getNameWithoutStub(): @NlsSafe String {
         return nameIdentifier?.text ?: ""
     }
 
