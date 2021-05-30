@@ -1,0 +1,6 @@
+module FromCaseExpr where
+
+sum xss = case x<caret>ss of
+    []     -> 0
+    [x]    -> x
+    (x:xs) -> x + sum xs
