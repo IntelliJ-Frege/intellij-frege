@@ -31,8 +31,14 @@ meta linearIndentSection ::= VIRTUAL_OPEN_SECTION <<linearIndentSectionItemsVirt
     mixin="com.plugin.frege.psi.mixin.indentsection.FregeLinearIndentSectionMixin"
 }
 
-meta nestedIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON VIRTUAL_END_DECL?) <<nestedIndentSectionItemsVirtual <<rule>> >>)?
-meta nestedIndentSectionItemsSemicolon ::= <<rule>> (SEMICOLON <<nestedIndentSectionItemsSemicolon <<rule>> >>)?
+meta nestedIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON VIRTUAL_END_DECL?) <<nestedIndentSectionItemsVirtual <<rule>> >>)? {
+    implements="com.plugin.frege.psi.FregeScopeElement"
+    mixin="com.plugin.frege.psi.mixin.indentsection.FregeNestedIndentSectionItemsMixin"
+}
+meta nestedIndentSectionItemsSemicolon ::= <<rule>> (SEMICOLON <<nestedIndentSectionItemsSemicolon <<rule>> >>)? {
+    implements="com.plugin.frege.psi.FregeScopeElement"
+    mixin="com.plugin.frege.psi.mixin.indentsection.FregeNestedIndentSectionItemsMixin"
+}
 meta nestedIndentSection ::= VIRTUAL_OPEN_SECTION <<nestedIndentSectionItemsVirtual <<rule>> >> SEMICOLON? VIRTUAL_END_SECTION
                         | LEFT_BRACE <<nestedIndentSectionItemsSemicolon <<rule>> >> SEMICOLON? RIGHT_BRACE
                         | <<rule>>
@@ -285,8 +291,10 @@ lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
 
 /* Do Expressions */
 doExpression ::= DO <<nestedIndentSection (doDecl | qConid LEFT_BRACE fieldsOrVaridInit RIGHT_BRACE)>>
-doDecl ::= letExpression | expr ((LEFT_ARROW | EQUAL) expr)? {
-    implements="com.plugin.frege.psi.FregeSubprogramsHolder"
+doDecl ::= letExpression | pattern (LEFT_ARROW | EQUAL) expr | expr {
+    implements=["com.plugin.frege.psi.FregeSubprogramsHolder"
+                "com.plugin.frege.psi.FregeScopeElement"]
+    mixin="com.plugin.frege.psi.mixin.indentsection.FregeDoDeclMixin"
 }
 
 /* Case Expressions */
