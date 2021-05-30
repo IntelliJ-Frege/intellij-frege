@@ -133,6 +133,10 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
         it is FregeBinding && it.text == "bindingImpl a b = a - b"
     }
 
+    fun `test file where NoAvailableBinding`() = doTest {
+        it == null
+    }
+
     // Testing classes
 
     fun `test file classes FromInstance`() = doTest {
@@ -194,6 +198,28 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
 
     fun `test file do LetWithBraces`() = doTest {
         it is FregeBinding && it.name == "second"
+    }
+
+    // Testing case of
+
+    fun `test file caseof FromCaseExpr`() = doTest {
+        it is FregeParameter && it.name == "xss"
+    }
+
+    fun `test file caseof FromRightToLeft`() = doTest {
+        it is FregeParameter && it.name == "first" && it.parentOfType<FregePattern>()?.text == "first:_"
+    }
+
+    fun `test file caseof FromDeclToParam`() = doTest {
+        it is FregeParameter && it.name == "c"
+    }
+
+    fun `test file caseof WhereUnderDecl`() = doTest {
+        it is FregeBinding && it.name == "hey"
+    }
+
+    fun `test file caseof WhereUnderBindingAbove`() = doTest() {
+        it is FregeBinding && it.name == "calculate"
     }
 
     // Testing between files

@@ -1,0 +1,5 @@
+package FromRightToLeft where
+
+check first = case first of
+    (first:_) -> firs<caret>t
+    _     -> undefined

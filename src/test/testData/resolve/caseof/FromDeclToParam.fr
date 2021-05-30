@@ -1,0 +1,5 @@
+module FromDeclToParam where
+
+heyHey a b c = case (a + b) of
+    0 -> c - a - b
+    _ -> <caret>c

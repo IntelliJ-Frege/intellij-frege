@@ -1,0 +1,7 @@
+module WhereUnderBindingAbove where
+
+check a b c = case [a, b + c, a - c] of
+        [1, 2, 3] -> 10
+        _         -> calculat<caret>e a b c
+    where
+        calculate x y z = x - y + z - (z * y)

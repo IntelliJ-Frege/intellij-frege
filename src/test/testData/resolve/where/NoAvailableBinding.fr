@@ -1,0 +1,7 @@
+module NoAvailableBinding where
+
+binding = impl + impl2
+     where impl = implImpl
+               where implImpl = c<caret>alc
+           impl2 = calc
+               where calc = 2
