@@ -10,6 +10,7 @@ object FregeElementTypeFactory {
             "NATIVE_DATA_DECL" -> FregeNativeDataDeclElementType(name)
             "PROGRAM" -> FregeProgramElementType(name)
             "CLASS_DECL" -> FregeClassDeclElementType(name)
+            "DATA_DECL" -> FregeDataDeclElementType(name)
             "BINDING" -> FregeBindingElementType(name)
             "ANNOTATION_ITEM" -> FregeAnnotationItemElementType(name)
             else -> throw IllegalStateException("Unknown element name: $name")

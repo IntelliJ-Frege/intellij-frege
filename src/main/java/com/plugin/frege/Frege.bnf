@@ -11,7 +11,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("nativeDataDecl|program|binding|classDecl|annotationItem")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("nativeDataDecl|dataDecl|program|binding|classDecl|annotationItem")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -245,17 +245,20 @@ deriveDecl ::= DERIVE conidUsage (constraints DOUBLE_RIGHT_ARROW)? typeApplicati
 
 
 /* Data Declarations */
-dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructors whereSection? deriveDecl? {
+dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructs whereSection? deriveDecl? {
     pin=6
+    implements="com.plugin.frege.psi.FregePsiClass"
+    mixin="com.plugin.frege.psi.mixin.FregeDataDeclMixin"
+    stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
-constructors ::= constructor (VERTICAL_BAR constructor)*
-constructor ::= accessModifier? (EXLAMATION_MARK? conidUsage) (
+constructs ::= construct (VERTICAL_BAR construct)*
+construct ::= accessModifier? (EXLAMATION_MARK? conidUsage) (
           LEFT_BRACE <<commaSequence (labels DOUBLE_COLON sigma)>> RIGHT_BRACE | simpleType*)
 labels ::= <<commaSequence label>>
 label ::= EXLAMATION_MARK? extendedVarid
 
 /* Newtype Declarations */
-newtypeDecl ::= ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL constructor whereSection? {
+newtypeDecl ::= ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL construct whereSection? {
     pin=2
 }
 
