@@ -1,0 +1,5 @@
+module ToParamVirtual where
+
+testTest = do Just xyz <- 42
+              Just abc <- xy<caret>z + 10
+              putStr $ show abc

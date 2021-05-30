@@ -1,6 +1,7 @@
 package com.plugin.frege.resolve
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
@@ -150,6 +151,40 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
     }
 
     // TODO methods are not supported yet
+
+    // testing do
+
+    fun `test file do ToLetVirtual`() = doTest {
+        it is FregeBinding && it.name == "variable"
+    }
+
+    fun `test file do ToLetSemicolon`() = doTest {
+        it is FregeBinding && it.name == "hey"
+    }
+
+    fun `test file do ToParamVirtual`() = doTest {
+        it is FregeParameter && it.name == "xyz"
+    }
+
+    fun `test file do ToParamSemicolon`() = doTest {
+        it is FregeParameter && it.name == "petya"
+    }
+
+    fun `test file do MultipleLet`() = doTest {
+        it is FregeBinding && it.text == "hello = -1"
+    }
+
+    fun `test file do MultipleParam`() = doTest {
+        it is FregeParameter && it.parentOfType<FregeDoDecl>()?.text == "name <- getStdin"
+    }
+
+    fun `test file do MultipleParam2`() = doTest {
+        it is FregeParameter && it.parentOfType<FregeDoDecl>()?.text == "Just hey <- 10"
+    }
+
+    fun `test file do LetWithBraces`() = doTest {
+        it is FregeBinding && it.name == "second"
+    }
 
     // Testing between files
 

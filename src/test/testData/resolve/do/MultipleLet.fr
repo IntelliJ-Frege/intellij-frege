@@ -1,0 +1,7 @@
+module MultipleLet where
+
+petya = do putStr "Hello, Petya!\n"
+           let hello = 42
+           let petya = hello + 10
+           let hello = -1
+           putStr $ show hell<caret>o
