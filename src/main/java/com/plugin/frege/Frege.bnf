@@ -160,7 +160,8 @@ decl ::= accessModifier? (annotation | binding | nativeFunction) {
 
 /* Bindings */
 binding ::= lhs rhs {
-    implements="com.plugin.frege.psi.FregePsiMethod"
+    implements=["com.plugin.frege.psi.FregePsiMethod"
+                "com.plugin.frege.psi.FregeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeBindingMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
@@ -303,7 +304,8 @@ caseExpression ::= CASE expr OF <<linearIndentSection caseDecl>> {
 }
 caseDecl ::= pattern ((RIGHT_ARROW | EQUAL) expr | guardedExpressions) whereSection? {
     pin=2
-    implements="com.plugin.frege.psi.FregeSubprogramsHolder"
+    implements=["com.plugin.frege.psi.FregeSubprogramsHolder"
+                "com.plugin.frege.psi.FregeParametersHolder"]
 }
 
 /* If Condition Expressions */

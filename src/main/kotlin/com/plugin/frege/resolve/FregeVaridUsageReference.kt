@@ -3,14 +3,15 @@ package com.plugin.frege.resolve
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.parentOfType
 import com.plugin.frege.psi.FregeDoDecl
 import com.plugin.frege.psi.FregeElementFactory.createVarId
 import com.plugin.frege.psi.FregeParameter
+import com.plugin.frege.psi.FregeParametersHolder
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findWhereInExpression
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.getParentBinding
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 
 class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
@@ -39,13 +40,13 @@ class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element
             }
         }
 
-        var binding = getParentBinding(psiElement)
-        while (binding != null) {
-            val params = findElementsWithinElement(binding, predicate)
+        var paramHolder = psiElement.parentOfType<FregeParametersHolder>(false)
+        while (paramHolder != null) {
+            val params = findElementsWithinElement(paramHolder, predicate)
             if (params.isNotEmpty()) {
                 return params
             }
-            binding = getParentBinding(binding.parent)
+            paramHolder = paramHolder.parentOfType(false)
         }
 
         return findParametersInDoDecls(incompleteCode)
