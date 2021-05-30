@@ -8,15 +8,13 @@ import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.FregeLanguage
-import com.plugin.frege.psi.FregeAnnotationItem
-import com.plugin.frege.psi.FregeBinding
-import com.plugin.frege.psi.FregeParameter
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeMethodStub
 
 @Suppress("UnstableApiUsage")
-abstract class FregeBindingMixin : FregePsiMethodImpl, FregeBinding {
+abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, FregeBinding {
     private val modifierList: LightModifierList
 
     constructor(node: ASTNode) : super(node) {
@@ -29,6 +27,10 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeBinding {
         modifierList = LightModifierList(manager, FregeLanguage.INSTANCE,
             PsiModifier.STATIC, PsiModifier.FINAL, PsiModifier.PUBLIC
         ) // TODO
+    }
+
+    override fun getSubprogramsFromScope(): List<PsiElement> {
+        return rhs.whereSection?.linearIndentSection?.subprogramsFromScope ?: emptyList()
     }
 
     override fun getBody(): PsiCodeBlock {

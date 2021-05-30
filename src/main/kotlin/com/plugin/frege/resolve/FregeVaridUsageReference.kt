@@ -9,8 +9,6 @@ import com.plugin.frege.psi.FregeElementFactory.createVarId
 import com.plugin.frege.psi.FregeParameter
 import com.plugin.frege.psi.FregeParametersHolder
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinElement
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.findWhereInExpression
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 
@@ -30,15 +28,8 @@ class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element
         return result
     }
 
-    private fun findParameters(incompleteCode: Boolean): List<PsiElement> { // TODO copy/paste from resolve util
+    private fun findParameters(incompleteCode: Boolean): List<PsiElement> {
         val predicate = getByTypePredicateCheckingName(FregeParameter::class, psiElement.text, incompleteCode)
-        val where = findWhereInExpression(psiElement)
-        if (where != null) {
-            val params = findElementsWithinScope(where, predicate)
-            if (params.isNotEmpty()) {
-                return params
-            }
-        }
 
         var paramHolder = psiElement.parentOfType<FregeParametersHolder>(false)
         while (paramHolder != null) {
