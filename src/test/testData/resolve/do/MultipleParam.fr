@@ -1,0 +1,8 @@
+module MultipleParam where
+
+jury = do putStr "Hello, Jury!\n"
+          name <- getLine
+          putStr name
+          name <- getText
+          name <- getStdin
+          puStr n<caret>ame

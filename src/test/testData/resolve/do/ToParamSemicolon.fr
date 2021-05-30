@@ -1,0 +1,3 @@
+module ToParamSemicolon where
+
+check = do { Just petya <- 10; println $ show pety<caret>a }

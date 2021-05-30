@@ -1,0 +1,4 @@
+module LetWithBraces where
+
+letLet = do let { first = 11; second = first + 10 }
+            putStr $ show secon<caret>d

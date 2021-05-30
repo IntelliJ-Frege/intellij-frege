@@ -1,0 +1,7 @@
+module MultipleParam2 where
+
+kirill = do putStr "Hello, Kirill!\n"
+            Just hey <- 10
+            putStr $ show h<caret>ey
+            Just hey <- 20
+            putStr $ show hey

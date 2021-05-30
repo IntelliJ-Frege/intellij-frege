@@ -1,0 +1,5 @@
+module ToLetVirtual where
+
+check = do putStr "Started\n"
+           let variable = 10
+           putStr $ "Result " ++ show var<caret>iable

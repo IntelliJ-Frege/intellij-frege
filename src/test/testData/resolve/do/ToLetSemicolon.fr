@@ -1,0 +1,3 @@
+module ToLetSemicolon where
+
+check = do { let { hey = 42 }; putStr $ show h<caret>ey }
