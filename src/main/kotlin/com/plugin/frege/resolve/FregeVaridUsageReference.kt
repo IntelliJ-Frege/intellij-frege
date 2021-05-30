@@ -2,6 +2,8 @@ package com.plugin.frege.resolve
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
+import com.plugin.frege.psi.FregeDoDecl
 import com.plugin.frege.psi.FregeElementFactory.createVarId
 import com.plugin.frege.psi.FregeParameter
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinElement
@@ -9,6 +11,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findWhereInExpression
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getParentBinding
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 
 class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
 
@@ -44,6 +47,25 @@ class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element
             }
             binding = getParentBinding(binding.parent)
         }
+
+        return findParametersInDoDecls(incompleteCode)
+    }
+
+    private fun findParametersInDoDecls(incompleteCode: Boolean): List<PsiElement> {
+        val predicate = getByTypePredicateCheckingName(FregeParameter::class, psiElement.text, incompleteCode)
+        var scope = scopeOfElement(psiElement)
+        while (scope != null) {
+            val doDecl = PsiTreeUtil.getPrevSiblingOfType(scope, FregeDoDecl::class.java)
+            if (doDecl?.pattern != null) {
+                val params = findElementsWithinElement(doDecl.pattern, predicate)
+                if (params.isNotEmpty()) {
+                    return params
+                }
+            }
+
+            scope = scopeOfElement(scope.parent)
+        }
+
         return emptyList()
     }
 }
