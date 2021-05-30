@@ -2,6 +2,7 @@ package com.plugin.frege.psi.impl
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.psi.*
 import kotlin.reflect.KClass
@@ -79,7 +80,7 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun findWhereInExpression(element: PsiElement): FregeWhereSection? {
-        val binding = getParentBinding(element)
+        val binding = element.parentOfType<FregeBinding>(false)
         val elements = findElementsWithinElementSequence(binding) { it === element }
         return if (elements.any()) {
             findElementsWithinElementSequence(binding) {
@@ -162,14 +163,6 @@ object FregePsiUtilImpl {
         predicate: (elem: PsiElement) -> Boolean
     ): List<PsiElement> {
         return findElementsWithinElementSequence(element, predicate).toList()
-    }
-
-    /**
-     * @return the first parent which is [FregeBinding].
-     */
-    @JvmStatic
-    fun getParentBinding(element: PsiElement?): FregeBinding? {
-        return element?.parentOfTypes(FregeBinding::class, withSelf = false)
     }
 
     /**
