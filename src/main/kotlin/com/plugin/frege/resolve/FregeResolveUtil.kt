@@ -18,10 +18,10 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findClassesInCurrentFile
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.findWhereInExpression
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getQualifiedNameFromUsage
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.mergeQualifiedNames
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.notWeakScopeOfElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 import com.plugin.frege.stubs.index.FregeClassNameIndex
 import com.plugin.frege.stubs.index.FregeMethodNameIndex
@@ -118,8 +118,9 @@ object FregeResolveUtil {
      */
     @JvmStatic
     fun resolveBindingByNameElement(bindingName: PsiElement, incompleteCode: Boolean): List<PsiElement> {
+        val scope = notWeakScopeOfElement(bindingName) ?: return emptyList()
         val binding = findElementsWithinScope(
-            bindingName,
+            scope,
             getByTypePredicateCheckingName(FregeBinding::class, bindingName.text, incompleteCode)
         ).minByOrNull { it.textOffset }
         return if (binding != null) listOf(binding) else emptyList()
@@ -197,15 +198,6 @@ object FregeResolveUtil {
         incompleteCode: Boolean
     ): List<PsiElement> {
         val predicate = getByTypePredicateCheckingName(FregeBinding::class, name, incompleteCode)
-
-        // check if this expression has `where` ans search there for definitions if it does.
-        val where = findWhereInExpression(usage)
-        if (where?.linearIndentSection != null) {
-            val whereFuncNames = findElementsWithinScope(where.linearIndentSection!!, predicate)
-            if (whereFuncNames.isNotEmpty()) {
-                return whereFuncNames
-            }
-        }
 
         // search for definitions in the current and outer scopes
         var scope: PsiElement? = scopeOfElement(usage)

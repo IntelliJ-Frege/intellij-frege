@@ -13,19 +13,36 @@ object FregePsiUtilImpl {
         "frege.Prelude" // TODO
     )
 
-    @JvmStatic
     private fun isScope(element: PsiElement?): Boolean {
         return element is FregeScopeElement
+    }
+
+    private fun isWeakScope(element: PsiElement?): Boolean {
+        return element is FregeWeakScopeElement
     }
 
     /**
      * Finds the first parent of [element] that presents a scope.
      * @return the [element], if it is a scope or `null` if there is no a scope for [element].
      */
-    @Suppress("RedundantNullableReturnType")
     @JvmStatic
     fun scopeOfElement(element: PsiElement): FregeScopeElement? {
-        return element.parentOfTypes(FregeScopeElement::class, withSelf = true)
+        return element.parentOfType(true)
+    }
+
+    /**
+     * The same as [scopeOfElement] but skips scopes which are [FregeWeakScopeElement].
+     */
+    @JvmStatic
+    fun notWeakScopeOfElement(element: PsiElement): FregeScopeElement? {
+        var current = element.parentOfType<FregeScopeElement>(true)
+        while (current != null) {
+            if (!isWeakScope(current)) {
+                return current
+            }
+            current = current.parentOfType(false)
+        }
+        return null
     }
 
     /**
@@ -37,7 +54,7 @@ object FregePsiUtilImpl {
     fun <T : PsiElement> subprogramsFromScopeOfElement(element: PsiElement, getter: (elem: PsiElement) -> T?): List<T> {
         val scope = scopeOfElement(element)
         return if (isScope(scope)) {
-            scope!!.subprogramsFromScope.mapNotNull {getter(it) }
+            scope!!.subprogramsFromScope.mapNotNull { getter(it) }
         } else {
             emptyList()
         }
@@ -49,14 +66,6 @@ object FregePsiUtilImpl {
     @JvmStatic
     fun subprogramsFromScopeOfElement(element: PsiElement): List<PsiElement> {
         return subprogramsFromScopeOfElement(element) { it }
-    }
-
-    /**
-     * @return a predicate, accepting only [PsiElement] for which [PsiElement.getText] equals [text].
-     */
-    @JvmStatic
-    fun keepWithText(text: String): (elem: PsiElement?) -> Boolean {
-        return { it != null && text == it.text }
     }
 
     /**
@@ -72,22 +81,6 @@ object FregePsiUtilImpl {
             instancePredicate(elem) && (elem as? PsiNamedElement)?.name == name
         } else {
             instancePredicate
-        }
-    }
-
-    /**
-     * @return [FregeWhereSection] if the first found binging contains it or `null` it not.
-     */
-    @JvmStatic
-    fun findWhereInExpression(element: PsiElement): FregeWhereSection? {
-        val binding = element.parentOfType<FregeBinding>(false)
-        val elements = findElementsWithinElementSequence(binding) { it === element }
-        return if (elements.any()) {
-            findElementsWithinElementSequence(binding) {
-                it is FregeWhereSection
-            }.firstOrNull() as FregeWhereSection?
-        } else {
-            null
         }
     }
 
@@ -145,11 +138,13 @@ object FregePsiUtilImpl {
             predicate(element) -> {
                 sequenceOf(element)
             }
-            isScope(element) -> {
+            isScope(element) && !isWeakScope(element) -> {
                 emptySequence()
             }
             else -> {
-                element.children.asSequence().flatMap { findElementsWithinElementSequence(it, predicate) }
+                element.children.asSequence().flatMap {
+                    findElementsWithinElementSequence(it, predicate)
+                }
             }
         }
     }
@@ -281,14 +276,5 @@ object FregePsiUtilImpl {
         } else {
             qualifiedName[qualifiedName.length - qualifier.length - 1] == '.'
         }
-    }
-
-    /**
-     * @return the first parent that inherits [FregeDecl], or `null` if none of them found
-     */
-    @JvmStatic
-    fun getDeclType(element: PsiElement): PsiElement? {
-        val fregeDeclParent = element.parentOfTypes(FregeDecl::class, withSelf = false)
-        return fregeDeclParent?.firstChild
     }
 }
