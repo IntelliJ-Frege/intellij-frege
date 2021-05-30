@@ -1,0 +1,3 @@
+module LetIn where
+
+checkSum expected = let sum = 10 in su<caret>m == expected
