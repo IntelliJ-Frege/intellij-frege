@@ -152,7 +152,17 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
 
     // TODO methods are not supported yet
 
-    // testing do
+    // Testing let
+
+    fun `test file let LetIn`() = doTest {
+        it is FregeBinding && it.name == "sum"
+    }
+
+    fun `test file let LetInBraces`() = doTest {
+        it is FregeBinding && it.name == "approx"
+    }
+
+    // Testing do
 
     fun `test file do ToLetVirtual`() = doTest {
         it is FregeBinding && it.name == "variable"

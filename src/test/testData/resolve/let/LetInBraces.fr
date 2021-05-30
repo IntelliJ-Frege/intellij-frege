@@ -1,0 +1,5 @@
+module LetInBraces where
+
+checkSum expected = let { exact  = exp 3;
+                          approx = round exact }
+                    in expected == app<caret>rox
