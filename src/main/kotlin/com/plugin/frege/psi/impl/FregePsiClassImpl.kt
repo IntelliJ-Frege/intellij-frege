@@ -25,6 +25,10 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
 
     protected abstract fun getNameWithoutStub(): @NlsSafe String
 
+    override fun notQualifiedSearchAllowed(): Boolean {
+        return true
+    }
+
     override fun getName(): String {
         val nameFromStub = greenStub?.name
         return if (nameFromStub != null) {

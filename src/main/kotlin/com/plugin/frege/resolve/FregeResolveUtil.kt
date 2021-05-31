@@ -21,7 +21,9 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getQualifiedNameFromUsage
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.mergeQualifiedNames
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.notWeakScopeOfElement
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 import com.plugin.frege.stubs.index.FregeClassNameIndex
 import com.plugin.frege.stubs.index.FregeMethodNameIndex
@@ -64,16 +66,24 @@ object FregeResolveUtil {
      */
     @JvmStatic
     fun findMethodsByQualifiedName(project: Project, qualifiedName: String): List<PsiMethod> {
-        val name = FregePsiUtilImpl.nameFromQualifiedName(qualifiedName)
-        val qualifier = FregePsiUtilImpl.qualifierFromQualifiedName(qualifiedName)
+        val name = nameFromQualifiedName(qualifiedName)
+        val qualifier = qualifierFromQualifiedName(qualifiedName)
         if (qualifier.isEmpty()) {
             return emptyList()
         }
 
         return FregeMethodNameIndex.INSTANCE.findByName(name, project, GlobalSearchScope.everythingScope(project))
             .filter { method ->
-                val containingClass = method.containingClass
-                containingClass?.qualifiedName == qualifier
+                val clazz = method.containingClass ?: return@filter false
+                val className = clazz.qualifiedName ?: return@filter false
+                when {
+                    className == qualifier ->
+                        true
+                    clazz.notQualifiedSearchAllowed() ->
+                        qualifierFromQualifiedName(className) == qualifier
+                    else ->
+                        false
+                }
             }.ifEmpty {
                 findClassesByQualifiedName(project, qualifier)
                     .flatMap { it.findMethodsByName(name, true).asSequence() }

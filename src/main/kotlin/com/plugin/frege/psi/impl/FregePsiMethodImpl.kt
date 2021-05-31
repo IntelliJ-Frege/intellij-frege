@@ -13,6 +13,7 @@ import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.MethodSignature
 import com.intellij.psi.util.MethodSignatureBackedByPsiMethod
 import com.plugin.frege.FregeLanguage
+import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.resolve.FregeResolveUtil.findContainingFregeClass
 import com.plugin.frege.stubs.FregeMethodStub
@@ -88,7 +89,7 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
         return null // TODO
     }
 
-    override fun getContainingClass(): PsiClass? {
+    override fun getContainingClass(): FregePsiClass? {
         return findContainingFregeClass(this)
     }
 
