@@ -1,0 +1,8 @@
+package hello.petya.Usage where
+
+import hello.world.Declaration
+
+what :: MyDat<caret>a -> Int
+what First       = 0
+what (Second _)  = 1
+what (Third _ _) = 2

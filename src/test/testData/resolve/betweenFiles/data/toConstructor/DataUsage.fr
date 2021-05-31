@@ -1,0 +1,7 @@
+module second.DataUsage where
+
+import first.DataDeclaration
+
+test :: PetyaFriend -> Bool
+test Kir<caret>ill = true
+test Jury   = false

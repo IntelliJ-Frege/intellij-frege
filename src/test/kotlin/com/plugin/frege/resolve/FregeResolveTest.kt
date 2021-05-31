@@ -1,6 +1,7 @@
 package com.plugin.frege.resolve
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture
@@ -148,6 +149,17 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
                 && it.containingClass?.qualifiedName == "FromFunctionUsage.Petya"
     }
 
+    // Testing data
+
+    fun `test file data FromTypeUsage`() = doTest {
+        it is FregeDataDecl && it.qualifiedName == "FromTypeUsage.MyTestData"
+    }
+
+    fun `test file data FromConstructorUsage`() = doTest {
+        it is FregeConstruct && it.name == "Right"
+                && it.containingClass?.qualifiedName == "FromConstructorUsage.Either"
+    }
+
     // Testing native data
 
     fun `test file nativeData FromType`() = doTest {
@@ -232,8 +244,27 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
         it is FregeBinding && it.name == "check" && it.containingClass?.qualifiedName == "Second"
     }
 
-    fun `test dir betweenFiles class ClassUsage`() = doTest {
+    fun `test dir betweenFiles class fromInstance ClassUsage`() = doTest {
         it is FregeClassDecl && it.qualifiedName == "ClassDeclaration.MyClass"
+    }
+
+    fun `test dir betweenFiles class notQualified Usage`() = doTest {
+        println(it?.elementType)
+        it is FregeAnnotationItem /*&& it.name == "calc"
+                && it.containingClass?.qualifiedName == "decl.ClassDeclaration.MyClass"*/
+    }
+
+    fun `test dir betweenFiles data toConstructor DataUsage`() = doTest {
+        it is FregeConstruct && it.name == "Kirill"
+                && it.containingClass?.qualifiedName == "first.DataDeclaration.PetyaFriend"
+    }
+
+    fun `test dir betweenFiles data toDeclaration Usage`() = doTest {
+        it is FregeDataDecl && it.qualifiedName == "hello.world.Declaration.MyData"
+    }
+
+    fun `test dir betweenFiles data noReference Usage`() = doTest {
+        it == null
     }
 
     // Testing from Java

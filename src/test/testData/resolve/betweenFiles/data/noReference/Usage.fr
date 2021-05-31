@@ -1,0 +1,6 @@
+module first.Usage where
+
+-- import first.Declaration
+
+test :: My<caret>Data -> Int
+test _ = 0

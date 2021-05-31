@@ -1,0 +1,3 @@
+module first.DataDeclaration where
+
+data PetyaFriend = Kirill | Jury

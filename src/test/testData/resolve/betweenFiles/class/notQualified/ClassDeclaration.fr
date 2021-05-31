@@ -1,0 +1,7 @@
+module decl.ClassDeclaration where
+
+class MyClass a where
+    calc :: a -> a -> Int
+
+instance MyClass Int where
+    calc x y = x - y

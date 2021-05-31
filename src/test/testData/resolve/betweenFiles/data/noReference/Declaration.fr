@@ -1,0 +1,3 @@
+module first.Declaration where
+
+data MyData = First | Second

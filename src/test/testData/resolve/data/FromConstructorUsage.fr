@@ -1,0 +1,9 @@
+module FromConstructorUsage where
+
+import frege.prelude.PreludeBase
+
+data Either a b = Left a | Right b
+
+test :: Either Int -> Maybe Int
+test (Righ<caret>t value) = Just value
+test (Left _)      = Nothing

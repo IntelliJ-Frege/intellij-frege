@@ -1,0 +1,3 @@
+module hello.world.Declaration where
+
+data MyData a = First | Second a | Third a a
