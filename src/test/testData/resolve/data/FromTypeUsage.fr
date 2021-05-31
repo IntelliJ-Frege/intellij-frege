@@ -1,0 +1,8 @@
+module FromTypeUsage where
+
+data MyTestData = First | Second | Third
+
+testTest :: MyTestDat<caret>a -> Int
+testTest First = 0
+testTest Second = 0
+testTest Third = 0
