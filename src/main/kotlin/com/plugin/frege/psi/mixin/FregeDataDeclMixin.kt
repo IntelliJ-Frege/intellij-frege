@@ -29,7 +29,7 @@ abstract class FregeDataDeclMixin : FregePsiClassImpl, FregeDataDecl {
     }
 
     override fun getMethods(): Array<PsiMethod> {
-        return PsiMethod.EMPTY_ARRAY // TODO
+        return constructs.constructList.toTypedArray()
     }
 
     override fun isInterface(): Boolean {
