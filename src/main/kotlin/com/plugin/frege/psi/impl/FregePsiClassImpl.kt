@@ -18,15 +18,10 @@ import org.jetbrains.annotations.NonNls
 
 @Suppress("UnstableApiUsage")
 abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassStub>, FregePsiClass {
-    private val modifierList: LightModifierList
 
-    constructor(node: ASTNode) : super(node) {
-        modifierList = LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC, PsiModifier.FINAL) // TODO
-    }
+    constructor(node: ASTNode) : super(node)
 
-    constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType) {
-        modifierList = LightModifierList(manager, FregeLanguage.INSTANCE)
-    }
+    constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     protected abstract fun getNameWithoutStub(): @NlsSafe String
 
@@ -197,11 +192,11 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
     }
 
     override fun getModifierList(): PsiModifierList {
-        return modifierList
+        return LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC, PsiModifier.FINAL) // TODO
     }
 
     override fun hasModifierProperty(@NonNls name: String): Boolean {
-        return getModifierList().hasModifierProperty(name) // TODO
+        return modifierList.hasModifierProperty(name) // TODO
     }
 
     override fun getContainingClass(): PsiClass? {

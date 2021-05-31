@@ -100,7 +100,7 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun isInGlobalScope(element: PsiElement): Boolean {
-        return isScopeGlobal(scopeOfElement(element))
+        return isScopeGlobal(notWeakScopeOfElement(element))
     }
 
     /**
