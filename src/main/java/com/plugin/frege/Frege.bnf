@@ -11,7 +11,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("nativeDataDecl|dataDecl|program|binding|classDecl|annotationItem")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("nativeDataDecl|dataDecl|construct|program|binding|classDecl|annotationItem")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -253,7 +253,11 @@ dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructs whereSection
 }
 constructs ::= construct (VERTICAL_BAR construct)*
 construct ::= accessModifier? (EXLAMATION_MARK? conidUsage) (
-          LEFT_BRACE <<commaSequence (labels DOUBLE_COLON sigma)>> RIGHT_BRACE | simpleType*)
+          LEFT_BRACE <<commaSequence (labels DOUBLE_COLON sigma)>> RIGHT_BRACE | simpleType*) {
+    implements="com.plugin.frege.psi.FregePsiMethod"
+    mixin="com.plugin.frege.psi.mixin.FregeConstructMixin"
+    stubClass="com.plugin.frege.stubs.FregeMethodStub"
+}
 labels ::= <<commaSequence label>>
 label ::= EXLAMATION_MARK? extendedVarid
 

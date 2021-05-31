@@ -12,10 +12,10 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.FregeFileType
 import com.plugin.frege.psi.FregeBinding
+import com.plugin.frege.psi.FregeBody
 import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.impl.FregeNamedStubBasedPsiElementBase
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.findClassesInCurrentFile
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
@@ -124,6 +124,26 @@ object FregeResolveUtil {
             getByTypePredicateCheckingName(FregeBinding::class, bindingName.text, incompleteCode)
         ).minByOrNull { it.textOffset }
         return if (binding != null) listOf(binding) else emptyList()
+    }
+
+    /**
+     * @return list of [FregePsiClass] which are in the global scope of [element].
+     */
+    @JvmStatic
+    fun findClassesInCurrentFile(element: PsiElement): List<FregePsiClass> {
+        val globalScope = FregePsiUtilImpl.globalScopeOfElement(element) ?: return emptyList()
+        check(globalScope is FregeBody) { "Global scope must be Frege body." }
+        return globalScope.topDeclList
+            .mapNotNull {
+                when { // TODO omg, think up a better way
+                    it.classDecl != null -> it.classDecl
+                    it.dataDecl != null -> it.dataDecl
+                    it.nativeDataDecl != null -> it.nativeDataDecl
+                    it.typeDecl != null -> it.typeDecl
+                    else -> null
+                }
+            }
+            .filterIsInstance(FregePsiClass::class.java)
     }
 
     /**

@@ -4,15 +4,22 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.plugin.frege.psi.FregeElementFactory.createDataNameUsage
 import com.plugin.frege.psi.FregePsiClass
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.findClassesInCurrentFile
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.mergeQualifiedNames
 import com.plugin.frege.resolve.FregeResolveUtil.findClassesByQualifiedName
+import com.plugin.frege.resolve.FregeResolveUtil.findClassesInCurrentFile
+import com.plugin.frege.resolve.FregeResolveUtil.findMethodsFromUsage
 
 class FregeConidUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
     public override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
-        val currentFileData = tryFindClassesInCurrentFile(incompleteCode)
-        return currentFileData.ifEmpty { tryFindClassesByImports() } // TODO support incomplete code
+        val currentFileData = tryFindClassesInCurrentFile(incompleteCode).toMutableList()
+        if (currentFileData.isEmpty() || incompleteCode) {
+            currentFileData.addAll(tryFindClassesByImports()) // TODO support incomplete code
+        }
+        if (currentFileData.isEmpty() || incompleteCode) {
+            currentFileData.addAll(findMethodsFromUsage(psiElement, incompleteCode))
+        }
+        return currentFileData
     }
 
     override fun handleElementRename(name: String): PsiElement {
