@@ -35,6 +35,7 @@ class FregeFindUsagesProvider : FindUsagesProvider {
             is FregeNewtypeDecl -> "newtype"
             is FregeTypeDecl -> "type alias"
             is FregeNativeDataDecl -> "native data"
+            is FregeNativeFunction -> "native function"
             is FregeClassDecl -> "class"
             is FregeProgram -> "module"
             is FregeParameter -> "parameter"

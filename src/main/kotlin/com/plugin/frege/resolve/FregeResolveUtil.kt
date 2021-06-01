@@ -6,6 +6,7 @@ import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.vfs.VirtualFileFilter
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
@@ -45,7 +46,7 @@ object FregeResolveUtil {
      * @return a list of methods and fields with [name] in [psiClass].
      */
     @JvmStatic
-    fun findMethodsAndFieldsByName(psiClass: PsiClass, name: String): List<PsiElement> {
+    fun findMethodsAndFieldsByName(psiClass: PsiClass, name: String): List<PsiMember> {
         val methods = psiClass.findMethodsByName(name, true)
         if (methods.isNotEmpty()) {
             return methods.toList()

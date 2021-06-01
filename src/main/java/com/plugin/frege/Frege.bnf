@@ -11,7 +11,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("nativeDataDecl|dataDecl|newtypeDecl|typeDecl|construct|program|binding|classDecl|annotationItem")
+    elementTypeFactory("nativeDataDecl|dataDecl|newtypeDecl|typeDecl|construct|program|binding|nativeFunction|classDecl|annotationItem")
         ="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
@@ -169,7 +169,7 @@ binding ::= lhs rhs {
 }
 lhs ::= functionLhs | pattern
 functionLhs ::= strictPatterns lexOperator strictPatterns
-              | (functionName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN) strictPattern* // TODO UNOP?
+              | (functionName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN) strictPattern* // TODO unaryOperator?
 rhs ::= (EQUAL expr | guardedExpressions) whereSection? {
     pin=1
 }
@@ -184,7 +184,7 @@ functionName ::= extendedVarid {
 annotation ::= annotationItem (COMMA annotationItem)* DOUBLE_COLON sigma {
     pin=3
 }
-annotationItem ::= annotationName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN | UNOP {
+annotationItem ::= annotationName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN | unaryOperator {
     implements="com.plugin.frege.psi.FregePsiMethod"
     mixin="com.plugin.frege.psi.mixin.FregeAnnotationItemMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
@@ -199,13 +199,17 @@ annotationName ::= extendedVarid {
 /* Native Bindings */
 nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? nativeTypeApplications? DOUBLE_COLON sigma (VERTICAL_BAR sigma)* throwsSequence? {
     pin=4
+    implements="com.plugin.frege.psi.FregePsiMethod"
+    mixin="com.plugin.frege.psi.mixin.FregeNativeFunctionMixin"
+    stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
 nativeTypeApplications ::= LEFT_BRACE typeApplications? RIGHT_BRACE
 javaItem ::= nativeName | unaryOperator | symbolOperatorQuoted | STRING
 throwsSequence ::= THROWS <<commaSequence typeApplications>>
-nativeAnnotationItem ::= nativeFunctionName | LEFT_PAREN (symbolOperatorQuoted | UNOP) RIGHT_PAREN | (symbolOperatorQuoted | UNOP)
+nativeAnnotationItem ::= nativeFunctionName | LEFT_PAREN (symbolOperatorQuoted | unaryOperator) RIGHT_PAREN | (symbolOperatorQuoted | unaryOperator)
 nativeFunctionName ::= extendedVarid {
-    implements="com.plugin.frege.psi.FregeCompositeElement"
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
     mixin="com.plugin.frege.psi.mixin.FregeNativeFunctionNameMixin"
 }
 
