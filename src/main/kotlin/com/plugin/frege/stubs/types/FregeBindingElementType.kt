@@ -17,6 +17,6 @@ class FregeBindingElementType(debugName: String) : FregeMethodElementType(debugN
 
     override fun shouldCreateStub(node: ASTNode): Boolean {
         val element = node.psi
-        return isInGlobalScope(element)
+        return isInGlobalScope(element) && element.reference?.resolve() == element
     }
 }
