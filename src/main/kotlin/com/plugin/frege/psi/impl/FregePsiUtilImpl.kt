@@ -2,6 +2,7 @@ package com.plugin.frege.psi.impl
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.psi.*
@@ -256,5 +257,19 @@ object FregePsiUtilImpl {
         } else {
             qualifiedName[qualifiedName.length - qualifier.length - 1] == '.'
         }
+    }
+
+    /**
+     * It is a workaround while we don't have a type system.
+     * @return first [FregeConidUsage] from [sigma] if it's not the arrow type. Otherwise `null` will be returned.
+     */
+    @JvmStatic
+    fun findMainTypeFromSigma(sigma: FregeSigma?): FregeConidUsage? {
+        val rho = sigma?.rho ?: return null
+        if (rho.rho != null) { // it's the arrow type
+            return null
+        }
+        val simpleType = rho.typeApplication?.simpleTypeList?.firstOrNull() ?: return null
+        return PsiTreeUtil.findChildOfType(simpleType, FregeConidUsage::class.java)
     }
 }
