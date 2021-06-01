@@ -16,6 +16,7 @@ object FregeElementTypeFactory {
             "CONSTRUCT" -> FregeConstructElementType(name)
             "BINDING" -> FregeBindingElementType(name)
             "ANNOTATION_ITEM" -> FregeAnnotationItemElementType(name)
+            "NATIVE_FUNCTION" -> FregeNativeFunctionElementType(name)
             else -> throw IllegalStateException("Unknown element name: $name")
         }
     }

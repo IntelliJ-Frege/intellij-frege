@@ -7,6 +7,7 @@ import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.stubs.IStubElementType
 import com.plugin.frege.psi.FregeNativeDataDecl
+import com.plugin.frege.psi.FregeNativeFunction
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
@@ -25,7 +26,9 @@ abstract class FregeNativeDataDeclMixin : FregePsiClassImpl, FregeNativeDataDecl
     }
 
     override fun getMethods(): Array<PsiMethod> {
-        return PsiMethod.EMPTY_ARRAY
+        return whereSection?.linearIndentSection?.subprogramsFromScope
+            ?.mapNotNull { it.firstChild as? FregeNativeFunction }
+            ?.toTypedArray() ?: PsiMethod.EMPTY_ARRAY
     }
 
     override fun getNameIdentifier(): PsiIdentifier {
