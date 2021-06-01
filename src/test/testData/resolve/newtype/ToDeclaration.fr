@@ -1,0 +1,6 @@
+module ToDeclaration where
+
+newtype Hello a = Hello a
+
+check :: Hell<caret>o Int -> Int
+check (Hello x) = x

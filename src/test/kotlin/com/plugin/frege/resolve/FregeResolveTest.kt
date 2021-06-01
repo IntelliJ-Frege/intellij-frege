@@ -160,6 +160,28 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
                 && it.containingClass?.qualifiedName == "FromConstructorUsage.Either"
     }
 
+    // Testing newtype
+
+    fun `test file newtype ToDeclaration`() = doTest {
+        it is FregeNewtypeDecl && it.qualifiedName == "ToDeclaration.Hello"
+    }
+
+    fun `test file newtype ToConstructor`() = doTest {
+        it is FregeConstruct && it.name == "CreateHello"
+                && it.containingClass?.qualifiedName == "ToConstructor.Hello"
+    }
+
+    // Testing data
+
+    fun `test file type ToDeclaration`() = doTest {
+        it is FregeTypeDecl && it.qualifiedName == "ToDeclaration.NewMaybe"
+    }
+
+    fun `test file type ToOriginConstructor`() = doTest {
+        it is FregeConstruct && it.name == "First"
+                && it.containingClass?.qualifiedName == "ToOriginConstructor.MyData"
+    }
+
     // Testing native data
 
     fun `test file nativeData FromType`() = doTest {

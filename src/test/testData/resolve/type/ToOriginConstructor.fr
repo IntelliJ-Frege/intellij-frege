@@ -1,0 +1,9 @@
+module ToOriginConstructor where
+
+data MyData a = First a | Second a
+
+type MyDataAlias a = MyData a
+
+test :: Int -> MyDataAlias Int
+test x | x <= 10 = MyDataAlias.Fir<caret>st x
+       | x > 10  = MyDataAlias.Second x
