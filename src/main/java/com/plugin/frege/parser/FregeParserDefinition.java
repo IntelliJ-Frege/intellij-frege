@@ -11,7 +11,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.plugin.frege.lexer.FregeLayoutLexerAdapter;
+import com.plugin.frege.lexer.layout.FregeLayoutLexerAdapter;
 import com.plugin.frege.psi.FregeFile;
 import com.plugin.frege.psi.FregeTypes;
 import com.plugin.frege.stubs.types.FregeFileElementType;
@@ -47,7 +47,7 @@ public class FregeParserDefinition implements ParserDefinition {
     }
 
     @Override
-    public PsiParser createParser(Project project) {
+    public @NotNull PsiParser createParser(Project project) {
         return (root, builder) -> {
             builder.setTokenTypeRemapper((source, start, end, text) -> {
                 if (source == FregeTypes.NEW_LINE) {
@@ -61,7 +61,7 @@ public class FregeParserDefinition implements ParserDefinition {
     }
 
     @Override
-    public IFileElementType getFileNodeType() {
+    public @NotNull IFileElementType getFileNodeType() {
         return FregeFileElementType.INSTANCE;
     }
 
@@ -86,12 +86,12 @@ public class FregeParserDefinition implements ParserDefinition {
     }
 
     @Override
-    public PsiFile createFile(FileViewProvider viewProvider) {
+    public @NotNull PsiFile createFile(@NotNull FileViewProvider viewProvider) {
         return new FregeFile(viewProvider);
     }
 
     @Override
-    public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
+    public @NotNull SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
         return SpaceRequirements.MAY;
     }
 }
