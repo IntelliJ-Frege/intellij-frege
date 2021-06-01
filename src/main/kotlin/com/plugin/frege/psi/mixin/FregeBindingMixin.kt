@@ -29,6 +29,10 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
         ) // TODO
     }
 
+    override fun onlyQualifiedSearch(): Boolean {
+        return containingClass is FregeNewtypeDecl
+    }
+
     override fun getSubprogramsFromScope(): List<PsiElement> {
         return rhs.whereSection?.linearIndentSection?.subprogramsFromScope ?: emptyList()
     }

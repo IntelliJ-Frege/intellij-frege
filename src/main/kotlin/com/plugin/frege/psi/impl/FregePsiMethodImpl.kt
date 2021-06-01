@@ -49,6 +49,10 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
 
     constructor(stub: FregeMethodStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
+    override fun onlyQualifiedSearch(): Boolean {
+        return false
+    }
+
     override fun getThrowsList(): PsiReferenceList {
         return LightReferenceListBuilder(manager, FregeLanguage.INSTANCE, PsiReferenceList.Role.THROWS_LIST)
     }

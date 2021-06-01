@@ -14,12 +14,14 @@ import com.plugin.frege.FregeFileType
 import com.plugin.frege.psi.FregeBinding
 import com.plugin.frege.psi.FregeBody
 import com.plugin.frege.psi.FregePsiClass
+import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.psi.impl.FregeNamedStubBasedPsiElementBase
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findImportsNamesForElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getQualifiedNameFromUsage
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.isNameQualified
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.mergeQualifiedNames
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.notWeakScopeOfElement
@@ -33,7 +35,7 @@ object FregeResolveUtil {
      * @return a list of classes in [project] with [qualifiedName].
      */
     @JvmStatic
-    fun findClassesByQualifiedName(project: Project, qualifiedName: String): List<PsiClass> {
+    fun findClassesByQualifiedName(project: Project, qualifiedName: String): List<FregePsiClass> {
         return FregeClassNameIndex.INSTANCE.findByName(
             qualifiedName, project, GlobalSearchScope.everythingScope(project)
         )
@@ -65,7 +67,11 @@ object FregeResolveUtil {
      * @return all methods in [project] with [qualifiedName].
      */
     @JvmStatic
-    fun findMethodsByQualifiedName(project: Project, qualifiedName: String): List<PsiMethod> {
+    fun findMethodsByQualifiedName(
+        project: Project,
+        qualifiedName: String,
+        usageIsQualified: Boolean
+    ): List<FregePsiMethod> {
         val name = nameFromQualifiedName(qualifiedName)
         val qualifier = qualifierFromQualifiedName(qualifiedName)
         if (qualifier.isEmpty()) {
@@ -74,19 +80,18 @@ object FregeResolveUtil {
 
         return FregeMethodNameIndex.INSTANCE.findByName(name, project, GlobalSearchScope.everythingScope(project))
             .filter { method ->
+                if (!usageIsQualified && method.onlyQualifiedSearch()) {
+                    return@filter false
+                }
                 val clazz = method.containingClass ?: return@filter false
                 val className = clazz.qualifiedName ?: return@filter false
-                when {
-                    className == qualifier ->
-                        true
-                    clazz.notQualifiedSearchAllowed() ->
-                        qualifierFromQualifiedName(className) == qualifier
-                    else ->
-                        false
-                }
+                className == qualifier || (!usageIsQualified && qualifierFromQualifiedName(className) == qualifier)
             }.ifEmpty {
-                findClassesByQualifiedName(project, qualifier)
-                    .flatMap { it.findMethodsByName(name, true).asSequence() }
+                findClassesByQualifiedName(project, qualifier).flatMap { clazz ->
+                    clazz.findMethodsByName(name, true).asSequence()
+                        .filterIsInstance<FregePsiMethod>()
+                        .filter { usageIsQualified || !it.onlyQualifiedSearch() }
+                }
             }
     }
 
@@ -178,6 +183,7 @@ object FregeResolveUtil {
         incompleteCode: Boolean
     ): List<PsiMethod> {
         val project = usage.project
+        val usageQualified = isNameQualified(name)
         val imports = findImportsNamesForElement(usage, true)
         val methods = mutableListOf<PsiMethod>()
         for (currentImport in imports) {
@@ -185,7 +191,7 @@ object FregeResolveUtil {
                 methods.addAll(findAllMethodsByImportName(project, currentImport))
             } else {
                 val qualifiedName = mergeQualifiedNames(currentImport, name)
-                methods.addAll(findMethodsByQualifiedName(project, qualifiedName))
+                methods.addAll(findMethodsByQualifiedName(project, qualifiedName, usageQualified))
                 if (methods.isNotEmpty()) {
                     break
                 }
@@ -199,11 +205,13 @@ object FregeResolveUtil {
         usage: PsiElement,
     ): List<PsiMethod> {
         val project = usage.project
+        val usageQualified = isNameQualified(name)
         val availableClasses = findClassesInCurrentFile(usage)
         for (clazz in availableClasses) {
             val className = clazz.qualifiedName ?: continue
             val qualifiedName = mergeQualifiedNames(className, name)
-            val methods = findMethodsByQualifiedName(project, qualifiedName)
+            val methods = findMethodsByQualifiedName(project, qualifiedName, usageQualified).toMutableList()
+            methods.removeIf { !usageQualified && it.onlyQualifiedSearch() }
             if (methods.isNotEmpty()) {
                 return methods // TODO errors if several references in different classes
             }

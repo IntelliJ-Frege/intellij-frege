@@ -1,7 +1,6 @@
 package com.plugin.frege.resolve
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture
@@ -171,6 +170,15 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
                 && it.containingClass?.qualifiedName == "ToConstructor.Hello"
     }
 
+    fun `test file newtype ToBinding`() = doTest {
+        it is FregeBinding && it.name == "func"
+                && it.containingClass?.qualifiedName == "ToBinding.MyType"
+    }
+
+    fun `test file newtype NoBinding`() = doTest {
+        it == null
+    }
+
     // Testing data
 
     fun `test file type ToDeclaration`() = doTest {
@@ -271,9 +279,8 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
     }
 
     fun `test dir betweenFiles class notQualified Usage`() = doTest {
-        println(it?.elementType)
-        it is FregeAnnotationItem /*&& it.name == "calc"
-                && it.containingClass?.qualifiedName == "decl.ClassDeclaration.MyClass"*/
+        it is FregeAnnotationItem && it.name == "calc"
+                && it.containingClass?.qualifiedName == "decl.ClassDeclaration.MyClass"
     }
 
     fun `test dir betweenFiles data toConstructor DataUsage`() = doTest {
