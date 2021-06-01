@@ -64,21 +64,28 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
                         state = State.NORMAL;
                         firstCodeToken = token;
                     }
+                    builder.add(token);
                     break;
                 case WAITING_FOR_SECTION_START:
-                    builder.tryStartSectionWith(token);
                     state = State.NORMAL;
+                    if (builder.tryStartSectionWith(token)) {
+                        break;
+                    }
+                    builder.add(token);
                     break;
                 case NORMAL:
-                    if (!builder.tryHandleSingleLineLetIn(token)) {
-                        builder.tryHandleSectionEndOrDeclEnd(token);
+                    if (builder.tryHandleSingleLineLetIn(token)) {
+                        break;
                     }
+                    if (builder.tryHandleSectionEndOrDeclEnd(token)) {
+                        break;
+                    }
+                    builder.add(token);
                     break;
             }
             if (SECTION_CREATING_KEYWORDS.contains(token.type)) {
                 state = State.WAITING_FOR_SECTION_START;
             }
-            builder.add(token);
         }
     }
 
