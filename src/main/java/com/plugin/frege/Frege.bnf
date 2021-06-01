@@ -11,7 +11,8 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("nativeDataDecl|dataDecl|construct|program|binding|classDecl|annotationItem")="com.plugin.frege.psi.FregeElementTypeFactory.factory"
+    elementTypeFactory("nativeDataDecl|dataDecl|newtypeDecl|construct|program|binding|classDecl|annotationItem")
+        ="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
 
@@ -264,6 +265,9 @@ label ::= EXLAMATION_MARK? extendedVarid
 /* Newtype Declarations */
 newtypeDecl ::= ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL construct whereSection? {
     pin=2
+    implements="com.plugin.frege.psi.FregePsiClass"
+    mixin="com.plugin.frege.psi.mixin.FregeNewtypeDeclMixin"
+    stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
 
 
