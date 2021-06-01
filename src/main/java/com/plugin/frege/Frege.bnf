@@ -11,7 +11,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("nativeDataDecl|dataDecl|newtypeDecl|construct|program|binding|classDecl|annotationItem")
+    elementTypeFactory("nativeDataDecl|dataDecl|newtypeDecl|typeDecl|construct|program|binding|classDecl|annotationItem")
         ="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
@@ -221,6 +221,9 @@ infixRule ::= INFIX | INFIXL | INFIXR
 /* Type Declarations */
 typeDecl ::= TYPE conidUsage (typedVarid)* EQUAL sigma {
     pin=1
+    implements="com.plugin.frege.psi.FregePsiClass"
+    mixin="com.plugin.frege.psi.mixin.FregeTypeDeclMixin"
+    stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
 
 
