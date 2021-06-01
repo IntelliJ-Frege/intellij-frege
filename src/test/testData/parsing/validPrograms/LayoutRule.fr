@@ -41,3 +41,39 @@ k3 = do {
     x <- 1; y <- 2;
     y <- z
     }
+
+s1 = x where {
+x = 1;
+y = 1
+}
+s2 = do {
+x <-
+Just 1;
+return x
+}
+s3 = x + y where {
+x =
+        1
+  ;
+   y
+=
+    2                                   where {z=1;
+u=z}
+}
+s4 =         let {
+x=1
+} in x
+s5 = x where
+    x = y where {
+y=1;
+}
+s6 = x where {
+x = do
+    y <- Just 1
+    return y
+}
+s7 = z where
+    x = y where {
+y=1;
+}
+    z = 1
