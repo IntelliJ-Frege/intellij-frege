@@ -143,17 +143,7 @@ object FregeResolveUtil {
     fun findClassesInCurrentFile(element: PsiElement): List<FregePsiClass> {
         val globalScope = FregePsiUtilImpl.globalScopeOfElement(element) ?: return emptyList()
         check(globalScope is FregeBody) { "Global scope must be Frege body." }
-        return globalScope.topDeclList
-            .mapNotNull {
-                when { // TODO omg, think up a better way
-                    it.classDecl != null -> it.classDecl
-                    it.dataDecl != null -> it.dataDecl
-                    it.nativeDataDecl != null -> it.nativeDataDecl
-                    it.typeDecl != null -> it.typeDecl
-                    else -> null
-                }
-            }
-            .filterIsInstance(FregePsiClass::class.java)
+        return globalScope.topDeclList.mapNotNull { it.firstChild as? FregePsiClass }
     }
 
     /**
