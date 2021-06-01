@@ -30,6 +30,9 @@ class FregeFindUsagesProvider : FindUsagesProvider {
                     else -> "function binding"
                 }
             }
+            is FregeDataDecl -> "data"
+            is FregeConstruct -> "data constructor"
+            is FregeNewtypeDecl -> "newtype"
             is FregeNativeDataDecl -> "native data"
             is FregeClassDecl -> "class"
             is FregeProgram -> "module"
