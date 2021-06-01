@@ -16,10 +16,6 @@ abstract class FregeNativeDataDeclMixin : FregePsiClassImpl, FregeNativeDataDecl
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun notQualifiedSearchAllowed(): Boolean {
-        return false
-    }
-
     override fun getNameWithoutStub(): @NlsSafe String {
         return conidUsage.text
     }

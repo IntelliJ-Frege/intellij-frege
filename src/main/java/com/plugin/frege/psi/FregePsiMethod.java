@@ -7,4 +7,9 @@ import org.jetbrains.annotations.Nullable;
 public interface FregePsiMethod extends FregeNamedElement, PsiMethod {
     @Override
     @Nullable FregePsiClass getContainingClass();
+
+    /**
+     * Indicates that this method can be searched only with class-name-qualifier.
+     */
+    boolean onlyQualifiedSearch();
 }

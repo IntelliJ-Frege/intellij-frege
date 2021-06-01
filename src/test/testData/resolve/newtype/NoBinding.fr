@@ -1,0 +1,7 @@
+module MoBinding where
+
+newtype MyType a = MyType a where
+    func x = 10
+
+test :: MyType a -> Int
+test x = fun<caret>c x

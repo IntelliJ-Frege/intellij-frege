@@ -215,6 +215,14 @@ object FregePsiUtilImpl {
     }
 
     /**
+     * @return if [name] does contain a qualifier.
+     */
+    @JvmStatic
+    fun isNameQualified(name: String): Boolean {
+        return name.contains('.')
+    }
+
+    /**
      * Tries to get qualifiers before [usage] and merge them with [usage] text.
      */
     @JvmStatic
