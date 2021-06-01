@@ -1,0 +1,21 @@
+module ToMethod where
+
+import frege.java.Lang
+import frege.prelude.PreludeBase
+import frege.prelude.PreludeIO
+import frege.prelude.PreludeText
+import frege.prelude.PreludeList
+import frege.prelude.PreludeMonad
+import frege.java.IO
+
+main = println $ ST.run do
+    list <- n<caret>ew()
+    list.add 1
+    list.add 2
+    list.add 3
+    list.toString
+
+data JList e = native java.util.LinkedList where
+    native add :: Mutable s (JList e) -> e -> ST s Bool
+    native new :: () -> STMutable s (JList e)
+    native toString :: Mutable s (JList e) -> ST s String
