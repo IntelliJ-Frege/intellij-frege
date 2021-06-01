@@ -1,0 +1,9 @@
+module ToDeclaration where
+
+import frege.prelude.PreludeBase
+
+type NewMaybe a = Maybe a
+
+test :: NewMay<caret>be Int -> Int
+test (Just x) = x
+test Nothing  = 0

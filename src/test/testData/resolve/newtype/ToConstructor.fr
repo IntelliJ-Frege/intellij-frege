@@ -1,0 +1,6 @@
+module ToConstructor where
+
+newtype Hello a = CreateHello a
+
+test :: Int -> Hello Int
+test x = CreateHell<caret>o 3
