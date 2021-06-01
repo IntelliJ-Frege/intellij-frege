@@ -196,6 +196,15 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
         it is FregeNativeDataDecl && it.qualifiedName == "FromType.JRandom"
     }
 
+    fun `test file nativeData ToMethod`() = doTest {
+        it is FregeNativeFunction && it.name == "new"
+                && it.containingClass?.qualifiedName == "ToMethod.JList"
+    }
+
+    fun `test file nativeData NoMethod`() = doTest {
+        it == null
+    }
+
     // TODO methods are not supported yet
 
     // Testing let
