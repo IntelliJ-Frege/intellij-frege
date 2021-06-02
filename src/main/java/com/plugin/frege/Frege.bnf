@@ -289,7 +289,7 @@ nativeDataDecl ::= DATA conidUsage typedVarid* EQUAL (strongMutable|strongPure)?
     mixin="com.plugin.frege.psi.mixin.FregeNativeDataDeclMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
-nativeName ::= ((extendedVarid | CONID) DOT)* ((extendedVarid | CONID | stringLiteral)) {
+nativeName ::= ((extendedVarid | CONID) DOT)* (extendedVarid | CONID | stringLiteral) {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeNativeNameMixin"
 }
