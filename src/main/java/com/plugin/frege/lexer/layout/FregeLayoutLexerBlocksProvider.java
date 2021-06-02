@@ -49,6 +49,9 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
                 continue;
             }
             codeTokensScanned++;
+            if (codeTokensScanned == 1) {
+                firstCodeToken = token;
+            }
             if (codeTokensScanned == 2) {
                 if (firstCodeToken == null) {
                     throw new FregeLayoutLexerException(
@@ -60,10 +63,7 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
             }
             switch (state) {
                 case START:
-                    if (token.column == 0) {
-                        state = State.NORMAL;
-                        firstCodeToken = token;
-                    }
+                    state = State.NORMAL;
                     builder.add(token);
                     break;
                 case WAITING_FOR_SECTION_START:
