@@ -57,8 +57,16 @@ string               = {doubleQuote}([^\"\\] | {escapeSequence})*{doubleQuote}
 regex                = \u00B4([^\u00B4\\] | {escapeSequence})*\u00B4
                      | \u0027([^\u0027\\] | {escapeSequence})*\u0027
 
+
+/* Documentation */
+lineDocStart         = {dash}{dash}{dash}
+lineDoc              = {lineDocStart}[^\n]*
+blockDocStart        = {leftBrace}{dash}{dash}
+blockDocEnd          = {dash}{rightBrace}
+blockDoc             = {blockDocStart}~{blockDocEnd}
+
 /* Comments */
-lineCommentStart     = {dash}{dash}{dash}?
+lineCommentStart     = {dash}{dash}
 lineComment          = {lineCommentStart}[^\n]*
 blockCommentStart    = {leftBrace}{dash}
 blockCommentEnd      = {dash}{rightBrace}
@@ -166,6 +174,8 @@ backQuote            = \`
       "type"                  { return FregeTypes.TYPE; }
       "where"                 { return FregeTypes.WHERE; }
 
+      {lineDoc}               { return FregeTypes.LINE_DOC; }
+      {blockDoc}              { return FregeTypes.BLOCK_DOC; }
       {blockComment}          { return FregeTypes.BLOCK_COMMENT; }
       {lineComment}           { return FregeTypes.LINE_COMMENT; }
       {newline}               { return FregeTypes.NEW_LINE; }

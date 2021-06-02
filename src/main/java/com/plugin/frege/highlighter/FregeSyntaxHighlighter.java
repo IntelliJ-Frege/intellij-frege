@@ -38,6 +38,10 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("FREGE_LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
     public static final TextAttributesKey BLOCK_COMMENT =
             createTextAttributesKey("FREGE_BLOCK_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
+    public static final TextAttributesKey LINE_DOC =
+            createTextAttributesKey("FREGE_LINE_DOC", DefaultLanguageHighlighterColors.DOC_COMMENT);
+    public static final TextAttributesKey BLOCK_DOC =
+            createTextAttributesKey("FREGE_BLOCK_DOC", DefaultLanguageHighlighterColors.DOC_COMMENT);
     public static final TextAttributesKey UNDEFINED =
             createTextAttributesKey("FREGE_UNDEFINED", DefaultLanguageHighlighterColors.NUMBER);
     public static final TextAttributesKey BAD_CHARACTER =
@@ -53,6 +57,8 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] OPERATOR_KEYS = new TextAttributesKey[]{OPERATOR};
     private static final TextAttributesKey[] LINE_COMMENT_KEYS = new TextAttributesKey[]{LINE_COMMENT};
     private static final TextAttributesKey[] BLOCK_COMMENT_KEYS = new TextAttributesKey[]{BLOCK_COMMENT};
+    private static final TextAttributesKey[] LINE_DOC_KEYS = new TextAttributesKey[]{LINE_DOC};
+    private static final TextAttributesKey[] BLOCK_DOC_KEYS = new TextAttributesKey[]{BLOCK_DOC};
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
@@ -82,6 +88,10 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
             return LINE_COMMENT_KEYS;
         } else if (tokenType.equals(FregeTypes.BLOCK_COMMENT)) {
             return BLOCK_COMMENT_KEYS;
+        } else if (tokenType.equals(FregeTypes.LINE_DOC)) {
+            return LINE_DOC_KEYS;
+        } else if (tokenType.equals(FregeTypes.BLOCK_DOC)) {
+            return BLOCK_DOC_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;
         } else {
