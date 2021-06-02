@@ -76,8 +76,9 @@ private strongPure ::= <<strongKeyword PURE>>
 literal ::= boolLiteral
           | numericLiteral
           | CHAR
-          | STRING
+          | stringLiteral
           | REGEX
+stringLiteral ::= STRING
 numericLiteral ::= integralLiteral | floatLiteral
 boolLiteral ::= TRUE | FALSE
 integralLiteral ::= INTEGER
@@ -288,7 +289,7 @@ nativeDataDecl ::= DATA conidUsage typedVarid* EQUAL (strongMutable|strongPure)?
     mixin="com.plugin.frege.psi.mixin.FregeNativeDataDeclMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
-nativeName ::= ((extendedVarid | CONID) DOT)* ((extendedVarid | CONID | STRING)) {
+nativeName ::= ((extendedVarid | CONID) DOT)* ((extendedVarid | CONID | stringLiteral)) {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeNativeNameMixin"
 }
