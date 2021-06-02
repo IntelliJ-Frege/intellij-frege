@@ -92,8 +92,13 @@ program ::= (PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHER
     mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
-packageName ::= ((packageVarid | qConid) DOT)* qConid
+packageName ::= (packageToken DOT)* mainPackageClass
 private packageVarid ::= qualifier? qualifier? (extendedVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
+packageToken ::= (packageVarid | CONID) {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.imports.FregePackageTokenMixin"
+}
+mainPackageClass ::= conidUsage
 inlineRule ::= strongInline extendedVarid* LEFT_PAREN <<commaSequence (qVarid | qLexOperator)>> RIGHT_PAREN
 
 
