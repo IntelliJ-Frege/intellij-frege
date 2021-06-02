@@ -22,7 +22,7 @@ abstract class FregeClassDeclMixin : FregePsiClassImpl, FregeClassDecl {
     }
 
     override fun getNameWithoutStub(): @NlsSafe String {
-        return nameIdentifier?.text ?: ""
+        return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {

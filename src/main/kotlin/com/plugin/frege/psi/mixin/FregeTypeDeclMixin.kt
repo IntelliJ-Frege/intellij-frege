@@ -17,7 +17,7 @@ abstract class FregeTypeDeclMixin : FregePsiClassImpl, FregeTypeDecl {
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     override fun getNameWithoutStub(): String {
-        return nameIdentifier?.text ?: text
+        return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
     }
 
     override fun setName(name: String): PsiElement {

@@ -18,6 +18,9 @@ import org.jetbrains.annotations.NonNls
 
 @Suppress("UnstableApiUsage")
 abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassStub>, FregePsiClass {
+    protected companion object {
+        const val DEFAULT_CLASS_NAME: String = ""
+    }
 
     constructor(node: ASTNode) : super(node)
 
