@@ -204,7 +204,7 @@ nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? nativeTypeA
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
 nativeTypeApplications ::= LEFT_BRACE typeApplications? RIGHT_BRACE
-javaItem ::= nativeName | unaryOperator | symbolOperatorQuoted | STRING
+javaItem ::= nativeName | unaryOperator | symbolOperatorQuoted
 throwsSequence ::= THROWS <<commaSequence typeApplications>>
 nativeAnnotationItem ::= nativeFunctionName | LEFT_PAREN (symbolOperatorQuoted | unaryOperator) RIGHT_PAREN | (symbolOperatorQuoted | unaryOperator)
 nativeFunctionName ::= extendedVarid {
@@ -288,7 +288,7 @@ nativeDataDecl ::= DATA conidUsage typedVarid* EQUAL (strongMutable|strongPure)?
     mixin="com.plugin.frege.psi.mixin.FregeNativeDataDeclMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
-nativeName ::= (extendedVarid | CONID) (DOT (extendedVarid | CONID))* {
+nativeName ::= ((extendedVarid | CONID) DOT)* ((extendedVarid | CONID | STRING)) {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeNativeNameMixin"
 }
