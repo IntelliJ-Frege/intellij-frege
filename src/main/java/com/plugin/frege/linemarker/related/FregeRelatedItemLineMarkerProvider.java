@@ -9,7 +9,7 @@ import java.util.Collection;
 
 public class FregeRelatedItemLineMarkerProvider extends RelatedItemLineMarkerProvider {
     FregeFunctionBindingToAnnotationLineMarker functionBindingToAnnotation = new FregeFunctionBindingToAnnotationLineMarker();
-    FregeNativeFunctionToDelegatedMember nativeFunctionToDelegatedMember = new FregeNativeFunctionToDelegatedMember();
+    FregeNativeFunctionToDelegatedMemberLineMarker nativeFunctionToDelegatedMember = new FregeNativeFunctionToDelegatedMemberLineMarker();
 
     @Override
     protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo<?>> result) {

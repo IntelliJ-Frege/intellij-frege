@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement
 import com.plugin.frege.psi.impl.FregeNativeFunctionNameImpl
 import javax.swing.Icon
 
-class FregeNativeFunctionToDelegatedMember : FregeRelatedItemLineMarkerAbstract() {
+class FregeNativeFunctionToDelegatedMemberLineMarker : FregeRelatedItemLineMarkerAbstract() {
     override fun getTargets(element: PsiElement): List<PsiElement> {
         val member = (element.parent as? FregeNativeFunctionNameImpl)?.getDelegatedMember()
         return if (member != null) listOf(member) else emptyList()
