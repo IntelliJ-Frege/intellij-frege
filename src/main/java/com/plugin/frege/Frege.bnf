@@ -215,7 +215,7 @@ nativeFunctionName ::= extendedVarid {
 
 
 /* Fixity */
-fixity ::= infixRule precedence (lexOperator | extendedVarid)+ {
+fixity ::= infixRule precedence (qLexOperator | extendedVarid)+ {
     pin=1
 }
 precedence ::= INTEGER
@@ -370,17 +370,17 @@ term ::= qVarid
        | qConid LEFT_BRACE initFields? RIGHT_BRACE
        | qConid
        | literal
+       | LEFT_PAREN qLexOperator RIGHT_PAREN
+       | LEFT_PAREN unaryOperator RIGHT_PAREN
        | LEFT_PAREN expr RIGHT_PAREN
        | list
        | slice
        | unit
        | tuple
        | UNDERSCORE
-       | LEFT_PAREN qLexOperator RIGHT_PAREN
-       | LEFT_PAREN unaryOperator RIGHT_PAREN
 initFields ::= <<commaSequence initField>>
 initField ::= extendedVarid (EQUAL expr)?
-slice ::= LEFT_PAREN (binaryExpression lexOperator | lexOperator expr) RIGHT_PAREN
+slice ::= LEFT_PAREN (binaryExpression qLexOperator | qLexOperator expr) RIGHT_PAREN
 unit ::= LEFT_PAREN RIGHT_PAREN
 tuple ::= tupleConstructor | nTuple | strictNTuple
 tupleConstructor ::= LEFT_PAREN COMMA* RIGHT_PAREN
