@@ -64,4 +64,8 @@ public class FregeSuccessfulParsingValidProgramsTest extends FregeParsingTestAbs
     public void testNewtype() throws IOException {
         doSuccessfulParsingTest();
     }
+
+    public void testNativeFunction() throws IOException {
+        doSuccessfulParsingTest();
+    }
 }

@@ -1,0 +1,18 @@
+native f :: Mutable s StringBuffer -> Float -> STMutable s StringBuffer
+                 | Mutable s StringBuffer -> Double -> STMutable s StringBuffer
+                 | Mutable s StringBuffer -> Bool -> STMutable s StringBuffer
+                 | Mutable s StringBuffer -> Char -> STMutable s StringBuffer
+                 | Mutable s StringBuffer -> Int -> STMutable s StringBuffer
+                 | Mutable s StringBuffer -> Long -> STMutable s StringBuffer
+                 | Mutable s StringBuffer -> Object -> STMutable s StringBuffer
+
+native fThrows :: Mutable s Appendable -> Char -> ST s (Mutable s Appendable)
+                        throws IOException
+                  |  Mutable s Appendable -> String -> ST s (Mutable s Appendable)
+                        throws IOException
+                  |  Mutable s StringBuffer -> Char -> STMutable s StringBuffer
+                        throws IOException
+
+
+pure native fPure   java.lang.System.getenv         :: String -> Maybe String
+native feString    "java.lang.System.getenv"        :: String -> Maybe String
