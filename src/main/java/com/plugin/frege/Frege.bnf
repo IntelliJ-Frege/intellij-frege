@@ -11,7 +11,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("nativeDataDecl|dataDecl|newtypeDecl|typeDecl|construct|program|binding|nativeFunction|classDecl|annotationItem")
+    elementTypeFactory("nativeDataDecl|dataDecl|newtypeDecl|typeDecl|construct|program|binding|nativeFunction|classDecl|instanceDecl|annotationItem")
         ="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
@@ -243,6 +243,9 @@ classDecl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW conidUsage ty
 /* Instance Declarations */
 instanceDecl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? conidUsage typeApplications whereSection? {
     pin=1
+    implements="com.plugin.frege.psi.FregePsiClass"
+    mixin="com.plugin.frege.psi.mixin.FregeInstanceDeclMixin"
+    stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
 
 

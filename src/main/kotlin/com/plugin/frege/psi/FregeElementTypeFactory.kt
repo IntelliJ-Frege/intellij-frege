@@ -10,6 +10,7 @@ object FregeElementTypeFactory {
             "NATIVE_DATA_DECL" -> FregeNativeDataDeclElementType(name)
             "PROGRAM" -> FregeProgramElementType(name)
             "CLASS_DECL" -> FregeClassDeclElementType(name)
+            "INSTANCE_DECL" -> FregeInstanceDeclElementType(name)
             "DATA_DECL" -> FregeDataDeclElementType(name)
             "NEWTYPE_DECL" -> FregeNewtypeDeclElementType(name)
             "TYPE_DECL" -> FregeTypeDeclElementType(name)

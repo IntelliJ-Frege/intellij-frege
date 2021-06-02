@@ -28,7 +28,7 @@ public class FregeFunctionBindingToAnnotationLineMarker extends FregeRelatedItem
 
     @Override
     protected @NotNull Icon getIcon() {
-        return AllIcons.Gutter.ImplementingMethod;
+        return AllIcons.Gutter.ImplementingFunctionalInterface;
     }
 
     @Override

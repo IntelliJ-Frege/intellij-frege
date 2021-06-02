@@ -77,7 +77,7 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
 
     fun getAnnoItem(): FregeAnnotationItem? {
         val referenceText = name
-        return FregePsiUtilImpl.findElementsWithinScope(this) { elem ->
+        return FregePsiUtilImpl.findElementsWithinScope(parent) { elem ->
             elem is FregeAnnotationItem && elem.name == referenceText
         }.firstOrNull() as? FregeAnnotationItem
     }

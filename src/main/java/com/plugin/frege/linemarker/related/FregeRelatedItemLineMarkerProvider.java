@@ -10,10 +10,12 @@ import java.util.Collection;
 public class FregeRelatedItemLineMarkerProvider extends RelatedItemLineMarkerProvider {
     FregeFunctionBindingToAnnotationLineMarker functionBindingToAnnotation = new FregeFunctionBindingToAnnotationLineMarker();
     FregeNativeFunctionToDelegatedMemberLineMarker nativeFunctionToDelegatedMember = new FregeNativeFunctionToDelegatedMemberLineMarker();
+    FregeInstanceMethodToClassLineMarker instanceMethodToClass = new FregeInstanceMethodToClassLineMarker();
 
     @Override
     protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo<?>> result) {
         functionBindingToAnnotation.addMarker(element, result);
         nativeFunctionToDelegatedMember.addMarker(element, result);
+        instanceMethodToClass.addMarker(element, result);
     }
 }
