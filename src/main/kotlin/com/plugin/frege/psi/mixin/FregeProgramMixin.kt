@@ -23,7 +23,7 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     override fun getNameIdentifier(): PsiIdentifier? {
-        return packageName?.qConidList?.lastOrNull()?.conidUsage
+        return packageName?.mainPackageClass?.conidUsage
     }
 
     override fun getQualifiedName(): @NlsSafe String? {

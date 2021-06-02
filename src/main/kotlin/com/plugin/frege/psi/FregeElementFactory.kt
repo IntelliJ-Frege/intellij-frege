@@ -47,9 +47,9 @@ object FregeElementFactory {
     }
 
     @JvmStatic
-    fun createDataNameUsage(project: Project, name: String): FregeConidUsage {
-        val fakeDataNameUsage = "${fakeProgram}func :: $name"
-        return createElement(project, fakeDataNameUsage, FregeConidUsage::class)
+    fun createConidUsage(project: Project, name: String): FregeConidUsage {
+        val fakeConidUsage = "${fakeProgram}func :: $name"
+        return createElement(project, fakeConidUsage, FregeConidUsage::class)
     }
 
     @JvmStatic
