@@ -1,0 +1,3 @@
+module ru.itmo.Usage where
+
+data MyPetya = native         "ru.hs<caret>e.Petya"

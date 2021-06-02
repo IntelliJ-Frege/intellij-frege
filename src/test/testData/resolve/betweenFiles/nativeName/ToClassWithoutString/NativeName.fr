@@ -1,0 +1,3 @@
+module my.pack.kirill.NativeName where
+
+data JClazz = native my.pack.petya.Claz<caret>z
