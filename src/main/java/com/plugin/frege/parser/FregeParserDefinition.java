@@ -21,6 +21,7 @@ public class FregeParserDefinition implements ParserDefinition {
 
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     public static final TokenSet COMMENTS = TokenSet.create(FregeTypes.LINE_COMMENT, FregeTypes.BLOCK_COMMENT);
+    public static final TokenSet DOCUMENTATION = TokenSet.create(FregeTypes.LINE_DOC, FregeTypes.BLOCK_DOC);
     public static final TokenSet STRING_LITERALS = TokenSet.create(FregeTypes.STRING, FregeTypes.CHAR);
     public static final TokenSet BRACKETS = TokenSet.create(FregeTypes.LEFT_BRACKET, FregeTypes.RIGHT_BRACKET);
     public static final TokenSet IDENTIFIERS = TokenSet.create(FregeTypes.CONID, FregeTypes.VARID, FregeTypes.AS,
@@ -72,7 +73,7 @@ public class FregeParserDefinition implements ParserDefinition {
 
     @Override
     public @NotNull TokenSet getCommentTokens() {
-        return COMMENTS;
+        return TokenSet.orSet(COMMENTS, DOCUMENTATION);
     }
 
     @Override

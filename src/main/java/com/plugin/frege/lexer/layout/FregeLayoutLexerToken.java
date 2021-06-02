@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import static com.plugin.frege.psi.FregeTypes.*;
 
 public class FregeLayoutLexerToken {
-    private static final @NotNull TokenSet NON_CODE_TOKENS = TokenSet.create(TokenType.WHITE_SPACE, NEW_LINE, LINE_COMMENT, BLOCK_COMMENT);
+    private static final @NotNull TokenSet NON_CODE_TOKENS = TokenSet.create(TokenType.WHITE_SPACE, NEW_LINE, LINE_COMMENT, BLOCK_COMMENT, LINE_DOC, BLOCK_DOC);
     private static final @NotNull TokenSet VIRTUAL_TOKENS = TokenSet.create(VIRTUAL_OPEN_SECTION, VIRTUAL_END_DECL, VIRTUAL_END_SECTION);
     public final @Nullable IElementType type;
     public final int start;
