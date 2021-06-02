@@ -60,7 +60,7 @@ conidUsage ::= CONID {
 
 qualifier ::= conidUsage DOT
 qLexOperator ::= qualifier? qualifier? lexOperator
-qVarid ::= qualifier? qualifier? varidUsage
+qVarid ::= qualifier qualifier varidUsage | qualifier varidUsage | varidUsage
 qConid ::= qualifier qualifier conidUsage | qualifier conidUsage | conidUsage
 
 // For real usages of these pseudo-keywords (for highlighting)
@@ -361,7 +361,7 @@ primary ::= (term | doExpression) (DOT (
               | QUESTION_MARK
               | LEFT_BRACE fieldsOrVaridInit RIGHT_BRACE
               | LEFT_BRACKET expr RIGHT_BRACKET))*
-fieldsOrVaridInit ::= extendedVarid (QUESTION_MARK | EQUAL | LEFT_ARROW) (
+fieldsOrVaridInit ::= extendedVarid (QUESTION_MARK | EQUAL | LEFT_ARROW)? (
     expr (COMMA getField)* COMMA?)?
 getField ::= extendedVarid ((LEFT_ARROW | EQUAL) expr)?
 
@@ -403,8 +403,8 @@ atPattern ::= parameterPattern AT atPattern
 matcherPattern ::= parameterPattern TILDA REGEX | strictPatterns
 strictPatterns ::= strictPattern+
 strictPattern ::= EXLAMATION_MARK? patternTerm
-patternTerm ::= conidUsage LEFT_BRACE patternFields? RIGHT_BRACE
-              | conidUsage
+patternTerm ::= qConid LEFT_BRACE patternFields? RIGHT_BRACE
+              | qConid
               | parameterPattern
               | literal
               | unit
