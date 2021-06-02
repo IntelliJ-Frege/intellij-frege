@@ -197,7 +197,7 @@ annotationName ::= extendedVarid {
 
 
 /* Native Bindings */
-nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? nativeTypeApplications? DOUBLE_COLON sigma (VERTICAL_BAR sigma)* throwsSequence? {
+nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? nativeTypeApplications? DOUBLE_COLON sigma throwsSequence? (VERTICAL_BAR sigma throwsSequence?)* {
     pin=4
     implements="com.plugin.frege.psi.FregePsiMethod"
     mixin="com.plugin.frege.psi.mixin.FregeNativeFunctionMixin"
