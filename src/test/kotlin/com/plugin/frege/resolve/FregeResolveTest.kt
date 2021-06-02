@@ -1,5 +1,6 @@
 package com.plugin.frege.resolve
 
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
@@ -205,8 +206,6 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
         it == null
     }
 
-    // TODO methods are not supported yet
-
     // Testing let
 
     fun `test file let LetIn`() = doTest {
@@ -303,6 +302,18 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
 
     fun `test dir betweenFiles data noReference Usage`() = doTest {
         it == null
+    }
+
+    fun `test dir betweenFiles nativeName ToClassWithoutString NativeName`() = doTest {
+        it is PsiClass && it.qualifiedName == "my.pack.petya.Clazz"
+    }
+
+    fun `test dir betweenFiles nativeName ToClassString Usage`() = doTest {
+        it is PsiClass && it.qualifiedName == "ru.hse.Petya"
+    }
+
+    fun `test dir betweenFiles nativeName ToClassStringMix FromKirill`() = doTest {
+        it is PsiClass && it.qualifiedName == "project.failed.BelovedPetya"
     }
 
     // Testing from Java

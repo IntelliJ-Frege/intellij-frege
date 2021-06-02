@@ -1,0 +1,4 @@
+module project.success.FromKirill where
+
+data BelovedPetya = native project.
+ "failed.BelovedPety<caret>a"
