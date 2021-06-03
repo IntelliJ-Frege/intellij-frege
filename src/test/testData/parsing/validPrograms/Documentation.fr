@@ -1,0 +1,55 @@
+{--
+ - doc doc doc
+ -
+ - doc
+ -}
+--- doc
+{--
+
+-}
+{-- doc -}
+
+module psi.Documentation where
+
+--- doc
+-- comment
+class (A a) => B a where
+    --- doc
+    f :: {- comment -} a -> a --- doc
+    --- doc
+    {-- doc -}
+    {-- comment -}
+
+instance A (->) where
+    --- doc
+    id = \x -> x ---doc
+    {-- doc -}
+
+newtype A a = A {f :: a} --- doc
+newtype A a  =  A where
+    --- doc
+    id x = x
+    {-- doc -}
+data A a =
+    {--
+        doc
+    -}
+    A {f :: a}
+   | {--
+        doc
+      -}
+    B {g :: a}
+data A a = native a.a.A where
+    --- doc
+    --- doc
+    native f :: a -> a
+    --- doc
+
+data A
+  = A
+  { f1 :: t1,
+    f2 :: t2  --- doc
+    f3 :: t3  --- doc
+    f4 :: t4, -- comment
+    f5 :: t5  -- comment
+  }

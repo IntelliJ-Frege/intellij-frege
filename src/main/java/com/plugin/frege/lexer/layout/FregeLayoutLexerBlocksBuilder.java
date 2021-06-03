@@ -12,7 +12,7 @@ public class FregeLayoutLexerBlocksBuilder {
     private @Nullable FregeLayoutLexerToken newlineStickyToken;
 
     public boolean canFinishBlockWith(@NotNull FregeLayoutLexerToken token) {
-        return token.isEof() || (token.isNewLine() && block.isContainsCode());
+        return token.isEof() || (token.isNewLine() && block.isContainsNotSkipping());
     }
 
 
@@ -94,7 +94,7 @@ public class FregeLayoutLexerBlocksBuilder {
     }
 
     public boolean tryHandleSectionEndOrDeclEnd(@NotNull FregeLayoutLexerToken token) {
-        if (token.isFirstCodeTokenOnLine()) {
+        if (token.isFirstNotSkippingTokenOnLine()) {
             if (newlineStickyToken == null) {
                 throw new FregeLayoutLexerException(
                         new IllegalStateException("Cannot find sticky newline token"));

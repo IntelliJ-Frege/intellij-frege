@@ -45,21 +45,23 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
             if (builder.canFinishBlockWith(token)) {
                 return builder.finishBlock(token);
             }
-            if (!token.isCode()) {
+            if (token.isSkipping()) {
                 builder.add(token);
                 continue;
             }
-            codeTokensScanned++;
-            if (codeTokensScanned == 1) {
-                firstCodeToken = token;
-            }
-            if (codeTokensScanned == 2) {
-                if (firstCodeToken == null) {
-                    throw new FregeLayoutLexerException(
-                            new IllegalStateException("First code token is undefined"));
+            if (token.isCode()) {
+                codeTokensScanned++;
+                if (codeTokensScanned == 1) {
+                    firstCodeToken = token;
                 }
-                if (firstCodeToken.isModuleStart() || (firstCodeToken.isProtectModifier() || token.isModuleStart())) {
-                    expectedGlobalWhere = true;
+                if (codeTokensScanned == 2) {
+                    if (firstCodeToken == null) {
+                        throw new FregeLayoutLexerException(
+                                new IllegalStateException("First code token is undefined"));
+                    }
+                    if (firstCodeToken.isModuleStart() || (firstCodeToken.isProtectModifier() || token.isModuleStart())) {
+                        expectedGlobalWhere = true;
+                    }
                 }
             }
             switch (state) {
@@ -101,8 +103,8 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
                 currentColumn,
                 lexer.getTokenText(),
                 currentLine);
-        if (currentLine.columnWhereCodeStarts == null && token.isCode()) {
-            currentLine.columnWhereCodeStarts = currentColumn;
+        if (currentLine.columnWhereNotSkippingStarts == null && !token.isSkipping()) {
+            currentLine.columnWhereNotSkippingStarts = currentColumn;
         }
         currentColumn += token.end - token.start;
         if (token.isNewLine()) {

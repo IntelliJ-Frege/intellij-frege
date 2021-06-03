@@ -73,7 +73,7 @@ public class FregeParserDefinition implements ParserDefinition {
 
     @Override
     public @NotNull TokenSet getCommentTokens() {
-        return TokenSet.orSet(COMMENTS, DOCUMENTATION);
+        return COMMENTS;
     }
 
     @Override

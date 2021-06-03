@@ -84,9 +84,11 @@ boolLiteral ::= TRUE | FALSE
 integralLiteral ::= INTEGER
 floatLiteral ::= FLOAT
 
+/* Documentation */
+documentation ::= LINE_DOC | BLOCK_DOC
 
 /* Frege Program */
-program ::= (PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION)? body {
+program ::= ((documentation VIRTUAL_END_DECL)* PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION)? body {
     pin=1
     implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
@@ -143,7 +145,8 @@ topDecl ::= !<<eof>> (
             | accessModifier? instanceDecl
             | accessModifier? deriveDecl
             | nativeModule
-            | decl) SEMICOLON? {
+            | decl
+            | documentation+) SEMICOLON? {
     pin=1
     recoverWhile=declRecover
 }
@@ -154,13 +157,13 @@ accessModifier ::= PUBLIC_MODIFIER | PROTECTED_MODIFIER | PRIVATE_MODIFIER
 
 
 /* Where Sections */
-whereSection ::= WHERE <<linearIndentSection decl>> {
+whereSection ::= WHERE <<linearIndentSection (documentation | decl)>> {
     pin=1
 }
 
 
 /* Functions */
-decl ::= accessModifier? (annotation | binding | nativeFunction) {
+decl ::= accessModifier? (annotation | binding | nativeFunction) documentation? {
     implements="com.plugin.frege.psi.FregeSubprogramsHolder"
 }
 
@@ -270,7 +273,7 @@ deriveDecl ::= DERIVE conidUsage (constraints DOUBLE_RIGHT_ARROW)? typeApplicati
 
 
 /* Data Declarations */
-dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructs whereSection? deriveDecl? {
+dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructs whereSection? deriveDecl? documentation? {
     pin=6
     implements=["com.plugin.frege.psi.FregePsiClass"
                 "com.plugin.frege.psi.FregeTypeParametersHolder"]
@@ -278,12 +281,14 @@ dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructs whereSection
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
 constructs ::= construct (VERTICAL_BAR construct)*
-construct ::= accessModifier? (EXLAMATION_MARK? conidUsage) (
-          LEFT_BRACE <<commaSequence (labels DOUBLE_COLON sigma)>> RIGHT_BRACE | simpleType*) {
+construct ::= documentation? accessModifier? (EXLAMATION_MARK? conidUsage) (
+          LEFT_BRACE constructorFields RIGHT_BRACE | simpleType*) documentation? {
     implements="com.plugin.frege.psi.FregePsiMethod"
     mixin="com.plugin.frege.psi.mixin.FregeConstructMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
+private constructorFields ::= constructorField ((COMMA | documentation) constructorField)* (COMMA | documentation)?
+private constructorField ::= labels DOUBLE_COLON sigma
 labels ::= <<commaSequence label>>
 label ::= EXLAMATION_MARK? extendedVarid
 
@@ -484,4 +489,4 @@ lexOperator ::= WORD_OPERATOR | symbolOperatorQuoted
 unaryOperator ::= EXLAMATION_MARK | QUESTION_MARK
 
 
-todo ::= NEW_LINE | LESS | GREATER | LINE_COMMENT | BLOCK_COMMENT | DEFAULT | FOREIGN | NEWTYPE | DERIVING | LINE_DOC | BLOCK_DOC
+todo ::= NEW_LINE | LESS | GREATER | LINE_COMMENT | BLOCK_COMMENT | DEFAULT | FOREIGN | NEWTYPE | DERIVING
