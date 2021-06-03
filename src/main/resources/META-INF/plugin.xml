@@ -42,6 +42,7 @@
                                         implementationClass="com.plugin.frege.linemarker.related.FregeRelatedItemLineMarkerProvider"/>
         <runLineMarkerContributor language="Frege" implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerContributor" />
         <completion.contributor language="Frege" implementationClass="com.plugin.frege.completion.FregeKeywordCompletionContributor"/>
+        <lang.documentationProvider language="Frege" implementationClass="com.plugin.frege.documentation.FregeDocumentationProvider"/>
 
         <defaultLiveTemplates file="/liveTemplates/Frege.xml"/>
         <liveTemplateContext implementation="com.plugin.frege.completion.FregeAbstractContext$Generic"/>
