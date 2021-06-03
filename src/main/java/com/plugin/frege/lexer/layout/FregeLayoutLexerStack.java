@@ -10,7 +10,8 @@ public class FregeLayoutLexerStack {
     private int braceLevel = 0;
 
     public FregeLayoutLexerStack() {
-        indentStack.push(-1);
+        indentStack.push(-1); // bottom section
+        indentStack.push(0); // global section
     }
 
     public void enterLeftBrace(boolean isSectionGenerating) {
@@ -21,15 +22,21 @@ public class FregeLayoutLexerStack {
         }
     }
 
+    public int skipToBottom() {
+        int skippedIndents = 0;
+        while (!indentStack.empty() && indentStack.peek() >= 0) {
+            skippedIndents++;
+            indentStack.pop();
+        }
+        return skippedIndents;
+    }
+
     public int enterRightBrace() {
         int skippedIndents = 0;
         if (!sectionGeneratingBrace.empty() &&
                 sectionGeneratingBrace.peek() == braceLevel) {
             sectionGeneratingBrace.pop();
-            while (!indentStack.empty() && indentStack.peek() >= 0) {
-                skippedIndents++;
-                indentStack.pop();
-            }
+            skippedIndents = skipToBottom();
             indentStack.pop();
         }
         braceLevel--;

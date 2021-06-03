@@ -78,8 +78,8 @@ public class FregeLayoutLexerToken {
         return VIRTUAL_TOKENS.contains(type);
     }
 
-    public boolean isNotModuleStart() {
-        return !MODULE.equals(type) && !PACKAGE.equals(type);
+    public boolean isModuleStart() {
+        return MODULE.equals(type) || PACKAGE.equals(type);
     }
 
     public boolean isProtectModifier() {
