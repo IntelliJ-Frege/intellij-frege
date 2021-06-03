@@ -9,7 +9,7 @@ import java.util.Objects;
 public class FregeLayoutLexerBlock {
     private final @NotNull List<@NotNull FregeLayoutLexerToken> virtualPrefixTokens = new ArrayList<>();
     private final @NotNull List<@NotNull FregeLayoutLexerToken> mainTokens = new ArrayList<>();
-    private boolean containsCode = false;
+    private boolean containsNotSkipping = false;
     private boolean containsLet = false;
 
     public void add(@NotNull FregeLayoutLexerToken token) {
@@ -27,8 +27,8 @@ public class FregeLayoutLexerBlock {
     }
 
     private void updateContains(@NotNull FregeLayoutLexerToken token) {
-        if (token.isCode()) {
-            containsCode = true;
+        if (!token.isSkipping()) {
+            containsNotSkipping = true;
         }
         if (token.isLet()) {
             containsLet = true;
@@ -52,8 +52,8 @@ public class FregeLayoutLexerBlock {
         }
     }
 
-    public boolean isContainsCode() {
-        return containsCode;
+    public boolean isContainsNotSkipping() {
+        return containsNotSkipping;
     }
 
     public boolean isContainsLet() {

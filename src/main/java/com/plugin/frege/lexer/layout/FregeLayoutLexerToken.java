@@ -1,15 +1,18 @@
 package com.plugin.frege.lexer.layout;
 
-import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import com.plugin.frege.parser.FregeParserDefinition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static com.plugin.frege.parser.FregeParserDefinition.COMMENTS;
+import static com.plugin.frege.parser.FregeParserDefinition.WHITE_SPACES;
 import static com.plugin.frege.psi.FregeTypes.*;
 
 public class FregeLayoutLexerToken {
-    private static final @NotNull TokenSet NON_CODE_TOKENS = TokenSet.create(TokenType.WHITE_SPACE, NEW_LINE, LINE_COMMENT, BLOCK_COMMENT, LINE_DOC, BLOCK_DOC);
+    private static final @NotNull TokenSet SKIPPING_TOKENS = TokenSet.orSet(COMMENTS, WHITE_SPACES, TokenSet.create(NEW_LINE));
+    private static final @NotNull TokenSet DOCUMENTATION_TOKENS = FregeParserDefinition.DOCUMENTATION;
     private static final @NotNull TokenSet VIRTUAL_TOKENS = TokenSet.create(VIRTUAL_OPEN_SECTION, VIRTUAL_END_DECL, VIRTUAL_END_SECTION);
     public final @Nullable IElementType type;
     public final int start;
@@ -54,8 +57,16 @@ public class FregeLayoutLexerToken {
         return type == null;
     }
 
+    public boolean isSkipping() {
+        return SKIPPING_TOKENS.contains(type);
+    }
+
+    public boolean isDocumentation() {
+        return DOCUMENTATION_TOKENS.contains(type);
+    }
+
     public boolean isCode() {
-        return !NON_CODE_TOKENS.contains(type) && !isEof();
+        return !isSkipping() && !isDocumentation() && !isEof();
     }
 
     public boolean isLet() {
@@ -86,13 +97,13 @@ public class FregeLayoutLexerToken {
         return PROTECTED_MODIFIER.equals(type);
     }
 
-    public boolean isFirstCodeTokenOnLine() {
-        return isCode() &&
-                line.columnWhereCodeStarts != null &&
-                line.columnWhereCodeStarts == column;
+    public boolean isFirstNotSkippingTokenOnLine() {
+        return !isSkipping() &&
+                line.columnWhereNotSkippingStarts != null &&
+                line.columnWhereNotSkippingStarts == column;
     }
 
     public static class Line {
-        public @Nullable Integer columnWhereCodeStarts;
+        public @Nullable Integer columnWhereNotSkippingStarts;
     }
 }
