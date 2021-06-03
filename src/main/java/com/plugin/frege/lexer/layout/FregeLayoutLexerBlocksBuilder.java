@@ -37,10 +37,12 @@ public class FregeLayoutLexerBlocksBuilder {
             add(token);
             newlineStickyToken = token;
         } else {
-            while (stack.getCurrentIndentLevel() > 1) {
+            int toBottom = stack.skipToBottom();
+            if (toBottom > 1) {
                 FregeLayoutLexerToken precedes = getPrecedesToken();
-                add(createVirtualToken(VIRTUAL_END_SECTION, precedes));
-                stack.enterVirtualSectionEnd();
+                for (int i = 0; i < toBottom - 1; i++) {
+                    add(createVirtualToken(VIRTUAL_END_SECTION, precedes));
+                }
             }
             add(token);
         }
@@ -111,8 +113,7 @@ public class FregeLayoutLexerBlocksBuilder {
         }
         return false;
     }
-
-    public void insertFakeModuleSection() {
-        stack.enterVirtualSectionStart(0);
+    public void globalSectionStart() {
+        stack.enterVirtualSectionStart(-1);
     }
 }

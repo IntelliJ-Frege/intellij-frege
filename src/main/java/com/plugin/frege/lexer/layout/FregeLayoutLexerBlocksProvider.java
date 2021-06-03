@@ -20,6 +20,7 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
     private int currentColumn = 0;
     private int codeTokensScanned = 0;
     private @Nullable FregeLayoutLexerToken firstCodeToken;
+    private boolean expectedGlobalWhere = false;
 
     public FregeLayoutLexerBlocksProvider(@NotNull FregeLexerAdapter lexer) {
         this.lexer = lexer;
@@ -57,8 +58,8 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
                     throw new FregeLayoutLexerException(
                             new IllegalStateException("First code token is undefined"));
                 }
-                if (firstCodeToken.isNotModuleStart() && (!firstCodeToken.isProtectModifier() || token.isNotModuleStart())) {
-                    builder.insertFakeModuleSection();
+                if (firstCodeToken.isModuleStart() || (firstCodeToken.isProtectModifier() || token.isModuleStart())) {
+                    expectedGlobalWhere = true;
                 }
             }
             switch (state) {
@@ -85,6 +86,10 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
             }
             if (SECTION_CREATING_KEYWORDS.contains(token.type)) {
                 state = State.WAITING_FOR_SECTION_START;
+                if (WHERE.equals(token.type) && expectedGlobalWhere) {
+                    expectedGlobalWhere = false;
+                    builder.globalSectionStart();
+                }
             }
         }
     }
