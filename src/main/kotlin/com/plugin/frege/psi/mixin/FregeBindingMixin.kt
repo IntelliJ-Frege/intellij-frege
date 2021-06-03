@@ -81,4 +81,8 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
         val argsCount = getParamsNumber()
         return (argsCount <= 1 && FregePsiUtilImpl.isInGlobalScope(this) && name == "main")
     }
+
+    override fun getDocs(): List<FregeDocumentationElement> {
+        return listOfNotNull(documentation)
+    }
 }

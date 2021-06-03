@@ -85,7 +85,12 @@ integralLiteral ::= INTEGER
 floatLiteral ::= FLOAT
 
 /* Documentation */
-documentation ::= LINE_DOC | BLOCK_DOC
+lineDocumentation ::= LINE_DOC
+blockDocumentation ::= BLOCK_DOC
+documentation ::= lineDocumentation | blockDocumentation {
+    implements="com.plugin.frege.psi.FregeDocumentationElement"
+    mixin="com.plugin.frege.psi.mixin.FregeDocumentationMixin"
+}
 
 /* Frege Program */
 program ::= ((documentation VIRTUAL_END_DECL)* PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION)? body {
@@ -163,16 +168,17 @@ whereSection ::= WHERE <<linearIndentSection (documentation | decl)>> {
 
 
 /* Functions */
-decl ::= accessModifier? (annotation | binding | nativeFunction) documentation? {
+decl ::= accessModifier? (annotation | binding | nativeFunction) {
     implements="com.plugin.frege.psi.FregeSubprogramsHolder"
 }
 
 
 /* Bindings */
-binding ::= lhs rhs {
+binding ::= lhs rhs documentation? {
     implements=["com.plugin.frege.psi.FregePsiMethod"
                 "com.plugin.frege.psi.FregeParametersHolder"
-                "com.plugin.frege.psi.FregeWeakScopeElement"]
+                "com.plugin.frege.psi.FregeWeakScopeElement"
+                "com.plugin.frege.documentation.FregeElementProvideDocumentation"]
     mixin="com.plugin.frege.psi.mixin.FregeBindingMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
@@ -190,7 +196,7 @@ functionName ::= extendedVarid {
 
 
 /*  Binding Annotations */
-annotation ::= annotationItem (COMMA annotationItem)* DOUBLE_COLON sigma {
+annotation ::= annotationItem (COMMA annotationItem)* DOUBLE_COLON sigma documentation? {
     pin=3
     implements="com.plugin.frege.psi.FregeTypeParametersHolder"
     mixin="com.plugin.frege.psi.mixin.FregeAnnotationMixin"
@@ -208,7 +214,7 @@ annotationName ::= extendedVarid {
 
 
 /* Native Bindings */
-nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? nativeTypeApplications? DOUBLE_COLON sigma throwsSequence? (VERTICAL_BAR sigma throwsSequence?)* {
+nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? nativeTypeApplications? DOUBLE_COLON sigma throwsSequence? (VERTICAL_BAR sigma throwsSequence?)* documentation? {
     pin=4
     implements="com.plugin.frege.psi.FregePsiMethod"
     mixin="com.plugin.frege.psi.mixin.FregeNativeFunctionMixin"
