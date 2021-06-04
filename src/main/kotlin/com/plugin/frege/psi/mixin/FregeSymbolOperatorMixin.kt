@@ -8,6 +8,7 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.psi.FregeAnnotationItem
+import com.plugin.frege.psi.FregeElementFactory
 import com.plugin.frege.psi.FregeFunctionLhs
 import com.plugin.frege.psi.FregeTypes
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
@@ -27,6 +28,10 @@ open class FregeSymbolOperatorMixin(node: ASTNode) : FregeCompositeElementImpl(n
                         findMethodsFromUsage(psiElement, incompleteCode)
                     }
                 }
+            }
+
+            override fun handleElementRename(name: String): PsiElement {
+                return psiElement.replace(FregeElementFactory.createSymbolOperator(psiElement.project, name))
             }
         }
     }
