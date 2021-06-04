@@ -41,12 +41,6 @@ object FregeElementFactory {
     }
 
     @JvmStatic
-    fun createNativeName(project: Project, name: String): FregeNativeName {
-        val fakeNativeName = "${fakeProgram}pure native Dummy = $name"
-        return createElement(project, fakeNativeName, FregeNativeName::class)
-    }
-
-    @JvmStatic
     fun createConidUsage(project: Project, name: String): FregeConidUsage {
         val fakeConidUsage = "${fakeProgram}func :: $name"
         return createElement(project, fakeConidUsage, FregeConidUsage::class)
@@ -56,5 +50,17 @@ object FregeElementFactory {
     fun createAnnotationName(project: Project, name: String): FregeAnnotationName {
         val fakeAnnotationName = "${fakeProgram}$name :: Int"
         return createElement(project, fakeAnnotationName, FregeAnnotationName::class)
+    }
+
+    @JvmStatic
+    fun createPackageToken(project: Project, name: String): FregePackageToken {
+        val fakePackageToken = "${fakeProgram}import $name.Hello\nmain = undefined"
+        return createElement(project, fakePackageToken, FregePackageToken::class)
+    }
+
+    @JvmStatic
+    fun createNativeFunctionName(project: Project, name: String): FregeNativeFunctionName {
+        val fakeNativeFunctionName = "${fakeProgram}native $name :: Int -> Int"
+        return createElement(project, fakeNativeFunctionName, FregeNativeFunctionName::class)
     }
 }

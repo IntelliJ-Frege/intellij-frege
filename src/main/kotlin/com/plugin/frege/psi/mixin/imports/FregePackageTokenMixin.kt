@@ -5,6 +5,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
+import com.plugin.frege.psi.FregeElementFactory
 import com.plugin.frege.psi.FregePackageName
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
 import com.plugin.frege.resolve.FregeReferenceBase
@@ -18,6 +19,10 @@ open class FregePackageTokenMixin(node: ASTNode) : FregeCompositeElementImpl(nod
                 val qualifiedName = packageText.substring(0, psiElement.textRange.endOffset - parent.textOffset)
                 val resolvedPackage = JavaPsiFacade.getInstance(psiElement.project).findPackage(qualifiedName)
                 return if (resolvedPackage != null) listOf(resolvedPackage) else emptyList()
+            }
+
+            override fun handleElementRename(name: String): PsiElement {
+                return psiElement.replace(FregeElementFactory.createPackageToken(psiElement.project, name))
             }
         }
     }
