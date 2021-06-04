@@ -23,6 +23,10 @@ open class FregeNativeFunctionNameMixin(node: ASTNode) : FregeCompositeElementIm
                 val function = psiElement.parentOfType<FregeNativeFunction>()
                 return if (function != null) listOf(function) else emptyList()
             }
+
+            override fun handleElementRename(name: String): PsiElement {
+                return psiElement.replace(FregeElementFactory.createNativeFunctionName(psiElement.project, name))
+            }
         }
     }
 
