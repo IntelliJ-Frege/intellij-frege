@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.FregeLanguage
+import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 
 object FregeElementFactory {
@@ -17,9 +18,18 @@ object FregeElementFactory {
             .createFileFromText(fakeFileName, FregeLanguage.INSTANCE, text) as FregeFile
     }
 
-    private fun <E : PsiElement> createElement(project: Project, text: String, elementClass: KClass<E>): E {
+    private fun <E : PsiElement> createElementOrNull(
+        project: Project,
+        text: String,
+        elementClass: KClass<E>
+    ): E? {
         val file = createFile(project, text)
-        return PsiTreeUtil.findChildrenOfType(file, elementClass.java).last()
+        return PsiTreeUtil.findChildrenOfType(file, elementClass.java).lastOrNull()
+    }
+
+    private fun <E : PsiElement> createElement(project: Project, text: String, elementClass: KClass<E>): E {
+        return createElementOrNull(project, text, elementClass)
+            ?: throw IllegalArgumentException("Cannot create an element in the factory.")
     }
 
     @JvmStatic
@@ -62,5 +72,17 @@ object FregeElementFactory {
     fun createNativeFunctionName(project: Project, name: String): FregeNativeFunctionName {
         val fakeNativeFunctionName = "${fakeProgram}native $name :: Int -> Int"
         return createElement(project, fakeNativeFunctionName, FregeNativeFunctionName::class)
+    }
+
+    @JvmStatic
+    fun createSymbolOperator(project: Project, name: String): FregeSymbolOperator {
+        val fakeSymbolOperator = "${fakeProgram}($name) :: Int -> Int -> Int"
+        return createElement(project, fakeSymbolOperator, FregeSymbolOperator::class)
+    }
+
+    @JvmStatic
+    fun canCreateSymbolOperator(project: Project, name: String): Boolean {
+        val fakeSymbolOperator = "${fakeProgram}($name) :: Int -> Int -> Int"
+        return createElementOrNull(project, fakeSymbolOperator, FregeSymbolOperator::class) != null
     }
 }
