@@ -83,6 +83,7 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
     }
 
     override fun getDocs(): List<FregeDocumentationElement> {
-        return listOfNotNull(documentation)
+        return listOfNotNull(documentation) +
+                FregePsiUtilImpl.collectPrecedingDocs(this)
     }
 }
