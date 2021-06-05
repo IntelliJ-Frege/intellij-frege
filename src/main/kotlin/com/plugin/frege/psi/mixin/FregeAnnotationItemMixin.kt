@@ -12,6 +12,7 @@ import com.plugin.frege.psi.FregeAnnotationItem
 import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.FregeSimpleType
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
+import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeMethodStub
 
 abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationItem {
@@ -45,6 +46,7 @@ abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationIte
     }
 
     override fun getDocs(): List<FregeDocumentationElement> {
-        return listOfNotNull(parentOfType<FregeAnnotation>()?.documentation)
+        return listOfNotNull(parentOfType<FregeAnnotation>()?.documentation) +
+                FregePsiUtilImpl.collectPrecedingDocs(this)
     }
 }

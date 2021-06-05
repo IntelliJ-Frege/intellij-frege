@@ -3,8 +3,11 @@ package com.plugin.frege.psi.impl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
+import com.plugin.frege.parser.FregeParserDefinition.COMMENTS
+import com.plugin.frege.parser.FregeParserDefinition.WHITE_SPACES
 import com.plugin.frege.psi.*
 import kotlin.reflect.KClass
 
@@ -286,6 +289,7 @@ object FregePsiUtilImpl {
         val simpleType = rho.typeApplication?.simpleTypeList?.firstOrNull() ?: return null
         return PsiTreeUtil.findChildOfType(simpleType, FregeConidUsage::class.java)
     }
+
     /**
      * @return all bindings of method
      */
@@ -295,5 +299,55 @@ object FregePsiUtilImpl {
         return findElementsWithinScope(method.parent) { elem ->
             elem is FregeBinding && elem.name == referenceText
         }.mapNotNull { elem -> elem as? FregeBinding }.toList()
+    }
+
+    /**
+     * @return the previous siblings of the PSI element.
+     */
+    @JvmStatic
+    fun siblingBackwardSequenceSkippingWhitespacesAndComments(
+        element: PsiElement,
+        strict: Boolean
+    ): Sequence<PsiElement> {
+        val start = if (strict) element.prevSibling else element
+        return generateSequence(start) { it.prevSibling }.filter {
+            !WHITE_SPACES.contains(it.elementType) && !COMMENTS.contains(
+                it.elementType
+            )
+        }
+    }
+
+    @JvmStatic
+    fun collectPrecedingDocs(element: PsiElement): List<FregeDocumentationElement> {
+        val parentInScope =
+            PsiTreeUtil.findFirstParent(element) {
+                isScope(it.parent) ||
+                        it.parent is FregeLinearIndentSectionItemsVirtual ||
+                        it.parent is FregeLinearIndentSectionItemsSemicolon
+            } ?: return emptyList()
+        return collectPrecedingDocsInBody(parentInScope) + collectPrecedingDocsInWhereScope(parentInScope)
+    }
+
+    @JvmStatic
+    private fun collectPrecedingDocsInWhereScope(element: PsiElement): List<FregeDocumentationElement> {
+        return siblingBackwardSequenceSkippingWhitespacesAndComments(element, true)
+            .takeWhile { it is FregeDocumentationElement || isEndDeclElement(it) }
+            .mapNotNull { it as? FregeDocumentationElement }.toList()
+    }
+
+    @JvmStatic
+    private fun collectPrecedingDocsInBody(element: PsiElement): List<FregeDocumentationElement> {
+        return siblingBackwardSequenceSkippingWhitespacesAndComments(element, true)
+            .takeWhile { it.firstChild is FregeDocumentationElement || isEndDeclElement(it) }
+            .mapNotNull { it.firstChild as? FregeDocumentationElement }.toList()
+    }
+
+    /**
+     * @return is [element] type separates declarations
+     */
+    @JvmStatic
+    private fun isEndDeclElement(element: PsiElement): Boolean {
+        val type = element.elementType
+        return FregeTypes.VIRTUAL_END_DECL.equals(type) || FregeTypes.SEMICOLON.equals(type)
     }
 }
