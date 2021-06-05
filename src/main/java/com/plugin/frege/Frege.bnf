@@ -178,7 +178,7 @@ binding ::= lhs rhs documentation? {
     implements=["com.plugin.frege.psi.FregePsiMethod"
                 "com.plugin.frege.psi.FregeParametersHolder"
                 "com.plugin.frege.psi.FregeWeakScopeElement"
-                "com.plugin.frege.documentation.FregeElementProvideDocumentation"]
+                "com.plugin.frege.psi.FregeElementProvideDocumentation"]
     mixin="com.plugin.frege.psi.mixin.FregeBindingMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
@@ -202,7 +202,8 @@ annotation ::= annotationItem (COMMA annotationItem)* DOUBLE_COLON sigma documen
     mixin="com.plugin.frege.psi.mixin.FregeAnnotationMixin"
 }
 annotationItem ::= annotationName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN | unaryOperator {
-    implements="com.plugin.frege.psi.FregePsiMethod"
+    implements=["com.plugin.frege.psi.FregePsiMethod"
+        "com.plugin.frege.psi.FregeElementProvideDocumentation"]
     mixin="com.plugin.frege.psi.mixin.FregeAnnotationItemMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
