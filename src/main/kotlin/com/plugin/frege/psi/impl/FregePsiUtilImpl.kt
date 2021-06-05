@@ -267,6 +267,12 @@ object FregePsiUtilImpl {
         }
     }
 
+    @JvmStatic
+    fun getFullQualifiedNameOfFregePsiMethod(method: FregePsiMethod): String? {
+        val classQualifiedName = method.containingClass?.qualifiedName ?: return null
+        return classQualifiedName + "." + method.name
+    }
+
     /**
      * It is a workaround while we don't have a type system.
      * @return first [FregeConidUsage] from [sigma] if it's not the arrow type. Otherwise `null` will be returned.
@@ -279,5 +285,15 @@ object FregePsiUtilImpl {
         }
         val simpleType = rho.typeApplication?.simpleTypeList?.firstOrNull() ?: return null
         return PsiTreeUtil.findChildOfType(simpleType, FregeConidUsage::class.java)
+    }
+    /**
+     * @return all bindings of method
+     */
+    @JvmStatic
+    fun getAllBindingsOfMethod(method: FregePsiMethod): List<FregeBinding> {
+        val referenceText = method.name
+        return findElementsWithinScope(method.parent) { elem ->
+            elem is FregeBinding && elem.name == referenceText
+        }.mapNotNull { elem -> elem as? FregeBinding }.toList()
     }
 }

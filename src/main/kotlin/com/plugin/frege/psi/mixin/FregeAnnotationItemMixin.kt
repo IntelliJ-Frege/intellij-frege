@@ -5,9 +5,11 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
+import com.intellij.psi.util.parentOfType
 import com.plugin.frege.FregeLanguage
-import com.plugin.frege.psi.FregeAnnotationItem
 import com.plugin.frege.psi.FregeAnnotation
+import com.plugin.frege.psi.FregeAnnotationItem
+import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.FregeSimpleType
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
 import com.plugin.frege.stubs.FregeMethodStub
@@ -38,11 +40,11 @@ abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationIte
         return false
     }
 
-    // isn't required now but maybe later it will be
-//    fun getBinding(): FregeBinding? {
-//        val referenceText = name
-//        return FregePsiUtilImpl.findElementsWithinScope(this) { elem ->
-//            elem is FregeBinding && elem.name == referenceText
-//        }.minByOrNull { it.textOffset } as? FregeBinding
-//    }
+    fun getAnnotation(): FregeAnnotation {
+        return parentOfType()!!
+    }
+
+    override fun getDocs(): List<FregeDocumentationElement> {
+        return listOfNotNull(parentOfType<FregeAnnotation>()?.documentation)
+    }
 }
