@@ -11,9 +11,11 @@ import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.MethodSignature
 import com.plugin.frege.FregeLanguage
+import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.FregeNativeFunction
 import com.plugin.frege.psi.impl.FregeNativeFunctionNameImpl
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
+import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeMethodStub
 
 @Suppress("UnstableApiUsage")
@@ -146,5 +148,10 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
 
     override fun getParameters(): Array<JvmParameter> {
         return delegatedMember?.parameters ?: super<FregePsiMethodImpl>.getParameters()
+    }
+
+    override fun getDocs(): List<FregeDocumentationElement> {
+        return listOfNotNull(documentation) +
+                FregePsiUtilImpl.collectPrecedingDocs(this)
     }
 }

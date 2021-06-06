@@ -7,7 +7,9 @@ import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.psi.FregeConstruct
+import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
+import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeMethodStub
 
 abstract class FregeConstructMixin: FregePsiMethodImpl, FregeConstruct {
@@ -37,5 +39,10 @@ abstract class FregeConstructMixin: FregePsiMethodImpl, FregeConstruct {
 
     override fun isConstructor(): Boolean {
         return true
+    }
+
+    override fun getDocs(): List<FregeDocumentationElement> {
+        return documentationList +
+                FregePsiUtilImpl.collectPrecedingDocs(this)
     }
 }
