@@ -5,11 +5,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture
-import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
-import com.intellij.util.io.exists
+import com.plugin.frege.FregeCodeInsightTest
 import com.plugin.frege.psi.*
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -33,18 +30,10 @@ import java.nio.file.Paths
  *
  * @see [JavaCodeInsightTestFixture.getReferenceAtCaretPositionWithAssertion]
  */
-class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
-    private val extensions = listOf("fr", "java")
+class FregeResolveTest : FregeCodeInsightTest() {
+    override val extensions = listOf("fr", "java")
 
-    @BeforeEach
-    override fun setUp() = super.setUp()
-
-    @AfterEach
-    override fun tearDown() = super.tearDown()
-
-    override fun getTestDataPath(): String {
-        return getTestDataPathValue().toString()
-    }
+    override val testDataPathValue: Path = Paths.get("src", "test", "testData", "resolve")
 
     // Testing bindings
 
@@ -331,10 +320,6 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
     }
 
 
-    private fun getTestDataPathValue(): Path {
-        return Paths.get("src", "test", "testData", "resolve").toAbsolutePath()
-    }
-
     private fun doTest(verify: (elem: PsiElement?) -> Boolean) {
         val name = getTestName(false)
         val parts = name.split(' ').drop(1).toTypedArray()
@@ -342,8 +327,8 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
 
         val mode = parts[0]
         val fileParts = parts.copyOfRange(1, parts.size)
-        val path = getTestDataPathValue().resolve(Paths.get("", *fileParts))
-        val filePath = Path.of("$path.${findAppropriateExtension(path)}")
+        val path = Paths.get("", *fileParts)
+        val filePath = findFileWithoutExtension(path)
 
         when (mode) {
             "file" -> doTestSingleFile(filePath, verify)
@@ -366,17 +351,6 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
             ?.toTypedArray() ?: return
 
         doTestReference(filePathString, *files, verify = verify)
-    }
-
-    private fun findAppropriateExtension(path: Path): String {
-        for (extension in extensions) {
-            val current = "$path.$extension"
-            if (Path.of(current).exists()) {
-                return extension
-            }
-        }
-
-        throw IllegalArgumentException("Cannot find an extension.")
     }
 
     private fun doTestReference(vararg filePaths: String, verify: (elem: PsiElement?) -> Boolean) {
