@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.plugin.frege.psi.FregeDoDecl
-import com.plugin.frege.psi.FregeElementFactory.createVarId
+import com.plugin.frege.psi.FregeElementFactory.createVaridUsage
 import com.plugin.frege.psi.FregeParameter
 import com.plugin.frege.psi.FregeParametersHolder
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinElement
@@ -15,7 +15,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
 
     override fun handleElementRename(name: String): PsiElement {
-        return psiElement.replace(createVarId(psiElement.project, name))
+        return psiElement.replace(createVaridUsage(psiElement.project, name))
     }
 
     // TODO take into account: qualified names

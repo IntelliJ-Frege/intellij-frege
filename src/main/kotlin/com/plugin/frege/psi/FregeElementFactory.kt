@@ -28,8 +28,11 @@ object FregeElementFactory {
         project: Project,
         text: String,
     ): E {
-        return createElementOrNull(project, text)
-            ?: throw IllegalArgumentException("Cannot create an element in the factory.")
+        return createElementOrNull(project, text) ?: cannotCreateElement()
+    }
+
+    private inline fun <reified E> cannotCreateElement(): E {
+        throw IllegalStateException("Cannot create an element ${E::class}")
     }
 
     @JvmStatic
@@ -45,15 +48,34 @@ object FregeElementFactory {
     }
 
     @JvmStatic
-    fun createVarId(project: Project, name: String): FregeQVarid {
-        val fakeVarId = fakeProgram + "function = " + name
-        return createElement(project, fakeVarId)
+    fun createVaridUsageOrNull(project: Project, name: String): FregeVaridUsage? {
+        val fakeVaridUsage = fakeProgram + "function = " + name
+        return createElementOrNull(project, fakeVaridUsage)
+    }
+
+    @JvmStatic
+    fun createVaridUsage(project: Project, name: String): FregeVaridUsage {
+        return createVaridUsageOrNull(project, name) ?: cannotCreateElement()
+    }
+
+    @JvmStatic
+    fun canCreateVaridUsage(project: Project, name: String): Boolean {
+        return createVaridUsageOrNull(project, name) != null
+    }
+
+    private fun createConidUsageOrNull(project: Project, name: String): FregeConidUsage? {
+        val fakeConidUsage = "module $name where\nfunc = undefined"
+        return createElementOrNull(project, fakeConidUsage)
     }
 
     @JvmStatic
     fun createConidUsage(project: Project, name: String): FregeConidUsage {
-        val fakeConidUsage = "${fakeProgram}func :: $name"
-        return createElement(project, fakeConidUsage)
+        return createConidUsageOrNull(project, name) ?: cannotCreateElement()
+    }
+
+    @JvmStatic
+    fun canCreateConidUsage(project: Project, name: String): Boolean {
+        return createConidUsageOrNull(project, name) != null
     }
 
     @JvmStatic
@@ -74,15 +96,18 @@ object FregeElementFactory {
         return createElement(project, fakeNativeFunctionName)
     }
 
+    private fun createSymbolOperatorOrNull(project: Project, name: String): FregeSymbolOperator? {
+        val fakeSymbolOperator = "${fakeProgram}($name) :: Int -> Int -> Int"
+        return createElementOrNull(project, fakeSymbolOperator)
+    }
+
     @JvmStatic
     fun createSymbolOperator(project: Project, name: String): FregeSymbolOperator {
-        val fakeSymbolOperator = "${fakeProgram}($name) :: Int -> Int -> Int"
-        return createElement(project, fakeSymbolOperator)
+        return createSymbolOperatorOrNull(project, name) ?: cannotCreateElement()
     }
 
     @JvmStatic
     fun canCreateSymbolOperator(project: Project, name: String): Boolean {
-        val fakeSymbolOperator = "${fakeProgram}($name) :: Int -> Int -> Int"
-        return createElementOrNull<FregeSymbolOperator>(project, fakeSymbolOperator) != null
+        return createSymbolOperatorOrNull(project, name) != null
     }
 }
