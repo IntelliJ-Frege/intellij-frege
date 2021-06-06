@@ -1,9 +1,7 @@
 package com.plugin.frege.documentation
 
 import com.intellij.psi.util.parentOfType
-import com.plugin.frege.psi.FregeClassDecl
-import com.plugin.frege.psi.FregeProgram
-import com.plugin.frege.psi.FregePsiMethod
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeAnnotationItemImpl
 import com.plugin.frege.psi.impl.FregeBindingImpl
 import com.plugin.frege.psi.impl.FregeClassDeclImpl
@@ -51,25 +49,41 @@ object FregeGenerateDocUtil {
     }
 
     @JvmStatic
-    fun generateFregeClassDoc(fregeClass: FregeClassDeclImpl): String {
-        val uniqueMethods = fregeClass.allMethods.distinctBy { it.name }.mapNotNull { it as? FregePsiMethod }
+    private fun generateFregePsiClassDoc(
+        fregePsiClass: FregePsiClass,
+        psiClassTitle: String,
+        psiMethodTitle: String
+    ): String {
+        val uniqueMethods = fregePsiClass.allMethods.distinctBy { it.name }.mapNotNull { it as? FregePsiMethod }
+        val psiClassName = fregePsiClass.name
         return buildDoc {
             definition {
-                appendModuleLink(fregeClass.parentOfType())
-                appendNewline()
-                appendText("Class ")
-                appendBoldText(fregeClass.name)
-                appendNewline()
+                appendModuleLink(fregePsiClass.parentOfType())
+                if (psiClassName != null) {
+                    appendNewline()
+                    appendText("$psiClassTitle ")
+                    appendBoldText(psiClassName)
+                }
             }
             content {
-                appendDocs(fregeClass)
-                section("Functions:") {
+                appendDocs(fregePsiClass)
+                section("$psiMethodTitle:") {
                     for (method in uniqueMethods) {
                         paragraph { appendPsiMethodLink(method) }
                     }
                 }
             }
         }
+    }
+
+    @JvmStatic
+    fun generateFregeClassDoc(element: FregeClassDeclImpl): String {
+        return generateFregePsiClassDoc(element, "Class", "Functions")
+    }
+
+    @JvmStatic
+    fun generateFregeDataDoc(element: FregeDataDecl): String {
+        return generateFregePsiClassDoc(element, "Data", "Constructors")
     }
 
     @JvmStatic
