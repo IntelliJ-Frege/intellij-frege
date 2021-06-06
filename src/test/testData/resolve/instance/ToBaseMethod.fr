@@ -1,0 +1,14 @@
+module ToBaseMethod where
+
+data Partner = Kirill | Jury
+
+data Couple = KirillPetya | JuryPetya
+
+class Petya a where
+    love :: a -> Couple
+
+instance Petya Partner where
+    love Kirill = KirillPetya
+    love Jury   = JuryPetya
+
+test = Petya.lo<caret>ve Kirill

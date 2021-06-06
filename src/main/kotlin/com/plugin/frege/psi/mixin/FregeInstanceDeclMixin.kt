@@ -20,6 +20,8 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl, FregeInstanceDecl {
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
+    override val canBeReferenced: Boolean = false
+
     override fun getNameWithoutStub(): @NlsSafe String {
         return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
     }
@@ -36,6 +38,7 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl, FregeInstanceDecl {
     override fun getMethods(): Array<PsiMethod> {
         return whereSection?.linearIndentSection?.subprogramsFromScope
             ?.mapNotNull { it.firstChild as? FregeBinding }
+            ?.filter { it.nameIdentifier?.reference?.resolve() === it }
             ?.toTypedArray() ?: PsiMethod.EMPTY_ARRAY
     }
 

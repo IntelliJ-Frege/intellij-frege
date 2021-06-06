@@ -10,12 +10,10 @@ import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.FregeFileType
-import com.plugin.frege.psi.FregeBinding
-import com.plugin.frege.psi.FregeBody
-import com.plugin.frege.psi.FregePsiClass
-import com.plugin.frege.psi.FregePsiMethod
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeNamedStubBasedPsiElementBase
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
@@ -228,7 +226,6 @@ object FregeResolveUtil {
     ): List<PsiElement> {
         val predicate = getByTypePredicateCheckingName(FregeBinding::class, name, incompleteCode)
 
-        // search for definitions in the current and outer scopes
         var scope: PsiElement? = scopeOfElement(usage)
         while (scope != null) {
             val functionNames = findElementsWithinScope(scope, predicate)
@@ -236,6 +233,62 @@ object FregeResolveUtil {
                 return listOf(functionNames.minByOrNull { it.textOffset }!!)
             }
             scope = scopeOfElement(scope.parent)
+        }
+        return emptyList()
+    }
+
+    /**
+     * If it's in import declaration, tries to resolve imported class.
+     * Otherwise, searches for classes in the current file and imported classes.
+     */
+    @JvmStatic
+    fun findClassesFromUsage(
+        usage: PsiElement,
+        incompleteCode: Boolean
+    ): List<PsiElement> {
+        if (usage.parentOfType<FregeMainPackageClass>() != null) {
+            return resolveClassInPackageFromUsage(usage) // TODO support incomplete code
+        }
+        // TODO take into account qualified names
+        val results = tryFindClassesInCurrentFileFromUsage(usage, incompleteCode).toMutableList()
+        results.addAll(tryFindClassesByImportsFromUsage(usage)) // TODO support incomplete code
+        return results
+    }
+
+    private fun resolveClassInPackageFromUsage(usage: PsiElement): List<PsiElement> {
+        val packageName = usage.parentOfType<FregePackageName>() ?: return emptyList()
+        val qualifiedNameLength = usage.textRange.endOffset - packageName.textOffset
+        val qualifiedName = packageName.text.substring(0, qualifiedNameLength)
+        val project = usage.project
+        return FregeClassNameIndex.INSTANCE.findByName(
+            qualifiedName,
+            project,
+            GlobalSearchScope.everythingScope(project)
+        )
+    }
+
+    private fun tryFindClassesInCurrentFileFromUsage(
+        usage: PsiElement,
+        incompleteCode: Boolean
+    ): List<PsiElement> {
+        val referenceText = usage.text
+        val classes = findClassesInCurrentFile(usage).toMutableList()
+        if (!incompleteCode) {
+            classes.removeIf { referenceText != it.name }
+        }
+        return classes
+    }
+
+    private fun tryFindClassesByImportsFromUsage(usage: PsiElement): List<PsiElement> {
+        val className = usage.text
+        val project = usage.project
+        val imports = findImportsNamesForElement(usage, true)
+        for (currentImport in imports) {
+            val qualifiedName = mergeQualifiedNames(currentImport, className)
+            val classes = findClassesByQualifiedName(project, qualifiedName)
+            if (classes.isNotEmpty()) {
+                return classes
+            }
         }
         return emptyList()
     }
