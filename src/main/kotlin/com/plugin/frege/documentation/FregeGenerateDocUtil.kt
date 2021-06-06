@@ -8,6 +8,7 @@ import com.plugin.frege.psi.impl.FregeClassDeclImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 
 object FregeGenerateDocUtil {
+
     @JvmStatic
     fun generateFregeMethodDoc(method: FregePsiMethod): String {
         val annoItem = when (method) {
@@ -15,18 +16,22 @@ object FregeGenerateDocUtil {
             is FregeAnnotationItemImpl -> method
             else -> null
         }
+        val sigmaList = when (method) {
+            is FregeNativeFunction -> method.sigmaList
+            else -> listOfNotNull(annoItem?.getAnnotation()?.sigma)
+        }
         return buildDoc {
             definition {
                 appendModuleLink(method.parentOfType())
                 appendNewline()
                 appendText("Function ")
                 appendBoldText(method.name)
-                val type = annoItem?.getAnnotation()?.sigma?.text
-                if (type != null) {
+                if (sigmaList.isNotEmpty()) {
                     appendNewline()
-                    appendCode("Type: $type")
+                    appendText("Type: ")
+                    appendCode(sigmaList.mapNotNull { it.text }.joinToString(" | "))
                 }
-                val fregeClass = method.containingClass as? FregeClassDecl
+                val fregeClass = method.containingClass
                 if (fregeClass != null) {
                     appendNewline()
                     appendText("within ")
@@ -34,13 +39,17 @@ object FregeGenerateDocUtil {
                 }
             }
             content {
-                appendDocs(annoItem)
-                section("Implementations:") {
-                    for (binding in FregePsiUtilImpl.getAllBindingsOfMethod(method)) {
-                        paragraph {
-                            appendDocs(binding)
-                            appendNewline()
-                            appendCode(binding.lhs.text)
+                if (method is FregeNativeFunction) {
+                    appendDocs(method)
+                } else {
+                    appendDocs(annoItem)
+                    section("Implementations:") {
+                        for (binding in FregePsiUtilImpl.getAllBindingsOfMethod(method)) {
+                            paragraph {
+                                appendDocs(binding)
+                                appendNewline()
+                                appendCode(binding.lhs.text)
+                            }
                         }
                     }
                 }
