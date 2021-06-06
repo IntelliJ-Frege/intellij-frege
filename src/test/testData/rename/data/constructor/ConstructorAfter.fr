@@ -1,0 +1,10 @@
+module Constructor where
+
+data Lover = Jury | Petya
+
+test :: Lover -> Lover
+test Jury = Petya
+test Petya = Jury
+
+get :: Lover
+get = Lover.Jury

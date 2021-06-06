@@ -1,0 +1,13 @@
+module Operator where
+
+infix 7 **+--+**
+
+(**+--+**) :: Int -> Int -> Int
+(**+--+**) 10 1 = 101
+a **+--+** 1 = a * a + 1
+(**+--+**) a b = a * a + b * b
+
+testOperator :: Int -> Int
+testOperator x = x **+--+** x
+
+testOperator2 x = (**+--+**) x

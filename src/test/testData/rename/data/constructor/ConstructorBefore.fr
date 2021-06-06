@@ -1,0 +1,10 @@
+module Constructor where
+
+data Lover = Kirill | Petya
+
+test :: Lover -> Lover
+test Kirill = Petya
+test Petya = Kirill
+
+get :: Lover
+get = Lover.Kiri<caret>ll

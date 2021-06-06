@@ -1,0 +1,10 @@
+module DataBefore where
+
+data Hello = Abc | Xyz
+
+test :: Hello -> String
+test Abc = "Abc"
+test Xyz = "Xyz"
+
+getAbc :: Hell<caret>o
+getAbc = Hello.Abc

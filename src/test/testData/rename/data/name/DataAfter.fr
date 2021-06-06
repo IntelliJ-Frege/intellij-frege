@@ -1,0 +1,10 @@
+module DataBefore where
+
+data Petya = Abc | Xyz
+
+test :: Petya -> String
+test Abc = "Abc"
+test Xyz = "Xyz"
+
+getAbc :: Petya
+getAbc = Petya.Abc

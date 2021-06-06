@@ -1,0 +1,6 @@
+module Quotes where
+
+test :: Int -> Int
+test x = x - 1
+
+test2 = t<caret>est 1 + test 2

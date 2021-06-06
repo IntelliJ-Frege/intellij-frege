@@ -1,0 +1,10 @@
+module Binding where
+
+newFunction :: Int -> Int -> Int
+newFunction 1 2 = 3
+newFunction 1 3 = 4
+newFunction 1 x = x + 1
+newFunction x 1 = 1 + x
+newFunction x y = x + y + newFunction (abs (x - y))
+
+func2 x y = x - y + (newFunction (x + y) (x - y))

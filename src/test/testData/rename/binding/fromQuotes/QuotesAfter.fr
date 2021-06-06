@@ -1,0 +1,9 @@
+module Quotes where
+
+test' :: String -> Int
+test' "petya"  = 0
+test' "kirill" = 1
+test' "jury"   = 2
+test' _        = 3
+
+func = test' "petya"
