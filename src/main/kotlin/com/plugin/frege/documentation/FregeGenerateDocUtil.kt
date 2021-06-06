@@ -2,6 +2,7 @@ package com.plugin.frege.documentation
 
 import com.intellij.psi.util.parentOfType
 import com.plugin.frege.psi.FregeClassDecl
+import com.plugin.frege.psi.FregeProgram
 import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.psi.impl.FregeAnnotationItemImpl
 import com.plugin.frege.psi.impl.FregeBindingImpl
@@ -61,6 +62,20 @@ object FregeGenerateDocUtil {
                         paragraph { psiMethodLink(method) }
                     }
                 }
+            }
+        }
+    }
+
+    @JvmStatic
+    fun generateFregeProgramDoc(fregeProgram: FregeProgram): String {
+        val moduleName = fregeProgram.packageName?.text ?: return ""
+        return buildDoc {
+            definition {
+                appendText("Module ")
+                appendBoldText(moduleName)
+            }
+            content {
+                appendDocs(fregeProgram)
             }
         }
     }
