@@ -1,0 +1,3 @@
+module other.Clazz where
+
+main = undefined

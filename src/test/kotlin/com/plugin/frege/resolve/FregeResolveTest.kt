@@ -316,6 +316,10 @@ class FregeResolveTest : LightJavaCodeInsightFixtureTestCase() {
         it is PsiClass && it.qualifiedName == "project.failed.BelovedPetya"
     }
 
+    fun `test dir betweenFiles imports toClass Usage`() = doTest {
+        it is PsiClass && it.qualifiedName == "other.Clazz"
+    }
+
     // Testing from Java
 
     fun `test dir fromJava ToModule JavaClass`() = doTest {
