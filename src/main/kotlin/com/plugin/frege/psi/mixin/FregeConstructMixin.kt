@@ -23,10 +23,6 @@ abstract class FregeConstructMixin: FregePsiMethodImpl, FregeConstruct {
         }
     }
 
-    override fun setName(name: String): PsiElement {
-        return this
-    }
-
     override fun getNameIdentifier(): PsiIdentifier {
         return conidUsage
     }

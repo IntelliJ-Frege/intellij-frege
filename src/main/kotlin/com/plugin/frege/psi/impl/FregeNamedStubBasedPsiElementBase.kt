@@ -14,6 +14,11 @@ abstract class FregeNamedStubBasedPsiElementBase<T : StubElement<*>> : StubBased
 
     constructor(node: ASTNode) : super(node)
 
+    override fun setName(name: String): PsiElement {
+        nameIdentifier?.reference?.handleElementRename(name)
+        return this
+    }
+
     override fun getNavigationElement(): PsiElement {
         return nameIdentifier ?: this
     }

@@ -47,10 +47,6 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
             .toList().toTypedArray()
     }
 
-    override fun setName(name: @NlsSafe String): PsiElement {
-        return this // DataNameUsage performs renaming
-    }
-
     override fun getScope(): PsiElement {
         return this
     }

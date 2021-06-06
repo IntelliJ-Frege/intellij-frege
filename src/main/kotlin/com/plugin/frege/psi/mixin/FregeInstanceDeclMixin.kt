@@ -24,10 +24,6 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl, FregeInstanceDecl {
         return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
     }
 
-    override fun setName(name: String): PsiElement {
-        return this
-    }
-
     override fun getNameIdentifier(): PsiIdentifier? {
         val typeApplications = typeApplications?.typeApplicationList ?: return null
         if (typeApplications.size != 1) {

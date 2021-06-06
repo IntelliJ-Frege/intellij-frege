@@ -21,11 +21,6 @@ abstract class FregeNewtypeDeclMixin : FregePsiClassImpl, FregeNewtypeDecl {
         return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
     }
 
-    override fun setName(name: String): PsiElement {
-        listOf(1, 2, 3).asSequence()
-        return this
-    }
-
     override fun getNameIdentifier(): PsiIdentifier? {
         return conidUsage
     }

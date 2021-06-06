@@ -1,15 +1,26 @@
 package com.plugin.frege.findusages
 
+import com.intellij.lang.cacheBuilder.DefaultWordsScanner
 import com.intellij.lang.cacheBuilder.WordsScanner
 import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.psi.PsiElement
+import com.intellij.psi.tree.TokenSet
+import com.plugin.frege.lexer.layout.FregeLayoutLexerAdapter
+import com.plugin.frege.parser.FregeParserDefinition
 import com.plugin.frege.psi.*
 import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 
 class FregeFindUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner {
-        return FregeWordsScanner()
+        return DefaultWordsScanner(
+            FregeLayoutLexerAdapter(),
+            FregeParserDefinition.IDENTIFIERS,
+            FregeParserDefinition.COMMENTS,
+            FregeParserDefinition.STRING_LITERALS,
+            TokenSet.EMPTY,
+            FregeParserDefinition.OPERATORS
+        )
     }
 
     override fun canFindUsagesFor(element: PsiElement): Boolean {

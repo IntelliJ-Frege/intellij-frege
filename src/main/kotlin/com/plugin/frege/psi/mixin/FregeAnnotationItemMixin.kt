@@ -22,10 +22,6 @@ abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationIte
         return annotation?.sigma?.children?.count { it is FregeSimpleType } ?: 0 // TODO it's VERY BAD. Waiting for grammar update.
     }
 
-    override fun setName(name: String): PsiElement {
-        return this // handleElementRename in AnnotationName performs renaming
-    }
-
     override fun getModifierList(): PsiModifierList {
         return LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC) // TODO
     }

@@ -29,10 +29,6 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
         return true
     }
 
-    override fun setName(name: String): PsiElement {
-        return this
-    }
-
     override fun getNameIdentifier(): PsiIdentifier? {
         val annotationItem = nativeAnnotationItem
         val nativeFunctionName = annotationItem.nativeFunctionName

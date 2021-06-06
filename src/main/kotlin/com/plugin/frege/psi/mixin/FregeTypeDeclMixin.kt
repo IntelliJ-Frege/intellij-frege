@@ -20,10 +20,6 @@ abstract class FregeTypeDeclMixin : FregePsiClassImpl, FregeTypeDecl {
         return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
     }
 
-    override fun setName(name: String): PsiElement {
-        return this
-    }
-
     override fun getNameIdentifier(): PsiIdentifier? {
         return conidUsage
     }
