@@ -11,30 +11,35 @@ class DocBuilder {
 
     private val builder = StringBuilder()
 
-    private fun psiElementLink(fqn: String?, label: String?): DocBuilder {
+    private fun appendPsiElementLink(fqn: String?, label: String?): DocBuilder {
         if (fqn != null && label != null) {
             DocumentationManagerUtil.createHyperlink(builder, fqn, label, false)
         }
         return this
     }
 
-    fun moduleLink(fregeProgram: FregeProgram?): DocBuilder {
+    fun appendModuleLink(fregeProgram: FregeProgram?): DocBuilder {
         val moduleName = fregeProgram?.packageName?.text
-        return psiElementLink(moduleName, moduleName)
+        return appendPsiElementLink(moduleName, moduleName)
     }
 
-    fun psiMethodLink(method: FregePsiMethod?): DocBuilder {
-        return psiElementLink(method?.containingClass?.qualifiedName + "#" + method?.name, method?.name)
+    fun appendPsiMethodLink(method: FregePsiMethod?): DocBuilder {
+        return appendPsiElementLink(method?.containingClass?.qualifiedName + "#" + method?.name, method?.name)
     }
 
-    fun psiClassLink(psiClass: FregePsiClass?): DocBuilder {
-        return psiElementLink(psiClass?.qualifiedName, psiClass?.name)
+    fun appendPsiClassLink(psiClass: FregePsiClass?): DocBuilder {
+        return appendPsiElementLink(psiClass?.qualifiedName, psiClass?.name)
     }
 
-    fun appendText(string: String?): DocBuilder {
-        if (string != null) {
-            builder.append(string)
-        }
+    fun appendText(string: String): DocBuilder {
+        builder.append(string)
+        return this
+    }
+
+    fun appendBoldText(string: String): DocBuilder {
+        builder.append("<b>")
+        builder.append(string)
+        builder.append("</b>")
         return this
     }
 
@@ -44,6 +49,25 @@ class DocBuilder {
             builder.append(string)
             builder.append("</code>")
         }
+        return this
+    }
+
+    fun appendNewline(): DocBuilder {
+        appendText("<br>")
+        return this
+    }
+
+    fun appendDocs(element: FregeElementProvideDocumentation?): DocBuilder {
+        if (element != null) {
+            appendText(element.getDocs().joinToString("<br>") { doc -> doc.documentationText.trim() })
+        }
+        return this
+    }
+
+    fun paragraph(builderAction: DocBuilder.() -> Unit): DocBuilder {
+        appendText("<p>")
+        apply(builderAction)
+        appendText("</p>")
         return this
     }
 
@@ -61,29 +85,9 @@ class DocBuilder {
         return this
     }
 
-    fun paragraph(builderAction: DocBuilder.() -> Unit): DocBuilder {
-        appendText("<p>")
+    fun section(title: String, builderAction: DocBuilder.() -> Unit) {
+        builder.append("<h3{margin-top:0, margin-bottom:0}>$title</h3>")
         apply(builderAction)
-        appendText("</p>")
-        return this
-    }
-
-    fun appendDocs(element: FregeElementProvideDocumentation?): DocBuilder {
-        if (element != null) {
-            appendText(element.getDocs().joinToString("<br>") { doc -> doc.documentationText.trim() })
-        }
-        return this
-    }
-
-    fun section(title: String, builderAction: DocBuilder.() -> Unit): DocBuilder {
-        appendText("<h3>$title</h3>")
-        apply(builderAction)
-        return this
-    }
-
-    fun appendNewline(): DocBuilder {
-        appendText("<br>")
-        return this
     }
 
     override fun toString(): String {
