@@ -9,6 +9,7 @@ import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregeTypeDecl
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findMainTypeFromSigma
+import com.plugin.frege.resolve.FregeResolveUtil
 import com.plugin.frege.stubs.FregeClassStub
 
 abstract class FregeTypeDeclMixin : FregePsiClassImpl, FregeTypeDecl {
@@ -25,7 +26,12 @@ abstract class FregeTypeDeclMixin : FregePsiClassImpl, FregeTypeDecl {
     }
 
     override fun getMethods(): Array<PsiMethod> {
-        val aliasClass = findMainTypeFromSigma(sigma)?.reference?.resolve() as? FregePsiClass
+        val alias = findMainTypeFromSigma(sigma) ?: return PsiMethod.EMPTY_ARRAY
+        val classes = FregeResolveUtil.findClassesFromUsage(alias, false)
+        if (classes.size != 1) {
+            return PsiMethod.EMPTY_ARRAY
+        }
+        val aliasClass = classes.first() as? FregePsiClass
         return aliasClass?.methods ?: PsiMethod.EMPTY_ARRAY
     }
 

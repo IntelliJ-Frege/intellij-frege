@@ -180,6 +180,19 @@ class FregeResolveTest : FregeCodeInsightTest() {
                 && it.containingClass?.qualifiedName == "ToOriginConstructor.MyData"
     }
 
+    // Testing instance
+
+    fun `test file instance ToBaseMethod`() = doTest {
+        it is FregeAnnotationItem && it.name == "love"
+                && it.containingClass?.qualifiedName == "ToBaseMethod.Petya"
+    }
+
+    fun `test file instance ToInstancedMethod`() = doTest {
+        println(it?.text)
+        it is FregeBinding && it.name == "love"
+                && it.containingClass?.qualifiedName == "ToInstancedMethod.Partner"
+    }
+
     // Testing native data
 
     fun `test file nativeData FromType`() = doTest {
