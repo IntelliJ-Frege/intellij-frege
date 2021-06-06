@@ -5,6 +5,7 @@ import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import com.plugin.frege.psi.FregeProgram
 import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.psi.impl.FregeClassDeclImpl
 import com.plugin.frege.documentation.FregeGenerateDocUtil as Doc
@@ -18,6 +19,7 @@ class FregeDocumentationProvider : AbstractDocumentationProvider() {
         return when (element) {
             is FregePsiMethod -> Doc.generateFregeMethodDoc(element)
             is FregeClassDeclImpl -> Doc.generateFregeClassDoc(element)
+            is FregeProgram -> Doc.generateFregeProgramDoc(element)
             else -> null
         }
     }

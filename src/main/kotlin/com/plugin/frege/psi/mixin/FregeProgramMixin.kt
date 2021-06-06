@@ -7,6 +7,7 @@ import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.stubs.IStubElementType
 import com.plugin.frege.psi.FregeDecl
+import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.FregeProgram
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
@@ -49,5 +50,9 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
 
     override fun getScope(): PsiElement {
         return this
+    }
+
+    override fun getDocs(): List<FregeDocumentationElement> {
+        return documentationList
     }
 }
