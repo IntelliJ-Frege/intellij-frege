@@ -1,7 +1,6 @@
 package com.plugin.frege.psi.mixin
 
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
@@ -63,10 +62,6 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
 
     override fun getModifierList(): PsiModifierList {
         return modifierList
-    }
-
-    override fun setName(name: @NlsSafe String): PsiElement {
-        return this // handleElementRename in FunctionName performs renaming
     }
 
     // TODO

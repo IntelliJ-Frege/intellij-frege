@@ -38,8 +38,4 @@ abstract class FregeNativeDataDeclMixin : FregePsiClassImpl, FregeNativeDataDecl
     override fun getScope(): PsiElement {
         return this
     }
-
-    override fun setName(name: @NlsSafe String): PsiElement {
-        return this // name identifier performs this
-    }
 }
