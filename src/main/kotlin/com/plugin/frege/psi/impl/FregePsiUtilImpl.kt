@@ -332,14 +332,14 @@ object FregePsiUtilImpl {
     private fun collectPrecedingDocsInWhereScope(element: PsiElement): List<FregeDocumentationElement> {
         return siblingBackwardSequenceSkippingWhitespacesAndComments(element, true)
             .takeWhile { it is FregeDocumentationElement || isEndDeclElement(it) }
-            .mapNotNull { it as? FregeDocumentationElement }.toList()
+            .mapNotNull { it as? FregeDocumentationElement }.toList().asReversed()
     }
 
     @JvmStatic
     private fun collectPrecedingDocsInBody(element: PsiElement): List<FregeDocumentationElement> {
         return siblingBackwardSequenceSkippingWhitespacesAndComments(element, true)
             .takeWhile { it.firstChild is FregeDocumentationElement || isEndDeclElement(it) }
-            .mapNotNull { it.firstChild as? FregeDocumentationElement }.toList()
+            .mapNotNull { it.firstChild as? FregeDocumentationElement }.toList().asReversed()
     }
 
     /**
