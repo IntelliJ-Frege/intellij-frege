@@ -6,11 +6,12 @@ import com.intellij.patterns.InitialPatternCondition
 import com.intellij.psi.PsiElement
 import com.intellij.refactoring.rename.RenameInputValidator
 import com.intellij.util.ProcessingContext
+import com.plugin.frege.psi.FregeConidUsage
 import com.plugin.frege.psi.FregeElementFactory
 import com.plugin.frege.psi.FregeNamedElement
 import com.plugin.frege.psi.FregeSymbolOperator
 
-class FregeSymbolOperatorRenameInputValidator : RenameInputValidator {
+class FregeRenameInputValidator : RenameInputValidator {
     private val pattern = object : ElementPattern<PsiElement> {
         private val condition =
             ElementPatternCondition(object : InitialPatternCondition<PsiElement>(PsiElement::class.java) {
@@ -18,7 +19,7 @@ class FregeSymbolOperatorRenameInputValidator : RenameInputValidator {
             })
 
         override fun accepts(o: Any?): Boolean {
-            return o is FregeNamedElement && o.nameIdentifier is FregeSymbolOperator
+            return o is FregeNamedElement
         }
 
         override fun accepts(o: Any?, context: ProcessingContext?): Boolean {
@@ -35,6 +36,16 @@ class FregeSymbolOperatorRenameInputValidator : RenameInputValidator {
     }
 
     override fun isInputValid(newName: String, element: PsiElement, context: ProcessingContext): Boolean {
-        return FregeElementFactory.canCreateSymbolOperator(element.project, newName)
+        if (newName.contains(' ')) {
+            return false
+        }
+
+        val project = element.project
+        val nameIdentifier = (element as? FregeNamedElement)?.nameIdentifier ?: return false
+        return when (nameIdentifier) {
+            is FregeSymbolOperator -> FregeElementFactory.canCreateSymbolOperator(project, newName)
+            is FregeConidUsage -> FregeElementFactory.canCreateConidUsage(project, newName)
+            else -> FregeElementFactory.canCreateVaridUsage(project, newName)
+        }
     }
 }
