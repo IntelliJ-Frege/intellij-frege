@@ -19,17 +19,20 @@ object FregeGenerateDocUtil {
         }
         return buildDoc {
             definition {
-                moduleLink(method.parentOfType())
-                section("Function ${method.name}") {
-                    val type = annoItem?.getAnnotation()?.sigma?.text
-                    if (type != null) {
-                        appendCode("Type: $type")
-                    }
-                    val fregeClass = method.containingClass as? FregeClassDecl
-                    if (fregeClass != null) {
-                        appendText(" within ")
-                        psiClassLink(fregeClass)
-                    }
+                appendModuleLink(method.parentOfType())
+                appendNewline()
+                appendText("Function ")
+                appendBoldText(method.name)
+                val type = annoItem?.getAnnotation()?.sigma?.text
+                if (type != null) {
+                    appendNewline()
+                    appendCode("Type: $type")
+                }
+                val fregeClass = method.containingClass as? FregeClassDecl
+                if (fregeClass != null) {
+                    appendNewline()
+                    appendText("within ")
+                    appendPsiClassLink(fregeClass)
                 }
             }
             content {
@@ -52,14 +55,17 @@ object FregeGenerateDocUtil {
         val uniqueMethods = fregeClass.allMethods.distinctBy { it.name }.mapNotNull { it as? FregePsiMethod }
         return buildDoc {
             definition {
-                moduleLink(fregeClass.parentOfType())
-                section("Class ${fregeClass.name}") {}
+                appendModuleLink(fregeClass.parentOfType())
+                appendNewline()
+                appendText("Class ")
+                appendBoldText(fregeClass.name)
+                appendNewline()
             }
             content {
                 appendDocs(fregeClass)
                 section("Functions:") {
                     for (method in uniqueMethods) {
-                        paragraph { psiMethodLink(method) }
+                        paragraph { appendPsiMethodLink(method) }
                     }
                 }
             }
