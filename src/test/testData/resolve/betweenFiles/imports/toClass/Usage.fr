@@ -1,0 +1,5 @@
+module Usage where
+
+import other.Cla<caret>zz
+
+main = undefined
