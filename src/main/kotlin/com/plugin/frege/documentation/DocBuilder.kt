@@ -86,7 +86,7 @@ class DocBuilder {
     }
 
     fun section(title: String, builderAction: DocBuilder.() -> Unit) {
-        builder.append("<h3{margin-top:0, margin-bottom:0}>$title</h3>")
+        builder.append("<h3 style=\"margin-top:0;margin-bottom:0\">$title</h3>")
         apply(builderAction)
     }
 

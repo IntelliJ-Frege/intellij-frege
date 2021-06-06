@@ -52,7 +52,7 @@ object FregeGenerateDocUtil {
     private fun generateFregePsiClassDoc(
         fregePsiClass: FregePsiClass,
         psiClassTitle: String,
-        psiMethodTitle: String
+        psiMethodsTitle: String
     ): String {
         val uniqueMethods = fregePsiClass.allMethods.distinctBy { it.name }.mapNotNull { it as? FregePsiMethod }
         val psiClassName = fregePsiClass.name
@@ -67,7 +67,7 @@ object FregeGenerateDocUtil {
             }
             content {
                 appendDocs(fregePsiClass)
-                section("$psiMethodTitle:") {
+                section("$psiMethodsTitle:") {
                     for (method in uniqueMethods) {
                         paragraph { appendPsiMethodLink(method) }
                     }
@@ -77,14 +77,30 @@ object FregeGenerateDocUtil {
     }
 
     @JvmStatic
-    fun generateFregeClassDoc(element: FregeClassDeclImpl): String {
-        return generateFregePsiClassDoc(element, "Class", "Functions")
+    fun generateFregeTypeDoc(element: FregeTypeDecl): String {
+        return generateFregePsiClassDoc(element, "Type", "Alias")
     }
 
     @JvmStatic
     fun generateFregeDataDoc(element: FregeDataDecl): String {
         return generateFregePsiClassDoc(element, "Data", "Constructors")
     }
+
+    @JvmStatic
+    fun generateFregeNewtypeDoc(element: FregeNewtypeDecl): String {
+        return generateFregePsiClassDoc(element, "Newtype", "Constructor")
+    }
+
+    @JvmStatic
+    fun generateFregeNativeDataDoc(element: FregeNativeDataDecl): String {
+        return generateFregePsiClassDoc(element, "Native data", "Functions")
+    }
+
+    @JvmStatic
+    fun generateFregeClassDoc(element: FregeClassDeclImpl): String {
+        return generateFregePsiClassDoc(element, "Class", "Functions")
+    }
+
 
     @JvmStatic
     fun generateFregeProgramDoc(fregeProgram: FregeProgram): String {
