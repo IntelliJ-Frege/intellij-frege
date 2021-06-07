@@ -6,10 +6,7 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.psi.PsiElement;
 import com.plugin.frege.highlighter.FregeSyntaxHighlighter;
-import com.plugin.frege.psi.FregeAnnotationName;
-import com.plugin.frege.psi.FregeFunctionName;
-import com.plugin.frege.psi.FregePackageName;
-import com.plugin.frege.psi.FregeStrongKeyword;
+import com.plugin.frege.psi.*;
 import com.plugin.frege.psi.impl.FregePsiUtilImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,37 +16,16 @@ public class FregeAnnotator implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof FregeFunctionName) {
-            annotateFunctionName((FregeFunctionName) element, holder);
-        } else if (element instanceof FregeAnnotationName) {
-            annotateAnnotationName((FregeAnnotationName) element, holder);
+        if (element instanceof FregeFunctionName || element instanceof FregeNativeFunctionName
+                || element instanceof FregeAnnotationName) {
+            annotateWithInfo(element, holder, FregeSyntaxHighlighter.FUNCTION_NAME);
         } else if (element instanceof FregeStrongKeyword) {
-            annotateStrongKeyword((FregeStrongKeyword) element, holder);
+            annotateWithInfo(element, holder, FregeSyntaxHighlighter.KEYWORD);
         } else if (element instanceof FregePackageName) {
-            annotatePackageVarid((FregePackageName) element, holder);
+            annotateWithInfo(element, holder, FregeSyntaxHighlighter.TYPE);
         } else if (FregePsiUtilImpl.isLeaf(element) && element.getText().equals(undefinedIdentifier)) {
-            annotateUndefined(element, holder);
+            annotateWithInfo(element, holder, FregeSyntaxHighlighter.UNDEFINED);
         }
-    }
-
-    private void annotateFunctionName(@NotNull FregeFunctionName funcName, @NotNull AnnotationHolder holder) {
-        annotateWithInfo(funcName, holder, FregeSyntaxHighlighter.FUNCTION_NAME);
-    }
-
-    private void annotateAnnotationName(@NotNull FregeAnnotationName annotationName, @NotNull AnnotationHolder holder) {
-        annotateWithInfo(annotationName, holder, FregeSyntaxHighlighter.FUNCTION_NAME);
-    }
-
-    private void annotateStrongKeyword(@NotNull FregeStrongKeyword keyword, @NotNull AnnotationHolder holder) {
-        annotateWithInfo(keyword, holder, FregeSyntaxHighlighter.KEYWORD);
-    }
-
-    private void annotateUndefined(@NotNull PsiElement undefined, @NotNull AnnotationHolder holder) {
-        annotateWithInfo(undefined, holder, FregeSyntaxHighlighter.UNDEFINED);
-    }
-
-    private void annotatePackageVarid(@NotNull FregePackageName packageVarid, @NotNull AnnotationHolder holder) {
-        annotateWithInfo(packageVarid, holder, FregeSyntaxHighlighter.CONSTRUCTOR);
     }
 
     private void annotateWithInfo(@NotNull PsiElement element, @NotNull AnnotationHolder holder,

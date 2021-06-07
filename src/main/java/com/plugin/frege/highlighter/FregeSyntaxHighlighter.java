@@ -26,22 +26,20 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("FREGE_CHAR", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey STRING =
             createTextAttributesKey("FREGE_STRING", DefaultLanguageHighlighterColors.STRING);
-    public static final TextAttributesKey CONSTRUCTOR =
-            createTextAttributesKey("FREGE_CONSTRUCTOR", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
     public static final TextAttributesKey TYPE =
-            createTextAttributesKey("FREGE_TYPE", DefaultLanguageHighlighterColors.CONSTANT);
+            createTextAttributesKey("FREGE_TYPE", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
     public static final TextAttributesKey BRACKETS =
             createTextAttributesKey("FREGE_BRACKETS", DefaultLanguageHighlighterColors.CLASS_REFERENCE);
     public static final TextAttributesKey OPERATOR =
             createTextAttributesKey("FREGE_OPERATOR", DefaultLanguageHighlighterColors.INSTANCE_METHOD);
     public static final TextAttributesKey FUNCTION_NAME =
-            createTextAttributesKey("FREGE_FUNCTION_NAME", DefaultLanguageHighlighterColors.METADATA);
+            createTextAttributesKey("FREGE_FUNCTION_NAME", DefaultLanguageHighlighterColors.INSTANCE_METHOD);
     public static final TextAttributesKey LINE_COMMENT =
             createTextAttributesKey("FREGE_LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
     public static final TextAttributesKey BLOCK_COMMENT =
             createTextAttributesKey("FREGE_BLOCK_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
     public static final TextAttributesKey UNDEFINED =
-            createTextAttributesKey("FREGE_UNDEFINED", DefaultLanguageHighlighterColors.NUMBER.getDefaultAttributes().clone());
+            createTextAttributesKey("FREGE_UNDEFINED", DefaultLanguageHighlighterColors.NUMBER);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("FREGE_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
@@ -50,7 +48,7 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] NUMBER_KEYS = new TextAttributesKey[]{NUMBER};
     private static final TextAttributesKey[] CHAR_KEYS = new TextAttributesKey[]{CHAR};
     private static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[]{STRING};
-    private static final TextAttributesKey[] CONSTRUCTOR_KEYS = new TextAttributesKey[]{CONSTRUCTOR};
+    private static final TextAttributesKey[] TYPE_KEYS = new TextAttributesKey[]{TYPE};
     private static final TextAttributesKey[] BRACKETS_KEYS = new TextAttributesKey[]{BRACKETS};
     private static final TextAttributesKey[] OPERATOR_KEYS = new TextAttributesKey[]{OPERATOR};
     private static final TextAttributesKey[] LINE_COMMENT_KEYS = new TextAttributesKey[]{LINE_COMMENT};
@@ -83,7 +81,7 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
         } else if (tokenType.equals(FregeTypes.STRING)) {
             return STRING_KEYS;
         } else if (tokenType.equals(FregeTypes.CONID)) {
-            return CONSTRUCTOR_KEYS;
+            return TYPE_KEYS;
         } else if (tokenType.equals(FregeTypes.LINE_COMMENT)) {
             return LINE_COMMENT_KEYS;
         } else if (tokenType.equals(FregeTypes.BLOCK_COMMENT)) {
