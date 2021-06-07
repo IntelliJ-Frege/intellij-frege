@@ -6,9 +6,7 @@ import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.util.containers.addIfNotNull
-import com.plugin.frege.psi.FregeDecl
-import com.plugin.frege.psi.FregeNewtypeDecl
-import com.plugin.frege.psi.FregePsiMethod
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
@@ -40,4 +38,7 @@ abstract class FregeNewtypeDeclMixin : FregePsiClassImpl, FregeNewtypeDecl {
     override fun getScope(): PsiElement {
         return this
     }
+
+    override val typedVaridDeclarations: List<FregeTypedVarid>
+        get() = typedVaridList
 }

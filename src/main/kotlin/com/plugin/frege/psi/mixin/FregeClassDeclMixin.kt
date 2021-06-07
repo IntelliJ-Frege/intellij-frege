@@ -5,9 +5,11 @@ import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.stubs.IStubElementType
+import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.psi.FregeClassDecl
 import com.plugin.frege.psi.FregeDecl
+import com.plugin.frege.psi.FregeTypedVarid
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
@@ -45,4 +47,14 @@ abstract class FregeClassDeclMixin : FregePsiClassImpl, FregeClassDecl {
     override fun getModifierList(): PsiModifierList {
         return LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC, PsiModifier.ABSTRACT) // TODO
     }
+
+    override val typedVaridDeclarations: List<FregeTypedVarid>
+        get() {
+            return if (conidUsage != null) {
+                val typedVarid = typedVarid
+                if (typedVarid != null) listOf(typedVarid) else emptyList()
+            } else {
+                PsiTreeUtil.findChildrenOfType(constraints, FregeTypedVarid::class.java).toList()
+            }
+        }
 }

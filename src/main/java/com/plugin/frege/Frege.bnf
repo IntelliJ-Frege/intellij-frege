@@ -189,6 +189,8 @@ functionName ::= extendedVarid {
 /*  Binding Annotations */
 annotation ::= annotationItem (COMMA annotationItem)* DOUBLE_COLON sigma {
     pin=3
+    implements="com.plugin.frege.psi.FregeTypeParametersHolder"
+    mixin="com.plugin.frege.psi.mixin.FregeAnnotationMixin"
 }
 annotationItem ::= annotationName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN | unaryOperator {
     implements="com.plugin.frege.psi.FregePsiMethod"
@@ -229,9 +231,10 @@ infixRule ::= INFIX | INFIXL | INFIXR
 
 
 /* Type Declarations */
-typeDecl ::= TYPE conidUsage (typedVarid)* EQUAL sigma {
+typeDecl ::= TYPE conidUsage typedVarid* EQUAL sigma {
     pin=1
-    implements="com.plugin.frege.psi.FregePsiClass"
+    implements=["com.plugin.frege.psi.FregePsiClass"
+                "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeTypeDeclMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
@@ -241,7 +244,8 @@ typeDecl ::= TYPE conidUsage (typedVarid)* EQUAL sigma {
 // TODO take class name out of constraints. After that fix it in mixin!
 classDecl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW conidUsage typedVarid)?  whereSection? {
     pin=1
-    implements="com.plugin.frege.psi.FregePsiClass"
+    implements=["com.plugin.frege.psi.FregePsiClass"
+                "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeClassDeclMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
@@ -250,7 +254,8 @@ classDecl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW conidUsage ty
 /* Instance Declarations */
 instanceDecl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? conidUsage typeApplications whereSection? {
     pin=1
-    implements="com.plugin.frege.psi.FregePsiClass"
+    implements=["com.plugin.frege.psi.FregePsiClass"
+                "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeInstanceDeclMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
@@ -259,13 +264,16 @@ instanceDecl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? conidUsage typeAppli
 /* Derived Instances */
 deriveDecl ::= DERIVE conidUsage (constraints DOUBLE_RIGHT_ARROW)? typeApplications {
     pin=1
+    implements="com.plugin.frege.psi.FregeTypeParametersHolder"
+    mixin="com.plugin.frege.psi.mixin.FregeDeriveDeclMixin"
 }
 
 
 /* Data Declarations */
 dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructs whereSection? deriveDecl? {
     pin=6
-    implements="com.plugin.frege.psi.FregePsiClass"
+    implements=["com.plugin.frege.psi.FregePsiClass"
+                "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeDataDeclMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
@@ -282,7 +290,8 @@ label ::= EXLAMATION_MARK? extendedVarid
 /* Newtype Declarations */
 newtypeDecl ::= ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL construct whereSection? {
     pin=2
-    implements="com.plugin.frege.psi.FregePsiClass"
+    implements=["com.plugin.frege.psi.FregePsiClass"
+                "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeNewtypeDeclMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
@@ -291,7 +300,8 @@ newtypeDecl ::= ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL construct whereSe
 /* Native Data Declarations */
 nativeDataDecl ::= DATA conidUsage typedVarid* EQUAL (strongMutable|strongPure)? NATIVE nativeName nativeTypeApplications? whereSection? deriveDecl? {
     pin=6
-    implements="com.plugin.frege.psi.FregePsiClass"
+    implements=["com.plugin.frege.psi.FregePsiClass"
+                "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeNativeDataDeclMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
