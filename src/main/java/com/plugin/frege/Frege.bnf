@@ -444,12 +444,19 @@ simpleType ::= typedVarid
              | LEFT_PAREN typeApplications COMMA typeApplications (COMMA typeApplications)* RIGHT_PAREN
              | LEFT_BRACKET typeApplications RIGHT_BRACKET
              | LEFT_PAREN typeApplications VERTICAL_BAR typeApplications (VERTICAL_BAR typeApplications)* RIGHT_PAREN
-typedVarid ::= extendedVarid | LEFT_PAREN extendedVarid DOUBLE_COLON kind RIGHT_PAREN
+typedVarid ::= typeParameter | LEFT_PAREN typeParameter DOUBLE_COLON kind RIGHT_PAREN {
+    implements="com.plugin.frege.psi.FregeNamedElement"
+    mixin="com.plugin.frege.psi.mixin.FregeTypedVaridMixin"
+}
 typedConid ::= qConid
              | emptyList
              | unit
              | tupleConstructor
              | RIGHT_ARROW
+typeParameter ::= extendedVarid {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.FregeTypeParameterMixin"
+}
 kind ::= simpleKind (RIGHT_ARROW kind)?
 simpleKind ::= STAR | LEFT_PAREN kind RIGHT_PAREN
 

@@ -41,6 +41,7 @@ class FregeFindUsagesProvider : FindUsagesProvider {
                     else -> "function binding"
                 }
             }
+            is FregeTypedVarid -> "type parameter"
             is FregeDataDecl -> "data"
             is FregeConstruct -> "data constructor"
             is FregeNewtypeDecl -> "newtype"
