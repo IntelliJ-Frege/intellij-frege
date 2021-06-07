@@ -110,4 +110,10 @@ object FregeElementFactory {
     fun canCreateSymbolOperator(project: Project, name: String): Boolean {
         return createSymbolOperatorOrNull(project, name) != null
     }
+
+    @JvmStatic
+    fun createTypeParameter(project: Project, name: String): FregeTypeParameter {
+        val fakeTypeParameter = "${fakeProgram}func :: $name"
+        return createElement(project, fakeTypeParameter)
+    }
 }
