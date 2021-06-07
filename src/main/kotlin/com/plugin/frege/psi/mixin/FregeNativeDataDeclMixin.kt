@@ -42,4 +42,8 @@ abstract class FregeNativeDataDeclMixin : FregePsiClassImpl, FregeNativeDataDecl
 
     override val typedVaridDeclarations: List<FregeTypedVarid>
         get() = typedVaridList
+
+    override fun generateDoc(): String {
+        return generateDoc("Native data", "Functions")
+    }
 }

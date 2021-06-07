@@ -10,12 +10,14 @@ import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.MethodSignature
+import com.intellij.psi.util.parentOfType
 import com.plugin.frege.FregeLanguage
-import com.plugin.frege.psi.FregeDocumentationElement
+import com.plugin.frege.documentation.FregeDocUtil
+import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.FregeNativeFunction
+import com.plugin.frege.psi.FregeProgram
 import com.plugin.frege.psi.impl.FregeNativeFunctionNameImpl
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeMethodStub
 
 @Suppress("UnstableApiUsage")
@@ -87,7 +89,7 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
     }
 
     override fun getParamsNumber(): Int {
-       return delegatedMember?.parameterList?.parametersCount ?: 0
+        return delegatedMember?.parameterList?.parametersCount ?: 0
     }
 
     override fun getBody(): PsiCodeBlock? {
@@ -107,7 +109,7 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
     }
 
     override fun getReturnTypeElement(): PsiTypeElement? {
-        return delegatedMember?.returnTypeElement ?:  super.getReturnTypeElement()
+        return delegatedMember?.returnTypeElement ?: super.getReturnTypeElement()
     }
 
     override fun getParameterList(): PsiParameterList {
@@ -150,8 +152,27 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
         return delegatedMember?.parameters ?: super<FregePsiMethodImpl>.getParameters()
     }
 
-    override fun getDocs(): List<FregeDocumentationElement> {
-        return listOfNotNull(documentation) +
-                FregePsiUtilImpl.collectPrecedingDocs(this)
+    override fun generateDoc(): String {
+        return buildDoc {
+            definition {
+                appendModuleLink(parentOfType())
+                appendNewline()
+                appendText("Native function ")
+                appendBoldText(name)
+                if (sigmaList.isNotEmpty()) {
+                    appendNewline()
+                    appendText("Type: ")
+                    appendCode(sigmaList.mapNotNull { it.text }.joinToString(" | "))
+                }
+                if (containingClass != null && containingClass !is FregeProgram) {
+                    appendNewline()
+                    appendText("within ")
+                    appendPsiClassLink(containingClass)
+                }
+            }
+            content {
+                appendDocs(FregeDocUtil.collectDocComments(this@FregeNativeFunctionMixin))
+            }
+        }
     }
 }

@@ -57,4 +57,8 @@ abstract class FregeClassDeclMixin : FregePsiClassImpl, FregeClassDecl {
                 PsiTreeUtil.findChildrenOfType(constraints, FregeTypedVarid::class.java).toList()
             }
         }
+
+    override fun generateDoc(): String {
+        return generateDoc("Class", "Types or defaults methods")
+    }
 }

@@ -10,7 +10,6 @@ import com.plugin.frege.psi.FregeDataDecl
 import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.FregeTypedVarid
 import com.plugin.frege.psi.impl.FregePsiClassImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeClassStub
 
 @Suppress("UnstableApiUsage")
@@ -42,8 +41,7 @@ abstract class FregeDataDeclMixin : FregePsiClassImpl, FregeDataDecl {
     override val typedVaridDeclarations: List<FregeTypedVarid>
         get() = typedVaridList
 
-    override fun getDocs(): List<FregeDocumentationElement> {
-        return listOfNotNull(documentation) +
-                FregePsiUtilImpl.collectPrecedingDocs(this)
+    override fun generateDoc(): String {
+        return generateDoc("Data", "Constructors")
     }
 }

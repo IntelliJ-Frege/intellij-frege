@@ -53,4 +53,8 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl, FregeInstanceDecl {
     fun getInstancedClass(): FregeClassDecl? {
         return conidUsage?.reference?.resolve() as? FregeClassDecl
     }
+
+    override fun generateDoc(): String {
+        return "" // TODO
+    }
 }

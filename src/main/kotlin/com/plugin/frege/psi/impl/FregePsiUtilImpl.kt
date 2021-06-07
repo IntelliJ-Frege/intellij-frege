@@ -17,7 +17,7 @@ object FregePsiUtilImpl {
         "frege.Prelude" // TODO
     )
 
-    private fun isScope(element: PsiElement?): Boolean {
+    fun isScope(element: PsiElement?): Boolean {
         return element is FregeScopeElement
     }
 
@@ -270,12 +270,6 @@ object FregePsiUtilImpl {
         }
     }
 
-    @JvmStatic
-    fun getFullQualifiedNameOfFregePsiMethod(method: FregePsiMethod): String? {
-        val classQualifiedName = method.containingClass?.qualifiedName ?: return null
-        return classQualifiedName + "." + method.name
-    }
-
     /**
      * It is a workaround while we don't have a type system.
      * @return first [FregeConidUsage] from [sigma] if it's not the arrow type. Otherwise `null` will be returned.
@@ -288,17 +282,6 @@ object FregePsiUtilImpl {
         }
         val simpleType = rho.typeApplication?.simpleTypeList?.firstOrNull() ?: return null
         return PsiTreeUtil.findChildOfType(simpleType, FregeConidUsage::class.java)
-    }
-
-    /**
-     * @return all bindings of method
-     */
-    @JvmStatic
-    fun getAllBindingsOfMethod(method: FregePsiMethod): List<FregeBinding> {
-        val referenceText = method.name
-        return findElementsWithinScope(method.parent) { elem ->
-            elem is FregeBinding && elem.name == referenceText
-        }.mapNotNull { elem -> elem as? FregeBinding }.toList()
     }
 
     /**
@@ -317,36 +300,11 @@ object FregePsiUtilImpl {
         }
     }
 
-    @JvmStatic
-    fun collectPrecedingDocs(element: PsiElement): List<FregeDocumentationElement> {
-        val parentInScope =
-            PsiTreeUtil.findFirstParent(element) {
-                isScope(it.parent) ||
-                        it.parent is FregeLinearIndentSectionItemsVirtual ||
-                        it.parent is FregeLinearIndentSectionItemsSemicolon
-            } ?: return emptyList()
-        return collectPrecedingDocsInBody(parentInScope) + collectPrecedingDocsInWhereScope(parentInScope)
-    }
-
-    @JvmStatic
-    private fun collectPrecedingDocsInWhereScope(element: PsiElement): List<FregeDocumentationElement> {
-        return siblingBackwardSequenceSkippingWhitespacesAndComments(element, true)
-            .takeWhile { it is FregeDocumentationElement || isEndDeclElement(it) }
-            .mapNotNull { it as? FregeDocumentationElement }.toList().asReversed()
-    }
-
-    @JvmStatic
-    private fun collectPrecedingDocsInBody(element: PsiElement): List<FregeDocumentationElement> {
-        return siblingBackwardSequenceSkippingWhitespacesAndComments(element, true)
-            .takeWhile { it.firstChild is FregeDocumentationElement || isEndDeclElement(it) }
-            .mapNotNull { it.firstChild as? FregeDocumentationElement }.toList().asReversed()
-    }
-
     /**
-     * @return is [element] type separates declarations
+     * @return is [element] type may separates declarations
      */
     @JvmStatic
-    private fun isEndDeclElement(element: PsiElement): Boolean {
+    fun isEndDeclElement(element: PsiElement): Boolean {
         val type = element.elementType
         return FregeTypes.VIRTUAL_END_DECL.equals(type) || FregeTypes.SEMICOLON.equals(type)
     }

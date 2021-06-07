@@ -6,8 +6,12 @@ import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.parentOfType
 import com.plugin.frege.FregeLanguage
+import com.plugin.frege.documentation.FregeDocUtil
+import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.*
+import com.plugin.frege.psi.impl.FregeAnnotationItemImpl
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeMethodStub
@@ -70,6 +74,36 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
         return PsiTreeUtil.findChildrenOfType(funLhs, FregeParameter::class.java).size
     }
 
+    override fun generateDoc(): String {
+        val annoItem = getAnnoItem() as? FregeAnnotationItemImpl
+        val type = annoItem?.getAnnotation()?.sigma?.text
+        return buildDoc {
+            definition {
+                appendModuleLink(parentOfType())
+                appendNewline()
+                appendText("Function ")
+                appendBoldText(name)
+                if (type != null) {
+                    appendNewline()
+                    appendText("Type: ")
+                    appendCode(type)
+                }
+                if (containingClass != null && containingClass !is FregeProgram) {
+                    appendNewline()
+                    appendText("within ")
+                    appendPsiClassLink(containingClass)
+                }
+            }
+            content {
+                if (annoItem != null) {
+                    appendDocs(FregeDocUtil.collectDocComments(annoItem))
+                    appendNewline()
+                }
+                appendDocs(FregeDocUtil.collectDocComments(this@FregeBindingMixin))
+            }
+        }
+    }
+
     fun getAnnoItem(): FregeAnnotationItem? {
         val referenceText = name
         return FregePsiUtilImpl.findElementsWithinScope(parent) { elem ->
@@ -80,10 +114,5 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
     fun isMainFunctionBinding(): Boolean {
         val argsCount = getParamsNumber()
         return (argsCount <= 1 && FregePsiUtilImpl.isInGlobalScope(this) && name == "main")
-    }
-
-    override fun getDocs(): List<FregeDocumentationElement> {
-        return listOfNotNull(documentation) +
-                FregePsiUtilImpl.collectPrecedingDocs(this)
     }
 }

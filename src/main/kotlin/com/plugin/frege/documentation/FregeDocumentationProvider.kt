@@ -5,9 +5,8 @@ import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
-import com.plugin.frege.psi.*
-import com.plugin.frege.psi.impl.FregeClassDeclImpl
-import com.plugin.frege.documentation.FregeGenerateDocUtil as Doc
+import com.plugin.frege.psi.FregeElementProvideDocumentation
+import com.plugin.frege.psi.impl.FregeBindingImpl
 
 class FregeDocumentationProvider : AbstractDocumentationProvider() {
 
@@ -15,16 +14,13 @@ class FregeDocumentationProvider : AbstractDocumentationProvider() {
         if (DumbService.isDumb(element.project)) {
             return null
         }
-        return when (element) {
-            is FregePsiMethod -> Doc.generateFregeMethodDoc(element)
-            is FregeTypeDecl -> Doc.generateFregeTypeDoc(element)
-            is FregeDataDecl -> Doc.generateFregeDataDoc(element)
-            is FregeNewtypeDecl -> Doc.generateFregeNewtypeDoc(element)
-            is FregeNativeDataDecl -> Doc.generateFregeNativeDataDoc(element)
-            is FregeClassDeclImpl -> Doc.generateFregeClassDoc(element)
-            is FregeProgram -> Doc.generateFregeProgramDoc(element)
-            else -> null
+        if (element is FregeBindingImpl) {
+            val annoItem = element.getAnnoItem()
+            if (annoItem != null) {
+                return annoItem.generateDoc()
+            }
         }
+        return (element as? FregeElementProvideDocumentation)?.generateDoc()
     }
 
     override fun getDocumentationElementForLink(
