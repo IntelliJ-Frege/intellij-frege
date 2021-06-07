@@ -1,0 +1,10 @@
+module WithConstraints where
+
+class Lover a where
+    love :: a -> a -> a
+
+class Lover a => Petya a where
+    makePetya :: a -> Petya a
+
+check :: a -> Pet<caret>ya a
+check = undefined

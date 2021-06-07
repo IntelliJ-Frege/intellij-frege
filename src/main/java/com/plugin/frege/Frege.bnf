@@ -238,6 +238,7 @@ typeDecl ::= TYPE conidUsage (typedVarid)* EQUAL sigma {
 
 
 /* Class Declarations */
+// TODO take class name out of constraints. After that fix it in mixin!
 classDecl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW conidUsage typedVarid)?  whereSection? {
     pin=1
     implements="com.plugin.frege.psi.FregePsiClass"
