@@ -23,6 +23,8 @@ public class FregeAnnotator implements Annotator {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.KEYWORD);
         } else if (element instanceof FregePackageName) {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.TYPE);
+        } else if (element instanceof FregeTypeParameter) {
+            annotateWithInfo(element, holder, FregeSyntaxHighlighter.TYPE_PARAMETER);
         } else if (FregePsiUtilImpl.isLeaf(element) && element.getText().equals(undefinedIdentifier)) {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.UNDEFINED);
         }
