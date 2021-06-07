@@ -138,6 +138,10 @@ class FregeResolveTest : FregeCodeInsightTest() {
                 && it.containingClass?.qualifiedName == "FromFunctionUsage.Petya"
     }
 
+    fun `test file classes WithConstraints`() = doTest {
+        it is FregeClassDecl && it.qualifiedName == "WithConstraints.Petya"
+    }
+
     // Testing data
 
     fun `test file data FromTypeUsage`() = doTest {

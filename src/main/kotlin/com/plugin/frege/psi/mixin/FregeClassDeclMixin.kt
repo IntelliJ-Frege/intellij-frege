@@ -22,7 +22,8 @@ abstract class FregeClassDeclMixin : FregePsiClassImpl, FregeClassDecl {
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {
-        return constraints?.constraintList?.firstOrNull()?.conidUsage
+        // TODO fix it after fix grammar of this rule
+        return conidUsage ?: constraints?.constraintList?.firstOrNull()?.conidUsage
     }
 
     override fun getMethods(): Array<PsiMethod> {
