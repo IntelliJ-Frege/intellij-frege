@@ -1,0 +1,23 @@
+<list>
+    <option name="FREGE_OPERATOR">
+        <value>
+            <option name="FOREGROUND" value="cb4a00" />
+        </value>
+    </option>
+    <option name="FREGE_FUNCTION_NAME">
+        <value>
+            <option name="FOREGROUND" value="00627a" />
+            <option name="FONT_TYPE" value="1" />
+        </value>
+    </option>
+    <option name="FREGE_BRACKETS">
+        <value>
+            <option name="FOREGROUND" value="0021a7" />
+        </value>
+    </option>
+    <option name="FREGE_UNDEFINED">
+        <value>
+            <option name="FONT_TYPE" value="1" />
+        </value>
+    </option>
+</list>

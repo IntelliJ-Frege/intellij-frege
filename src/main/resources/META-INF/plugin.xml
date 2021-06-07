@@ -52,6 +52,9 @@
 
         <internalFileTemplate name="Frege Module" />
         <internalFileTemplate name="Frege Empty File" />
+
+        <additionalTextAttributes scheme="Darcula" file="colorScheme/Darcula_Frege.xml" />
+        <additionalTextAttributes scheme="Default" file="colorScheme/Default_Frege.xml" />
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">

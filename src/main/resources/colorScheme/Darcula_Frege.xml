@@ -1,0 +1,28 @@
+<list>
+    <option name="FREGE_OPERATOR">
+        <value>
+            <option name="FOREGROUND" value="ff7b72" />
+        </value>
+    </option>
+    <option name="FREGE_TYPE">
+        <value>
+            <option name="FOREGROUND" value="7aade3" />
+        </value>
+    </option>
+    <option name="FREGE_FUNCTION_NAME">
+        <value>
+            <option name="FOREGROUND" value="c0a5cf" />
+            <option name="FONT_TYPE" value="1" />
+        </value>
+    </option>
+    <option name="FREGE_BRACKETS">
+        <value>
+            <option name="FOREGROUND" value="20999d" />
+        </value>
+    </option>
+    <option name="FREGE_UNDEFINED">
+        <value>
+            <option name="FONT_TYPE" value="1" />
+        </value>
+    </option>
+</list>
