@@ -52,7 +52,7 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
         return this
     }
 
-    override fun getDocs(): List<FregeDocumentationElement> {
-        return documentationList
+    override fun generateDoc(): String {
+        return generateDoc("Module", "Functions")
     }
 }

@@ -12,7 +12,10 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.MethodSignature
 import com.intellij.psi.util.MethodSignatureBackedByPsiMethod
+import com.intellij.psi.util.parentOfType
 import com.plugin.frege.FregeLanguage
+import com.plugin.frege.documentation.buildDoc
+import com.plugin.frege.psi.FregeNativeFunction
 import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.resolve.FregeResolveUtil.findContainingFregeClass

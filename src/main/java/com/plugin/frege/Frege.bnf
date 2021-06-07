@@ -132,7 +132,7 @@ importMember ::= extendedVarid | symbolOperatorQuoted | conidUsage
 
 
 /* Main part of program */
-body ::= topDecl (VIRTUAL_END_DECL topDecl)* {
+body ::= (documentation | topDecl) (VIRTUAL_END_DECL (documentation | topDecl))* {
     implements="com.plugin.frege.psi.FregeScopeElement"
     mixin="com.plugin.frege.psi.mixin.FregeBodyMixin"
 }
@@ -150,8 +150,7 @@ topDecl ::= !<<eof>> (
             | accessModifier? instanceDecl
             | accessModifier? deriveDecl
             | nativeModule
-            | decl
-            | documentation+) SEMICOLON? {
+            | decl) SEMICOLON? {
     pin=1
     recoverWhile=declRecover
 }

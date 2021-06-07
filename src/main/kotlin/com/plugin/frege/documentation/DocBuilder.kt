@@ -2,7 +2,7 @@ package com.plugin.frege.documentation
 
 import com.intellij.codeInsight.documentation.DocumentationManagerUtil
 import com.intellij.lang.documentation.DocumentationMarkup.*
-import com.plugin.frege.psi.FregeElementProvideDocumentation
+import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.FregeProgram
 import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregePsiMethod
@@ -19,7 +19,7 @@ class DocBuilder {
     }
 
     fun appendModuleLink(fregeProgram: FregeProgram?): DocBuilder {
-        val moduleName = fregeProgram?.packageName?.text
+        val moduleName = fregeProgram?.qualifiedName
         return appendPsiElementLink(moduleName, moduleName)
     }
 
@@ -28,7 +28,7 @@ class DocBuilder {
     }
 
     fun appendPsiClassLink(psiClass: FregePsiClass?): DocBuilder {
-        return appendPsiElementLink(psiClass?.qualifiedName, psiClass?.name)
+        return appendPsiElementLink(psiClass?.qualifiedName, psiClass?.qualifiedName)
     }
 
     fun appendText(string: String): DocBuilder {
@@ -53,15 +53,11 @@ class DocBuilder {
     }
 
     fun appendNewline(): DocBuilder {
-        appendText("<br>")
-        return this
+        return appendText("<br>")
     }
 
-    fun appendDocs(element: FregeElementProvideDocumentation?): DocBuilder {
-        if (element != null) {
-            appendText(element.getDocs().joinToString("<br>") { doc -> doc.documentationText.trim() })
-        }
-        return this
+    fun appendDocs(docComments: List<FregeDocumentationElement>): DocBuilder {
+        return appendText(docComments.joinToString("<br>") { doc -> doc.getDocumentationText().trim() })
     }
 
     fun paragraph(builderAction: DocBuilder.() -> Unit): DocBuilder {
@@ -85,9 +81,10 @@ class DocBuilder {
         return this
     }
 
-    fun section(title: String, builderAction: DocBuilder.() -> Unit) {
+    fun section(title: String, builderAction: DocBuilder.() -> Unit): DocBuilder {
         builder.append("<h3 style=\"margin-top:0;margin-bottom:0\">$title</h3>")
         apply(builderAction)
+        return this
     }
 
     override fun toString(): String {

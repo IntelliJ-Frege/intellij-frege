@@ -1,16 +1,18 @@
 package com.plugin.frege.psi.mixin
 
 import com.intellij.lang.ASTNode
-import com.intellij.psi.*
+import com.intellij.psi.PsiCodeBlock
+import com.intellij.psi.PsiIdentifier
+import com.intellij.psi.PsiModifier
+import com.intellij.psi.PsiModifierList
 import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.parentOfType
 import com.plugin.frege.FregeLanguage
-import com.plugin.frege.psi.FregeAnnotation
-import com.plugin.frege.psi.FregeAnnotationItem
-import com.plugin.frege.psi.FregeDocumentationElement
-import com.plugin.frege.psi.FregeSimpleType
+import com.plugin.frege.documentation.FregeDocUtil
+import com.plugin.frege.documentation.buildDoc
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.stubs.FregeMethodStub
@@ -45,8 +47,44 @@ abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationIte
         return parentOfType()!!
     }
 
-    override fun getDocs(): List<FregeDocumentationElement> {
-        return listOfNotNull(parentOfType<FregeAnnotation>()?.documentation) +
-                FregePsiUtilImpl.collectPrecedingDocs(this)
+    fun getBindings(): List<FregeBinding> {
+        val referenceText = name
+        return FregePsiUtilImpl.findElementsWithinScope(parent) { elem ->
+            elem is FregeBinding && elem.name == referenceText
+        }.mapNotNull { elem -> elem as? FregeBinding }.toList()
+    }
+
+    override fun generateDoc(): String {
+        val sigma = getAnnotation().sigma
+        return buildDoc {
+            definition {
+                appendModuleLink(parentOfType())
+                appendNewline()
+                appendText("Function ")
+                appendBoldText(name)
+                if (sigma != null) {
+                    appendNewline()
+                    appendText("Type: ")
+                    appendCode(sigma.text)
+                }
+                if (containingClass != null && containingClass !is FregeProgram) {
+                    appendNewline()
+                    appendText("within ")
+                    appendPsiClassLink(containingClass)
+                }
+            }
+            content {
+                appendDocs(FregeDocUtil.collectDocComments(this@FregeAnnotationItemMixin))
+                section("Implementations:") {
+                    for (binding in getBindings()) {
+                        paragraph {
+                            appendDocs(FregeDocUtil.collectDocComments(binding))
+                            appendNewline()
+                            appendCode(binding.lhs.text)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

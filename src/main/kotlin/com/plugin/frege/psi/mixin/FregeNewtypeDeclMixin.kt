@@ -41,4 +41,8 @@ abstract class FregeNewtypeDeclMixin : FregePsiClassImpl, FregeNewtypeDecl {
 
     override val typedVaridDeclarations: List<FregeTypedVarid>
         get() = typedVaridList
+
+    override fun generateDoc(): String {
+        return generateDoc("Newtype", "Constructor")
+    }
 }

@@ -10,8 +10,12 @@ import com.intellij.psi.scope.NameHint
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.parentOfType
 import com.plugin.frege.FregeLanguage
+import com.plugin.frege.documentation.FregeDocUtil
+import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.FregePsiClass
+import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.resolve.FregeResolveUtil.findContainingFregeClass
 import com.plugin.frege.stubs.FregeClassStub
 import org.jetbrains.annotations.NonNls
@@ -239,6 +243,26 @@ abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassS
         val classes = if (nameHint == null) allClasses else allClasses.filter { it.name == nameHint }
         for (clazz in classes) {
             processor.execute(clazz, state)
+        }
+    }
+
+    protected fun generateDoc(psiClassTitle: String, psiMethodsTitle: String): String {
+        val uniqueMethods = allMethods.distinctBy { it.name }.mapNotNull { it as? FregePsiMethod }
+        return buildDoc {
+            definition {
+                appendModuleLink(parentOfType())
+                appendNewline()
+                appendText("$psiClassTitle ")
+                appendBoldText(name)
+            }
+            content {
+                appendDocs(FregeDocUtil.collectDocComments(this@FregePsiClassImpl))
+                section("$psiMethodsTitle:") {
+                    for (method in uniqueMethods) {
+                        paragraph { appendPsiMethodLink(method) }
+                    }
+                }
+            }
         }
     }
 }
