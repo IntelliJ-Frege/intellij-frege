@@ -7,10 +7,7 @@ import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
-import com.plugin.frege.psi.FregeBinding
-import com.plugin.frege.psi.FregeClassDecl
-import com.plugin.frege.psi.FregeConidUsage
-import com.plugin.frege.psi.FregeInstanceDecl
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
@@ -49,6 +46,9 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl, FregeInstanceDecl {
     override fun getScope(): PsiElement {
         return this
     }
+
+    override val typedVaridDeclarations: List<FregeTypedVarid>
+        get() = PsiTreeUtil.findChildrenOfType(typeApplications, FregeTypedVarid::class.java).toList()
 
     fun getInstancedClass(): FregeClassDecl? {
         return conidUsage?.reference?.resolve() as? FregeClassDecl
