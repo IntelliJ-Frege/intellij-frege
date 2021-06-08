@@ -1,0 +1,6 @@
+module Annotation where
+
+check :: a -> a
+check x = func x
+    where func :: <caret>a -> a
+          func x = x

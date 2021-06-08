@@ -1,0 +1,6 @@
+module Annotation where
+
+check :: Show all => all -> all
+check x = func x
+    where func :: Show all => all -> a<caret>ll
+          func x = x

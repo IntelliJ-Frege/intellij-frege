@@ -1,0 +1,4 @@
+module Class where
+
+class Petya pet where
+    getPetya :: pe<caret>t

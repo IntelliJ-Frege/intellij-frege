@@ -278,6 +278,33 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeBinding && it.name == "calculate"
     }
 
+    // Testing type parameters
+
+    fun `test file typeParameters Annotation`() = doTest {
+        it is FregeTypedVarid && it.name == "all" && it.parentOfType<FregeRho>() != null
+                && it.parentOfType<FregeBinding>() != null
+    }
+
+    fun `test file typeParameters Class`() = doTest {
+        it is FregeTypedVarid && it.name == "show" && it.parentOfType<FregeAnnotation>() == null
+    }
+
+    fun `test file typeParameters Label`() = doTest {
+        it is FregeTypedVarid && it.name == "a"
+    }
+
+    fun `test file typeParameters NativeData`() = doTest {
+        it is FregeTypedVarid && it.name == "element" && it.parentOfType<FregeNativeFunction>() == null
+    }
+
+    fun `test file typeParameters Newtype`() = doTest {
+        it is FregeTypedVarid && it.name == "pet" && it.parentOfType<FregeAnnotation>() == null
+    }
+
+    fun `test file typeParameters Type`() = doTest {
+        it is FregeTypedVarid && it.name == "maybe" && it.parentOfType<FregeSigma>() == null
+    }
+
     // Testing between files
 
     fun `test dir betweenFiles binding Second`() = doTest {

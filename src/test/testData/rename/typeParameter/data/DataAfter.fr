@@ -1,0 +1,4 @@
+module Data where
+
+data Partner kek b c = Kirill { kirill :: kek, value :: kek } | Petya { petya :: b, value :: kek } |
+                     Jury   { jury :: c, value :: kek }   | Other kek

@@ -1,0 +1,7 @@
+module Newtype where
+
+newtype Kirill a = Kirill a
+
+newtype Petya pet = Petya p where
+    getKirill :: pe<caret>t -> Kirill
+    getKirill _ = undefined

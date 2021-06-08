@@ -1,0 +1,4 @@
+module NativeData where
+
+data List element = native java.util.LinkedList where
+    native add :: List -> el<caret>ement -> Boolean
