@@ -1,0 +1,3 @@
+module Label where
+
+data Petya a b = Petya { kirill :: <caret>a, jury :: b }

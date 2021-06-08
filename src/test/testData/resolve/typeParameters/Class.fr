@@ -1,0 +1,7 @@
+module Class where
+
+class Hello a where
+    hello :: a
+
+class Hello show => Show show where
+    show :: sho<caret>w -> String

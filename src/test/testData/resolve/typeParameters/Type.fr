@@ -1,0 +1,3 @@
+module Type where
+
+type NewMaybe maybe = Maybe mayb<caret>e

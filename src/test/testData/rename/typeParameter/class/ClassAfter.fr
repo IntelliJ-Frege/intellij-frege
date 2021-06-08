@@ -1,0 +1,4 @@
+module Class where
+
+class Petya kirill where
+    getPetya :: kirill

@@ -23,6 +23,12 @@ class FregeRenameTest : FregeCodeInsightTest() {
 
     fun `test data constructor Constructor`() = doTest("Jury")
 
+    fun `test typeParameter class Class`() = doTest("kirill")
+
+    fun `test typeParameter annotation Annotation`() = doTest("b")
+
+    fun `test typeParameter data Data`() = doTest("kek")
+
     private fun doTest(newName: String) {
         val name = getTestName(false)
         val parts = name.split(' ').drop(1).toTypedArray()
