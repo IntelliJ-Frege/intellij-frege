@@ -4,8 +4,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
+import org.apache.commons.lang.StringEscapeUtils
 
 object FregeDocUtil {
+
+    @JvmStatic
+    fun escapeDocText(text: String): String {
+        return StringEscapeUtils.escapeHtml(text).replace("\r\n|\n\r|\r|\n".toRegex(), "<br/>")
+    }
 
     @JvmStatic
     fun collectDocComments(element: PsiElement): List<FregeDocumentationElement> {
