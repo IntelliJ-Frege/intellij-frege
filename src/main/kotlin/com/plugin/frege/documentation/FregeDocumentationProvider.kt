@@ -5,7 +5,7 @@ import com.intellij.lang.documentation.AbstractDocumentationProvider
 import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
-import com.plugin.frege.psi.FregeElementProvideDocumentation
+import com.plugin.frege.psi.FregeDocumentableElement
 import com.plugin.frege.psi.impl.FregeBindingImpl
 
 class FregeDocumentationProvider : AbstractDocumentationProvider() {
@@ -20,7 +20,7 @@ class FregeDocumentationProvider : AbstractDocumentationProvider() {
                 return annoItem.generateDoc()
             }
         }
-        return (element as? FregeElementProvideDocumentation)?.generateDoc()
+        return (element as? FregeDocumentableElement)?.generateDoc()
     }
 
     override fun getDocumentationElementForLink(

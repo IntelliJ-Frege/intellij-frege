@@ -36,6 +36,10 @@ abstract class FregeTypeDeclMixin : FregePsiClassImpl, FregeTypeDecl {
         return aliasClass?.methods ?: PsiMethod.EMPTY_ARRAY
     }
 
+    override fun generateDoc(): String {
+        return generateDoc("Type", "Alias")
+    }
+
     override fun isInterface(): Boolean {
         return false
     }
@@ -46,8 +50,4 @@ abstract class FregeTypeDeclMixin : FregePsiClassImpl, FregeTypeDecl {
 
     override val typedVaridDeclarations: List<FregeTypedVarid>
         get() = typedVaridList
-
-    override fun generateDoc(): String {
-        return generateDoc("Type", "Alias")
-    }
 }

@@ -4,7 +4,7 @@ import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("UnstableApiUsage")
-public interface FregePsiMethod extends FregeNamedElement, PsiMethod, FregeElementProvideDocumentation {
+public interface FregePsiMethod extends FregeNamedElement, PsiMethod, FregeDocumentableElement {
     @Override
     @Nullable FregePsiClass getContainingClass();
 
