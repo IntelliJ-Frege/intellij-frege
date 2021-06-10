@@ -6,11 +6,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.stubs.IStubElementType
-import com.plugin.frege.psi.FregeDecl
-import com.plugin.frege.psi.FregeDocumentationElement
-import com.plugin.frege.psi.FregeProgram
+import com.intellij.psi.util.PsiTreeUtil
+import com.plugin.frege.documentation.DocBuilder
+import com.plugin.frege.documentation.FregeDocUtil
+import com.plugin.frege.documentation.buildDoc
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
+import com.plugin.frege.resolve.FregeResolveUtil
 import com.plugin.frege.stubs.FregeClassStub
 
 @Suppress("UnstableApiUsage")
@@ -27,7 +30,7 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
         return packageName?.mainPackageClass?.conidUsage
     }
 
-    override fun getQualifiedName(): @NlsSafe String? {
+    override fun getQualifiedName(): @NlsSafe String {
         return packageName?.text ?: DEFAULT_MODULE_NAME
     }
 
@@ -53,6 +56,58 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
     }
 
     override fun generateDoc(): String {
-        return generateDoc("Module", "Functions")
+        return buildDoc {
+            definition {
+                appendText("Module ")
+                appendBoldText(qualifiedName)
+            }
+            content {
+                appendDocs(FregeDocUtil.collectDocComments(this@FregeProgramMixin))
+                val body = PsiTreeUtil.findChildOfType(this@FregeProgramMixin, FregeBody::class.java)
+                if (body != null) {
+                    section("Functions:") {
+                        for (method in methods) {
+                            if (method is FregePsiMethod) {
+                                paragraph { appendPsiMethodLink(method) }
+                            }
+                        }
+                    }
+                    val psiClasses = FregeResolveUtil.findClassesInCurrentFile(body)
+                    generateSectionWithLinksToPsiClasses(
+                        this, "Classes:", psiClasses.filterIsInstance<FregeClassDecl>()
+                    )
+                    generateSectionWithLinksToPsiClasses(
+                        this, "Instances:", psiClasses.filterIsInstance<FregeInstanceDecl>()
+                    )
+                    generateSectionWithLinksToPsiClasses(
+                        this, "Dates:", psiClasses.filterIsInstance<FregeDataDecl>()
+                    )
+                    generateSectionWithLinksToPsiClasses(
+                        this, "Native dates:", psiClasses.filterIsInstance<FregeNativeDataDecl>()
+                    )
+                    generateSectionWithLinksToPsiClasses(
+                        this, "Types:", psiClasses.filterIsInstance<FregeTypeDecl>()
+                    )
+                    generateSectionWithLinksToPsiClasses(
+                        this, "Newtypes:", psiClasses.filterIsInstance<FregeNewtypeDecl>()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun generateSectionWithLinksToPsiClasses(
+        stringBuilder: DocBuilder,
+        title: String,
+        psiClasses: List<FregePsiClass>
+    ): DocBuilder {
+        if (psiClasses.isEmpty()) {
+            return stringBuilder
+        }
+        return stringBuilder.section(title) {
+            for (psiClass in psiClasses) {
+                paragraph { appendPsiClassLink(psiClass) }
+            }
+        }
     }
 }
