@@ -1,0 +1,5 @@
+module Label where
+
+newtype Petya a = Petya { get :: a }
+
+test = Petya.ge<caret>t (Petya 3)

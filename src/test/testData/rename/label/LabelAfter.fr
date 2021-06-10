@@ -1,0 +1,5 @@
+module Label where
+
+newtype Petya a = Petya { getNow :: a }
+
+test = Petya.getNow (Petya 3)
