@@ -46,6 +46,30 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
         return null // TODO make unary operator identifier
     }
 
+    override fun generateDoc(): String {
+        return buildDoc {
+            definition {
+                appendModuleLink(parentOfType())
+                appendNewline()
+                appendText("Native function ")
+                appendBoldText(name)
+                if (sigmaList.isNotEmpty()) {
+                    appendNewline()
+                    appendText("Type: ")
+                    appendCode(sigmaList.mapNotNull { it.text }.joinToString(" | "))
+                }
+                if (containingClass != null && containingClass !is FregeProgram) {
+                    appendNewline()
+                    appendText("within ")
+                    appendPsiClassLink(containingClass)
+                }
+            }
+            content {
+                appendDocs(FregeDocUtil.collectDocComments(this@FregeNativeFunctionMixin))
+            }
+        }
+    }
+
     // Following overrides are just delegates
 
     override fun getIdentifyingElement(): PsiElement? {
@@ -150,29 +174,5 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
 
     override fun getParameters(): Array<JvmParameter> {
         return delegatedMember?.parameters ?: super<FregePsiMethodImpl>.getParameters()
-    }
-
-    override fun generateDoc(): String {
-        return buildDoc {
-            definition {
-                appendModuleLink(parentOfType())
-                appendNewline()
-                appendText("Native function ")
-                appendBoldText(name)
-                if (sigmaList.isNotEmpty()) {
-                    appendNewline()
-                    appendText("Type: ")
-                    appendCode(sigmaList.mapNotNull { it.text }.joinToString(" | "))
-                }
-                if (containingClass != null && containingClass !is FregeProgram) {
-                    appendNewline()
-                    appendText("within ")
-                    appendPsiClassLink(containingClass)
-                }
-            }
-            content {
-                appendDocs(FregeDocUtil.collectDocComments(this@FregeNativeFunctionMixin))
-            }
-        }
     }
 }

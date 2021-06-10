@@ -2,12 +2,11 @@ package com.plugin.frege.psi.impl
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
-import com.plugin.frege.parser.FregeParserDefinition.COMMENTS
-import com.plugin.frege.parser.FregeParserDefinition.WHITE_SPACES
 import com.plugin.frege.psi.*
 import kotlin.reflect.KClass
 
@@ -17,7 +16,7 @@ object FregePsiUtilImpl {
         "frege.Prelude" // TODO
     )
 
-    private fun isScope(element: PsiElement?): Boolean {
+    fun isScope(element: PsiElement?): Boolean {
         return element is FregeScopeElement
     }
 
@@ -32,15 +31,6 @@ object FregePsiUtilImpl {
     @JvmStatic
     fun scopeOfElement(element: PsiElement): FregeScopeElement? {
         return element.parentOfType(true)
-    }
-
-    /**
-     * Finds the first parent of [element] that parent presents a scope.
-     * @return the [element], if its parent is a scope or `null` if no one is found
-     */
-    @JvmStatic
-    fun parentBeforeScopeOfElement(element: PsiElement): PsiElement? {
-        return PsiTreeUtil.findFirstParent(element) { isScope(it.parent) }
     }
 
     /**
@@ -297,15 +287,14 @@ object FregePsiUtilImpl {
      * @return the previous siblings of the PSI element.
      */
     @JvmStatic
-    fun siblingBackwardSequenceSkippingWhitespacesAndComments(
+    fun siblingBackwardSequenceSkipping(
         element: PsiElement,
-        strict: Boolean
+        strict: Boolean,
+        skip: TokenSet
     ): Sequence<PsiElement> {
         val start = if (strict) element.prevSibling else element
         return generateSequence(start) { it.prevSibling }.filter {
-            !WHITE_SPACES.contains(it.elementType) && !COMMENTS.contains(
-                it.elementType
-            )
+            !skip.contains(it.elementType)
         }
     }
 
