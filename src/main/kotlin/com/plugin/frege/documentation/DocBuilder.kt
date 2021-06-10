@@ -57,7 +57,11 @@ class DocBuilder {
     }
 
     fun appendDocs(docComments: List<FregeDocumentationElement>): DocBuilder {
-        return appendText(docComments.joinToString("<br>") { doc -> doc.getDocumentationText().trim() })
+        return appendText(docComments.joinToString("<br>") { doc ->
+            FregeDocUtil.escapeDocText(
+                doc.getDocumentationText().trim()
+            )
+        })
     }
 
     fun paragraph(builderAction: DocBuilder.() -> Unit): DocBuilder {
