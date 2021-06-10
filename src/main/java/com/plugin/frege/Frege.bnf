@@ -11,7 +11,7 @@
 
     elementTypeHolderClass="com.plugin.frege.psi.FregeTypes"
     elementTypeClass="com.plugin.frege.psi.FregeElementType"
-    elementTypeFactory("nativeDataDecl|dataDecl|newtypeDecl|typeDecl|construct|program|binding|nativeFunction|classDecl|instanceDecl|annotationItem")
+    elementTypeFactory("nativeDataDecl|dataDecl|newtypeDecl|typeDecl|construct|program|binding|nativeFunction|classDecl|instanceDecl|annotationItem|label")
         ="com.plugin.frege.psi.FregeElementTypeFactory.factory"
     tokenTypeClass="com.plugin.frege.psi.FregeTokenType"
 }
@@ -299,7 +299,16 @@ construct ::= documentation? accessModifier? (EXLAMATION_MARK? conidUsage) (
 private constructorFields ::= constructorField ((COMMA | documentation) constructorField)* (COMMA | documentation)?
 private constructorField ::= documentation* labels DOUBLE_COLON sigma
 labels ::= <<commaSequence label>>
-label ::= EXLAMATION_MARK? extendedVarid
+label ::= EXLAMATION_MARK? labelName {
+    implements="com.plugin.frege.psi.FregePsiMethod"
+    mixin="com.plugin.frege.psi.mixin.FregeLabelMixin"
+    stubClass="com.plugin.frege.stubs.FregeMethodStub"
+}
+labelName ::= extendedVarid {
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
+    mixin="com.plugin.frege.psi.mixin.FregeLabelNameMixin"
+}
 
 /* Newtype Declarations */
 newtypeDecl ::= ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL construct whereSection? {

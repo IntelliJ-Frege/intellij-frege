@@ -51,6 +51,7 @@ class FregeFindUsagesProvider : FindUsagesProvider {
             is FregeClassDecl -> "class"
             is FregeProgram -> "module"
             is FregeParameter -> "parameter"
+            is FregeLabel -> "label"
             else -> "" // TODO
         }
     }

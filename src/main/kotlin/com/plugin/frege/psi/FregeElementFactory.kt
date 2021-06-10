@@ -122,4 +122,10 @@ object FregeElementFactory {
         val fakeTypeParameter = "${fakeProgram}func :: $name"
         return createElement(project, fakeTypeParameter)
     }
+
+    @JvmStatic
+    fun createLabelName(project: Project, name: String): FregeLabelName {
+        val fakeLabel = "${fakeProgram}data Hello a = Hello { $name :: a }"
+        return createElement(project, fakeLabel)
+    }
 }
