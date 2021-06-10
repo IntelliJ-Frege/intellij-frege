@@ -17,7 +17,7 @@ object FregePsiUtilImpl {
         "frege.Prelude" // TODO
     )
 
-    fun isScope(element: PsiElement?): Boolean {
+    private fun isScope(element: PsiElement?): Boolean {
         return element is FregeScopeElement
     }
 
@@ -32,6 +32,15 @@ object FregePsiUtilImpl {
     @JvmStatic
     fun scopeOfElement(element: PsiElement): FregeScopeElement? {
         return element.parentOfType(true)
+    }
+
+    /**
+     * Finds the first parent of [element] that parent presents a scope.
+     * @return the [element], if its parent is a scope or `null` if no one is found
+     */
+    @JvmStatic
+    fun parentBeforeScopeOfElement(element: PsiElement): PsiElement? {
+        return PsiTreeUtil.findFirstParent(element) { isScope(it.parent) }
     }
 
     /**
