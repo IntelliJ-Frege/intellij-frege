@@ -29,6 +29,8 @@ class FregeRenameTest : FregeCodeInsightTest() {
 
     fun `test typeParameter data Data`() = doTest("kek")
 
+    fun `test label Label`() = doTest("getNow")
+
     private fun doTest(newName: String) {
         val name = getTestName(false)
         val parts = name.split(' ').drop(1).toTypedArray()

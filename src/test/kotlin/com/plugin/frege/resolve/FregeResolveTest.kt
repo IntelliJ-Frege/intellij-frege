@@ -305,6 +305,12 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeTypedVarid && it.name == "maybe" && it.parentOfType<FregeSigma>() == null
     }
 
+    // Testing labels
+
+    fun `test file labels Label`() = doTest {
+        it is FregeLabel && it.name == "test1" && it.containingClass?.qualifiedName == "Label.Hello"
+    }
+
     // Testing between files
 
     fun `test dir betweenFiles binding Second`() = doTest {
