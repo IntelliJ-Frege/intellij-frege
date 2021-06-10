@@ -14,7 +14,7 @@ abstract class FregeLinearIndentSectionMixin(node: @NotNull ASTNode) :
 
     override fun getSubprogramsFromScope(): List<PsiElement> {
         return PsiTreeUtil.getChildrenOfType(
-            linearIndentSectionItemsSemicolon ?: linearIndentSectionItemsVirtual,
+            this,
             FregeSubprogramsHolder::class.java
         )?.toList() ?: emptyList()
     }

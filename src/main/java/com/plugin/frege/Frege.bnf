@@ -23,8 +23,8 @@ fregeFile ::= !<<eof>> program
 private meta commaSequence ::= <<rule>> (COMMA <<rule>>)*
 private meta semicolonSequence ::= <<rule>> (SEMICOLON <<rule>>)*
 
-meta linearIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON VIRTUAL_END_DECL?) <<rule>>)*
-meta linearIndentSectionItemsSemicolon ::= <<rule>> (SEMICOLON <<rule>>)*
+private meta linearIndentSectionItemsVirtual ::= <<rule>> ((VIRTUAL_END_DECL | SEMICOLON VIRTUAL_END_DECL?) <<rule>>)*
+private meta linearIndentSectionItemsSemicolon ::= <<rule>> (SEMICOLON <<rule>>)*
 meta linearIndentSection ::= VIRTUAL_OPEN_SECTION <<linearIndentSectionItemsVirtual <<rule>> >> SEMICOLON? VIRTUAL_END_SECTION
                         | LEFT_BRACE <<linearIndentSectionItemsSemicolon <<rule>> >> SEMICOLON? RIGHT_BRACE
                         | <<rule>> {
