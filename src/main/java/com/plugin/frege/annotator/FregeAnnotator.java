@@ -21,7 +21,7 @@ public class FregeAnnotator implements Annotator {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.FUNCTION_NAME);
         } else if (element instanceof FregeStrongKeyword) {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.KEYWORD);
-        } else if (element instanceof FregePackageName) {
+        } else if (element instanceof FregePackageName || element instanceof FregeImportPackageName) {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.TYPE);
         } else if (element instanceof FregeTypeParameter) {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.TYPE_PARAMETER);

@@ -238,33 +238,17 @@ object FregeResolveUtil {
     }
 
     /**
-     * If it's in import declaration, tries to resolve imported class.
-     * Otherwise, searches for classes in the current file and imported classes.
+     * Searches for classes in the current file and imported classes.
      */
     @JvmStatic
     fun findClassesFromUsage(
         usage: PsiElement,
         incompleteCode: Boolean
     ): List<PsiElement> {
-        if (usage.parentOfType<FregeMainPackageClass>() != null) {
-            return resolveClassInPackageFromUsage(usage) // TODO support incomplete code
-        }
         // TODO take into account qualified names
         val results = tryFindClassesInCurrentFileFromUsage(usage, incompleteCode).toMutableList()
         results.addAll(tryFindClassesByImportsFromUsage(usage)) // TODO support incomplete code
         return results
-    }
-
-    private fun resolveClassInPackageFromUsage(usage: PsiElement): List<PsiElement> {
-        val packageName = usage.parentOfType<FregePackageName>() ?: return emptyList()
-        val qualifiedNameLength = usage.textRange.endOffset - packageName.textOffset
-        val qualifiedName = packageName.text.substring(0, qualifiedNameLength)
-        val project = usage.project
-        return FregeClassNameIndex.INSTANCE.findByName(
-            qualifiedName,
-            project,
-            GlobalSearchScope.everythingScope(project)
-        )
     }
 
     private fun tryFindClassesInCurrentFileFromUsage(
