@@ -200,7 +200,7 @@ object FregePsiUtilImpl {
     @JvmStatic
     fun findImportsNamesForElement(element: PsiElement, includingDefault: Boolean): List<String> {
         val imports = findImportsForElement(element)
-            .mapNotNull { it.packageName?.text }
+            .mapNotNull { it.importPackageName?.text }
             .toMutableList()
         if (includingDefault) {
             imports.addAll(defaultImports)

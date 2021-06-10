@@ -102,13 +102,13 @@ program ::= ((documentation VIRTUAL_END_DECL)* PROTECTED_MODIFIER? (strongPackag
     mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
     stubClass="com.plugin.frege.stubs.FregeClassStub"
 }
-packageName ::= (packageToken DOT)* mainPackageClass
+packagePrefix ::= (packageToken DOT)*
+packageName ::= packagePrefix conidUsage
 private packageVarid ::= qualifier? qualifier? (extendedVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
 packageToken ::= (packageVarid | CONID) {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.imports.FregePackageTokenMixin"
 }
-mainPackageClass ::= conidUsage
 inlineRule ::= strongInline extendedVarid* LEFT_PAREN <<commaSequence (qVarid | qLexOperator)>> RIGHT_PAREN
 
 
@@ -117,7 +117,7 @@ private declRecover ::= !(VIRTUAL_END_DECL)
 
 
 /* Importing Packages */
-importDecl ::= IMPORT packageName (strongAs? conidUsage)? PUBLIC_MODIFIER? importList? {
+importDecl ::= IMPORT importPackageName (strongAs? conidUsage)? PUBLIC_MODIFIER? importList? {
     pin=1
 }
 importList ::= strongHiding? LEFT_PAREN (<<commaSequence importSpec>>)? RIGHT_PAREN
@@ -132,6 +132,13 @@ importAlias ::= extendedVarid | CONID | symbolOperatorQuoted
 importMembers ::= LEFT_PAREN (<<commaSequence importMemberSpec>>)? RIGHT_PAREN
 importMemberSpec ::= PUBLIC_MODIFIER? importMember importAlias?
 importMember ::= extendedVarid | symbolOperatorQuoted | conidUsage
+
+importPackageName ::= packagePrefix importPackageClassName
+importPackageClassName ::= CONID {
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.intellij.psi.PsiIdentifier"]
+    mixin="com.plugin.frege.psi.mixin.imports.FregeImportPackageClassNameMixin"
+}
 
 
 /* Main part of program */

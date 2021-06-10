@@ -128,4 +128,9 @@ object FregeElementFactory {
         val fakeLabel = "${fakeProgram}data Hello a = Hello { $name :: a }"
         return createElement(project, fakeLabel)
     }
+
+    fun createImportPackageClassName(project: Project, name: String): FregeImportPackageClassName {
+        val fakePackageClassName = "${fakeProgram}import hello.$name\nfunc = undefined"
+        return createElement(project, fakePackageClassName)
+    }
 }
