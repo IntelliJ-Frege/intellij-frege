@@ -7,6 +7,7 @@ import com.intellij.psi.util.parentOfTypes
 import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture
 import com.plugin.frege.FregeCodeInsightTest
 import com.plugin.frege.psi.*
+import org.opentest4j.AssertionFailedError
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -393,12 +394,13 @@ class FregeResolveTest : FregeCodeInsightTest() {
 
     private fun doTestDirectory(mainFilePath: Path, verify: (elem: PsiElement?) -> Boolean) {
         val filePathString = mainFilePath.toString()
-        val dirPath = mainFilePath.parent
+        val dirPath = testDataPathValue.resolve(mainFilePath.parent)
         val files = dirPath.toFile()
             .listFiles { file -> file.isFile && extensions.contains(file.extension) }
+            ?.map { it.relativeTo(testDataPathValue.toFile()) }
             ?.map { it.path }
             ?.filter { it != filePathString }
-            ?.toTypedArray() ?: return
+            ?.toTypedArray() ?: throw AssertionFailedError("Cannot find directory: $dirPath")
 
         doTestReference(filePathString, *files, verify = verify)
     }
