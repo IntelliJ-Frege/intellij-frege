@@ -129,8 +129,15 @@ object FregeElementFactory {
         return createElement(project, fakeLabel)
     }
 
+    @JvmStatic
     fun createImportPackageClassName(project: Project, name: String): FregeImportPackageClassName {
         val fakePackageClassName = "${fakeProgram}import hello.$name\nfunc = undefined"
         return createElement(project, fakePackageClassName)
+    }
+
+    @JvmStatic
+    fun createImportDecl(project: Project, name: String): FregeImportDecl {
+        val fakeImportDecl = "${fakeProgram}import $name\nfunc = undefined"
+        return createElement(project, fakeImportDecl)
     }
 }

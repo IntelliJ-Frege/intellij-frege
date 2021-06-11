@@ -3,6 +3,7 @@ package com.plugin.frege.psi.impl
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
@@ -11,11 +12,6 @@ import com.plugin.frege.psi.*
 import kotlin.reflect.KClass
 
 object FregePsiUtilImpl {
-    @JvmStatic
-    private val defaultImports = listOf(
-        "frege.Prelude" // TODO
-    )
-
     fun isScope(element: PsiElement?): Boolean {
         return element is FregeScopeElement
     }
@@ -182,33 +178,6 @@ object FregePsiUtilImpl {
     }
 
     /**
-     * @return all the imports [element] can access to.
-     * It doesn't return default imports such as `frege.Prelude`.
-     */
-    @JvmStatic
-    fun findImportsForElement(element: PsiElement): List<FregeImportDecl> {
-        val body = element.parentOfTypes(FregeBody::class, withSelf = true) ?: return emptyList()
-        return body.topDeclList.asSequence()
-            .map { it.importDecl }
-            .filterNotNull().toList()
-    }
-
-    /**
-     * @return import names from the file [element] contains in.
-     * If [includingDefault] is `true`, it includes default imports such as `frege.Prelude`.
-     */
-    @JvmStatic
-    fun findImportsNamesForElement(element: PsiElement, includingDefault: Boolean): List<String> {
-        val imports = findImportsForElement(element)
-            .mapNotNull { it.importPackageName?.text }
-            .toMutableList()
-        if (includingDefault) {
-            imports.addAll(defaultImports)
-        }
-        return imports
-    }
-
-    /**
      * @return the last word after the last '.' in [qualifiedName].
      */
     @JvmStatic
@@ -305,5 +274,12 @@ object FregePsiUtilImpl {
     fun isEndDeclElement(element: PsiElement): Boolean {
         val type = element.elementType
         return FregeTypes.VIRTUAL_END_DECL.equals(type) || FregeTypes.SEMICOLON.equals(type)
+    }
+
+    /**
+     * Checks if within children of [element] there is an PSI node of [type].
+     */
+    fun isElementTypeWithinChildren(element: PsiElement, type: IElementType): Boolean {
+        return generateSequence({ element.firstChild }, { it.nextSibling }).any { it.elementType === type }
     }
 }
