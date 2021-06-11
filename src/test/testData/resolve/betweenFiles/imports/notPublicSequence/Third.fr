@@ -1,0 +1,5 @@
+module third.Third where
+
+import second.Second
+
+test3 = 30

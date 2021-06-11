@@ -360,6 +360,14 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is PsiClass && it.qualifiedName == "other.Clazz"
     }
 
+    fun `test dir betweenFiles imports publicSequence Fourth`() = doTest {
+        it is FregeBinding && it.name == "test1" && it.containingClass?.qualifiedName == "first.First"
+    }
+
+    fun `test dir betweenFiles imports notPublicSequence Fourth`() = doTest {
+        it == null
+    }
+
     // Testing from Java
 
     fun `test dir fromJava ToModule JavaClass`() = doTest {
