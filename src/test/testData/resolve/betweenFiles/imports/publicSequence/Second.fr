@@ -1,0 +1,5 @@
+module second.Second where
+
+import first.First public
+
+test2 = 20

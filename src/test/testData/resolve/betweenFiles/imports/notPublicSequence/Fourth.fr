@@ -1,0 +1,5 @@
+module fourth.Fourth where
+
+import third.Third public
+
+test4 = test<caret>1
