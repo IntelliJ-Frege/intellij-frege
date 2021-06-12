@@ -1,0 +1,28 @@
+package psi.Dots where
+
+import frege.control.Semigroupoid public (.)
+
+(.?.) x y = x .: y
+(.:) x y = x .?. y
+x .: y = (.?.) x y
+(.|.) = (.:)
+
+infixr 2 `.||.`
+infixr 2 `.&.`
+infixr 2 `.&&.`
+
+l1 = [1..x]
+l2 = [1 ..x]
+l3 = [1.. x]
+l4 = [1..x]
+
+f = (Qualifier.Qualifier.`.|.`)
+f = Point
+         .{x}
+
+g = (Int..&.)
+g = x Int..&. y
+
+instance A B where
+    x > b = (a.compareTo b). > 0
+    y < b = (a.compareTo b). < 0
