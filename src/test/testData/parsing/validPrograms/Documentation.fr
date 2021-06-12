@@ -45,11 +45,18 @@ data A a = native a.a.A where
     native f :: a -> a
     --- doc
 
-data A
-  = A
+data A = A
   { f1 :: t1,
     f2 :: t2  --- doc
     f3 :: t3  --- doc
     f4 :: t4, -- comment
     f5 :: t5  -- comment
+  }
+
+data B = B
+  { f1 :: t1, --- doc
+    f2 :: t2, --- doc1
+    {-- doc -} f3 :: t3  --- doc
+    {-- doc -} f4 :: t4,  --- doc
+    {-- doc -} f5 :: t5  --- doc
   }
