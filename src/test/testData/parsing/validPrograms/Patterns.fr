@@ -29,5 +29,9 @@ fst3 (x, y, z) = x
 f !x = x
 f !x !x = x
 
+-- lazy
+f ?x = x
+f ?x ?x = x
+
 data Point = Point {x::Double, y::Double}
 f Point {x=1} = true
