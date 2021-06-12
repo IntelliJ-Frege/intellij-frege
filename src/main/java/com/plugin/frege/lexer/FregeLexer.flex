@@ -77,10 +77,7 @@ conid                = \p{Lu}(\d | {underscore} | \p{L})*
 varid                = \p{Ll}(\d | {underscore} | \p{L})*{quote}*
 
 /* Operators */
-aloneOps             = {exlamationMark} | {questionMark} | {hash} | {tilda} | {plus}
-                        | {star} | {at} | {dash} | {slash} | {backSlash} | {dollar}
-                        | {less} | {greater} | {colon} | {degreeSign} | {ampersand} | {carret}
-                        | {percent} | {superOrSubscript} | [\u2201-\u22FF]
+aloneOps             = [\P{L}~~[\s\p{N}\"\'\`\u00B4\u0027\.,=|{}\[\]()_]]
 notAloneOps          = {equal} | {verticalBar} | {doubleColon}
 symop_not_first_dot  = {aloneOps} ({aloneOps} | {notAloneOps} | {dot})* | {notAloneOps} ({aloneOps} | {notAloneOps} | {dot})+
 
@@ -92,7 +89,6 @@ rightArrow           = -> | \u2192
 leftArrow            = <- | \u2190
 doubleRightArrow     = => | \u21D2
 verticalBar          = \|
-ampersand            = \&
 equal                = =
 dash                 = -
 exlamationMark       = \!
@@ -101,21 +97,12 @@ comma                = \,
 semicolon            = ;
 dot                  = \.
 doubleDot            = \.\.
-slash                = \/
 backSlash            = \\
 underscore           = _
 star                 = \* | \u2605
 at                   = @
 tilda                = \~
-plus                 = \+
-less                 = <
-greater              = >
-dollar               = \$
-carret               = \^
-percent              = %
-hash                 = #
 forall               = \u2200
-degreeSign           = \u00B0
 
 /* parentheses  */
 leftParen            = \(
