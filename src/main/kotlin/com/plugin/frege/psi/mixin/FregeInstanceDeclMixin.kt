@@ -51,7 +51,7 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl, FregeInstanceDecl {
         get() = PsiTreeUtil.findChildrenOfType(typeApplications, FregeTypedVarid::class.java).toList()
 
     fun getInstancedClass(): FregeClassDecl? {
-        return conidUsage?.reference?.resolve() as? FregeClassDecl
+        return qConid?.conidUsage?.reference?.resolve() as? FregeClassDecl
     }
 
     override fun generateDoc(): String {

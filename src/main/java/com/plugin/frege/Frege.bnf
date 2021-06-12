@@ -259,7 +259,7 @@ classDecl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW conidUsage ty
 
 
 /* Instance Declarations */
-instanceDecl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? conidUsage typeApplications whereSection? {
+instanceDecl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? qConid typeApplications whereSection? {
     pin=1
     implements=["com.plugin.frege.psi.FregePsiClass"
                 "com.plugin.frege.psi.FregeTypeParametersHolder"]
@@ -453,7 +453,7 @@ rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
       | typeApplication RIGHT_ARROW rho
       | typeApplication
 constraints ::= constraint | LEFT_PAREN <<commaSequence constraint>> COMMA? RIGHT_PAREN
-constraint ::= conidUsage typeApplication+
+constraint ::= qConid typeApplication+
 typeApplications ::= typeApplication (RIGHT_ARROW typeApplication)*
 typeApplication ::= simpleType+
 
