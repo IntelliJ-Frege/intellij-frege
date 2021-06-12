@@ -36,6 +36,7 @@
         <stubElementTypeHolder class="com.plugin.frege.psi.FregeTypes"/>
         <stubIndex implementation="com.plugin.frege.stubs.index.FregeClassNameIndex"/>
         <stubIndex implementation="com.plugin.frege.stubs.index.FregeMethodNameIndex"/>
+        <stubIndex implementation="com.plugin.frege.stubs.index.FregeShortClassNameIndex"/>
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeWarningAnnotator"/>
