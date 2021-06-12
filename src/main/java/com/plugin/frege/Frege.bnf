@@ -184,8 +184,8 @@ binding ::= lhs rhs documentation? {
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
 lhs ::= functionLhs | pattern
-functionLhs ::= strictPatterns lexOperator strictPatterns
-              | (functionName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN) strictPattern* // TODO unaryOperator?
+functionLhs ::= patternTerms lexOperator patternTerms
+              | (functionName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN) patternTerms?
 rhs ::= (EQUAL expr | guardedExpressions) whereSection? {
     pin=1
 }
@@ -429,18 +429,18 @@ pattern ::= atPattern (DOUBLE_COLON sigma)* {
 }
 atPattern ::= parameterPattern AT atPattern
             | matcherPattern (COLON matcherPattern)*
-matcherPattern ::= parameterPattern TILDA REGEX | strictPatterns
-strictPatterns ::= strictPattern+
-strictPattern ::= EXLAMATION_MARK? patternTerm
-patternTerm ::= qConid LEFT_BRACE patternFields? RIGHT_BRACE
-              | qConid
-              | parameterPattern
-              | literal
-              | unit
-              | emptyList
-              | LEFT_BRACKET pattern (COMMA pattern)* RIGHT_BRACKET
-              | LEFT_PAREN parameterPattern SUPER_OR_SUBSCRIPT RIGHT_PAREN
-              | LEFT_PAREN pattern (COMMA pattern)* RIGHT_PAREN
+matcherPattern ::= parameterPattern TILDA REGEX | patternTerms
+patternTerms ::= patternTerm+
+patternTerm ::= (EXLAMATION_MARK | QUESTION_MARK)?
+                  ( qConid LEFT_BRACE patternFields? RIGHT_BRACE
+                  | LEFT_PAREN <<commaSequence pattern>> RIGHT_PAREN
+                  | qConid
+                  | parameterPattern
+                  | literal
+                  | unit
+                  | emptyList
+                  | LEFT_BRACKET pattern (COMMA pattern)* RIGHT_BRACKET
+                  | LEFT_PAREN parameterPattern SUPER_OR_SUBSCRIPT RIGHT_PAREN)
 parameterPattern ::= parameter | UNDERSCORE
 patternFields ::= <<commaSequence patternField>>
 patternField ::= parameter (EQUAL pattern)?
