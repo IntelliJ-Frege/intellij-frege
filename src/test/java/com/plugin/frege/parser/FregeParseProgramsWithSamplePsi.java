@@ -11,4 +11,8 @@ public class FregeParseProgramsWithSamplePsi extends FregeParsingTestAbstract {
     public void testQLexOperatorIsNotPrimary() throws IOException {
         doAccurateTest();
     }
+
+    public void testQualifiedConstructorIsNotComposition() throws IOException {
+        doAccurateTest();
+    }
 }

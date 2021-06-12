@@ -448,7 +448,7 @@ parameter ::= extendedVarid {
 
 
 /* Types */
-sigma ::= (FORALL typedVarid (typedVarid)* DOT)? (constraints DOUBLE_RIGHT_ARROW)? rho
+sigma ::= (FORALL typedVarid+ (DOT | symbolOperatorQuoted))? (constraints DOUBLE_RIGHT_ARROW)? rho
 rho ::= LEFT_PAREN sigma RIGHT_PAREN RIGHT_ARROW rho
       | typeApplication RIGHT_ARROW rho
       | typeApplication
@@ -481,9 +481,9 @@ simpleKind ::= STAR | LEFT_PAREN kind RIGHT_PAREN
 
 
 /* Operators */
-private preservedAloneOperators ::= STAR | COLON | SUPER_OR_SUBSCRIPT
-                                  | DOT | AT | TILDA | EXLAMATION_MARK | QUESTION_MARK // TODO AT is not an operator
-symbolOperator ::= SYM_OPERATOR_NO_FIRST_DOT | DOT+ SYM_OPERATOR_NO_FIRST_DOT | preservedAloneOperators {
+private reservedAloneOperators ::= STAR | COLON | SUPER_OR_SUBSCRIPT
+                                  | AT | TILDA | EXLAMATION_MARK | QUESTION_MARK // TODO AT is not an operator
+symbolOperator ::= SYMOP_NO_RESERVED | reservedAloneOperators {
     implements=["com.plugin.frege.psi.FregeCompositeElement"
                 "com.intellij.psi.PsiIdentifier"]
     mixin="com.plugin.frege.psi.mixin.FregeSymbolOperatorMixin"
