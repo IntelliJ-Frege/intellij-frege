@@ -295,7 +295,7 @@ construct ::= documentation? accessModifier? (EXLAMATION_MARK? conidUsage) (
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
 private constructorFields ::= constructorField ((COMMA | documentation) constructorField)* (COMMA | documentation)?
-private constructorField ::= labels DOUBLE_COLON sigma
+private constructorField ::= documentation* labels DOUBLE_COLON sigma
 labels ::= <<commaSequence label>>
 label ::= EXLAMATION_MARK? extendedVarid
 
