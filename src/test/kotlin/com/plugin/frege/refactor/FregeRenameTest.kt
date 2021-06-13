@@ -31,6 +31,8 @@ class FregeRenameTest : FregeCodeInsightTest() {
 
     fun `test label Label`() = doTest("getNow")
 
+    fun `test imports importAlias Alias`() = doTest("O")
+
     private fun doTest(newName: String) {
         val name = getTestName(false)
         val parts = name.split(' ').drop(1).toTypedArray()

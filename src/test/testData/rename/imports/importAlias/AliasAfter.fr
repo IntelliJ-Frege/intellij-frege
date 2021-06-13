@@ -1,0 +1,6 @@
+module Alias where
+
+import other.Other as O
+
+hey :: O.MyData Int Int -> O.MyData Int Int
+hey (O.MyData.C x y) = (O.MyData.C (x - y) (x + y))

@@ -1,0 +1,3 @@
+package other.Other where
+
+data MyData a = CMyData a
