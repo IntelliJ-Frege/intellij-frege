@@ -1,0 +1,6 @@
+module t.Third where
+
+import s.Second as S
+
+test :: Second.K<caret>ir
+test = undefined

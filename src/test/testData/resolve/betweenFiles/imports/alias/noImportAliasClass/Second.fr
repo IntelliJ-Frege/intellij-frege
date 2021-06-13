@@ -1,0 +1,3 @@
+module s.Second where
+
+import f.First public

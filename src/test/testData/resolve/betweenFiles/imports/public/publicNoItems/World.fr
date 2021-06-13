@@ -1,0 +1,3 @@
+module ru.World where
+
+data MyWorld a = CMyWorld a

@@ -1,0 +1,3 @@
+package ru.hse.Petya where
+
+data Lover a = CLover a

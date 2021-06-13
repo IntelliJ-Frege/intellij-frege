@@ -1,0 +1,6 @@
+module ru.itmo.Jury where
+
+import ru.hse.world.Kirill as K
+
+test :: K.Lov<caret>er Int
+test = undefined
