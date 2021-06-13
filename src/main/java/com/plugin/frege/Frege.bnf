@@ -184,8 +184,10 @@ binding ::= lhs rhs documentation? {
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
 lhs ::= functionLhs | pattern
-functionLhs ::= patternTerms lexOperator patternTerms
+functionLhs ::= functionLexOperatorLhs
               | (functionName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN) patternTerms?
+private functionLexOperatorLhs ::= patternTerms lexOperator patternTerms
+                                 | LEFT_PAREN patternTerms lexOperator patternTerms RIGHT_PAREN
 rhs ::= (EQUAL expr | guardedExpressions) whereSection? {
     pin=1
 }
@@ -221,7 +223,7 @@ nativeFunction ::= strongPure? NATIVE nativeAnnotationItem javaItem? nativeTypeA
     mixin="com.plugin.frege.psi.mixin.FregeNativeFunctionMixin"
     stubClass="com.plugin.frege.stubs.FregeMethodStub"
 }
-nativeTypeApplications ::= LEFT_BRACE typeApplications? RIGHT_BRACE
+nativeTypeApplications ::= LEFT_BRACE (<<commaSequence typeApplications>>)? RIGHT_BRACE
 javaItem ::= nativeName | unaryOperator | symbolOperatorQuoted
 throwsSequence ::= THROWS <<commaSequence typeApplications>>
 nativeAnnotationItem ::= nativeFunctionName | LEFT_PAREN (symbolOperatorQuoted | unaryOperator) RIGHT_PAREN | (symbolOperatorQuoted | unaryOperator)
@@ -331,7 +333,7 @@ external javaCode ::= javaCodeParseExternal
 
 /* Expression */
 expr ::= binaryExpression (DOUBLE_COLON (FORALL | rho))?
-binaryExpression ::= topExpression (qLexOperator topExpression)*
+binaryExpression ::= DASH? topExpression (qLexOperator topExpression)*
 topExpression ::= condition
                 | letInExpression
                 | caseExpression
@@ -415,8 +417,8 @@ slice ::= LEFT_PAREN (binaryExpression qLexOperator | qLexOperator expr) RIGHT_P
 unit ::= LEFT_PAREN RIGHT_PAREN
 tuple ::= tupleConstructor | nTuple | strictNTuple
 tupleConstructor ::= LEFT_PAREN COMMA* RIGHT_PAREN
-nTuple ::= LEFT_PAREN expr COMMA <<commaSequence expr>> RIGHT_PAREN
-strictNTuple ::= LEFT_PAREN expr SEMICOLON <<semicolonSequence expr>> RIGHT_PAREN
+nTuple ::= LEFT_PAREN expr COMMA <<commaSequence expr>> COMMA? RIGHT_PAREN
+strictNTuple ::= LEFT_PAREN expr SEMICOLON <<semicolonSequence expr>> SEMICOLON? RIGHT_PAREN
 
 /* Lists */
 list ::= emptyList
@@ -440,6 +442,7 @@ patternTerm ::= (EXLAMATION_MARK | QUESTION_MARK)?
                   | parameterPattern
                   | literal
                   | unit
+                  | tuple
                   | emptyList
                   | LEFT_BRACKET pattern (COMMA pattern)* RIGHT_BRACKET
                   | LEFT_PAREN parameterPattern SUPER_OR_SUBSCRIPT RIGHT_PAREN)
@@ -486,7 +489,7 @@ simpleKind ::= STAR | LEFT_PAREN kind RIGHT_PAREN
 
 
 /* Operators */
-private reservedAloneOperators ::= STAR | COLON | SUPER_OR_SUBSCRIPT
+private reservedAloneOperators ::= DASH | STAR | COLON | SUPER_OR_SUBSCRIPT
                                   | AT | TILDA | EXLAMATION_MARK | QUESTION_MARK // TODO AT is not an operator
 symbolOperator ::= SYMOP_NO_RESERVED | reservedAloneOperators {
     implements=["com.plugin.frege.psi.FregeCompositeElement"
