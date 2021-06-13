@@ -1,0 +1,6 @@
+module third.Third where
+
+import second.Second
+
+test :: Ke<caret>k String Int
+test = undefined

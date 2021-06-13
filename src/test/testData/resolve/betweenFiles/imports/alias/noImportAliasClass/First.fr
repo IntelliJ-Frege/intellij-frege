@@ -1,0 +1,3 @@
+module f.First where
+
+data Kir a = Test a | Test2 a

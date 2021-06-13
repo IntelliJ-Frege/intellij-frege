@@ -1,0 +1,3 @@
+module ru.hse.world.Kirill where
+
+import ru.hse.Petya public

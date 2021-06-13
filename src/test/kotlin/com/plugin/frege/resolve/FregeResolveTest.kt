@@ -360,11 +360,35 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is PsiClass && it.qualifiedName == "other.Clazz"
     }
 
-    fun `test dir betweenFiles imports publicSequence Fourth`() = doTest {
+    fun `test dir betweenFiles imports public publicSequence Fourth`() = doTest {
         it is FregeBinding && it.name == "test1" && it.containingClass?.qualifiedName == "first.First"
     }
 
-    fun `test dir betweenFiles imports notPublicSequence Fourth`() = doTest {
+    fun `test dir betweenFiles imports public notPublicSequence Fourth`() = doTest {
+        it == null
+    }
+
+    fun `test dir betweenFiles imports public publicClassImport Third`() = doTest {
+        it is FregeDataDecl && it.qualifiedName == "first.First.Kek"
+    }
+
+    fun `test dir betweenFiles imports public publicClassImport2 Third`() = doTest {
+        it is FregeDataDecl && it.qualifiedName == "first.First.Kek"
+    }
+
+    fun `test dir betweenFiles imports public notPublicClassImport Third`() = doTest {
+        it == null
+    }
+
+    fun `test dir betweenFiles imports public publicNoItems Hello`() = doTest {
+        it == null
+    }
+
+    fun `test dir betweenFiles imports alias importAliasClass Jury`() = doTest {
+        it is FregeDataDecl && it.qualifiedName == "ru.hse.Petya.Lover"
+    }
+
+    fun `test dir betweenFiles imports alias noImportAliasClass Third`() = doTest {
         it == null
     }
 

@@ -1,0 +1,6 @@
+module hello.Hello where
+
+import ru.World public ()
+
+test :: MyWorl<caret>d Int
+test = undefined
