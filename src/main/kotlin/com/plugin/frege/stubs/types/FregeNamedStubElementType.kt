@@ -8,7 +8,7 @@ import com.plugin.frege.psi.FregeNamedElement
 abstract class FregeNamedStubElementType<StubT : NamedStubBase<*>, PsiT : FregeNamedElement?>(debugName: String) :
     FregeStubElementType<StubT, PsiT>(debugName) {
 
-    protected abstract val nameKey: StubIndexKey<Int, PsiT>
+    protected abstract val nameKey: StubIndexKey<Int, in PsiT>
 
     override fun indexStub(stub: StubT, sink: IndexSink) {
         val name = stub.name

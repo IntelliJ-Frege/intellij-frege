@@ -100,7 +100,7 @@ program ::= ((documentation VIRTUAL_END_DECL)* PROTECTED_MODIFIER? (strongPackag
     pin=1
     implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
-    stubClass="com.plugin.frege.stubs.FregeClassStub"
+    stubClass="com.plugin.frege.stubs.FregeProgramStub"
 }
 packagePrefix ::= (packageToken DOT)*
 packageName ::= packagePrefix conidUsage

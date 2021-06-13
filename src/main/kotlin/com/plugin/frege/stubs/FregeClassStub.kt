@@ -5,8 +5,7 @@ import com.intellij.psi.stubs.StubElement
 import com.intellij.util.io.StringRef
 import com.plugin.frege.psi.FregePsiClass
 
-// TODO keep more data
-class FregeClassStub : FregeNamedStub<FregePsiClass> {
+open class FregeClassStub : FregeNamedStub<FregePsiClass> {
     constructor(
         parent: StubElement<*>?,
         elementType: IStubElementType<*, *>,

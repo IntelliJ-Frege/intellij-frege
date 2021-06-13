@@ -13,7 +13,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.findMainTypeFromSigma
 import com.plugin.frege.resolve.FregeResolveUtil
 import com.plugin.frege.stubs.FregeClassStub
 
-abstract class FregeTypeDeclMixin : FregePsiClassImpl, FregeTypeDecl {
+abstract class FregeTypeDeclMixin : FregePsiClassImpl<FregeClassStub>, FregeTypeDecl {
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)

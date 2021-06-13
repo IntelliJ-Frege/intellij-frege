@@ -14,23 +14,27 @@ import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.resolve.FregeResolveUtil
-import com.plugin.frege.stubs.FregeClassStub
+import com.plugin.frege.stubs.FregeProgramStub
 
 @Suppress("UnstableApiUsage")
-abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
+abstract class FregeProgramMixin : FregePsiClassImpl<FregeProgramStub>, FregeProgram {
     private companion object {
         private const val DEFAULT_MODULE_NAME: String = "Main"
     }
 
     constructor(node: ASTNode) : super(node)
 
-    constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
+    constructor(stub: FregeProgramStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     override fun getNameIdentifier(): PsiIdentifier? {
         return packageName?.conidUsage
     }
 
     override fun getQualifiedName(): @NlsSafe String {
+        val nameFromStub = greenStub?.name
+        if (nameFromStub != null) {
+            return nameFromStub
+        }
         return packageName?.text ?: DEFAULT_MODULE_NAME
     }
 
@@ -110,4 +114,15 @@ abstract class FregeProgramMixin : FregePsiClassImpl, FregeProgram {
             }
         }
     }
+}
+
+object FregeProgramUtil {
+    val FregeProgram.imports: List<FregeImportDecl>
+        get() {
+            val stub = (this as? FregeProgramMixin)?.greenStub
+            if (stub != null) {
+                return stub.importStrings.map { FregeElementFactory.createImportDecl(project, it) }
+            }
+            return body?.topDeclList?.mapNotNull { it.firstChild as? FregeImportDecl } ?: emptyList()
+        }
 }

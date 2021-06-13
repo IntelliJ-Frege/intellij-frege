@@ -10,7 +10,7 @@ import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
-abstract class FregeNewtypeDeclMixin : FregePsiClassImpl, FregeNewtypeDecl {
+abstract class FregeNewtypeDeclMixin : FregePsiClassImpl<FregeClassStub>, FregeNewtypeDecl {
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)

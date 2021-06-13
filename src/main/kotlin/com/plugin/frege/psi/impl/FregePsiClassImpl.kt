@@ -21,14 +21,16 @@ import com.plugin.frege.stubs.FregeClassStub
 import org.jetbrains.annotations.NonNls
 
 @Suppress("UnstableApiUsage")
-abstract class FregePsiClassImpl : FregeNamedStubBasedPsiElementBase<FregeClassStub>, FregePsiClass {
+abstract class FregePsiClassImpl<StubT : FregeClassStub> :
+    FregeNamedStubBasedPsiElementBase<StubT>, FregePsiClass {
+
     protected companion object {
         const val DEFAULT_CLASS_NAME: String = ""
     }
 
     constructor(node: ASTNode) : super(node)
 
-    constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
+    constructor(stub: StubT, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     protected abstract fun getNameWithoutStub(): @NlsSafe String
 

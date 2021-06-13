@@ -7,13 +7,12 @@ import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.stubs.IStubElementType
 import com.plugin.frege.psi.FregeDataDecl
-import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.FregeTypedVarid
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
 @Suppress("UnstableApiUsage")
-abstract class FregeDataDeclMixin : FregePsiClassImpl, FregeDataDecl {
+abstract class FregeDataDeclMixin : FregePsiClassImpl<FregeClassStub>, FregeDataDecl {
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)

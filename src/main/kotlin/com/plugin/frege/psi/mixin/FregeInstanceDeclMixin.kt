@@ -12,7 +12,7 @@ import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.stubs.FregeClassStub
 
 @Suppress("UnstableApiUsage")
-abstract class FregeInstanceDeclMixin : FregePsiClassImpl, FregeInstanceDecl {
+abstract class FregeInstanceDeclMixin : FregePsiClassImpl<FregeClassStub>, FregeInstanceDecl {
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
