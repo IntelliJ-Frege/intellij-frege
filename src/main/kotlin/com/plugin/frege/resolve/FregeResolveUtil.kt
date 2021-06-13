@@ -10,12 +10,10 @@ import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.FregeFileType
-import com.plugin.frege.psi.FregeBinding
-import com.plugin.frege.psi.FregeBody
-import com.plugin.frege.psi.FregePsiClass
-import com.plugin.frege.psi.FregePsiMethod
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeNamedStubBasedPsiElementBase
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
@@ -27,6 +25,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.notWeakScopeOfElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
+import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
 import com.plugin.frege.resolve.FregeImportResolveUtil.findAvailableModulesInImportsForElement
 import com.plugin.frege.resolve.FregeImportResolveUtil.findClassesFromUsageInImports
 import com.plugin.frege.stubs.index.FregeClassNameIndex
@@ -239,7 +238,17 @@ object FregeResolveUtil {
     ): List<PsiElement> {
         // TODO take into account qualified names
         val results = tryFindClassesInCurrentFileFromUsage(usage, incompleteCode).toMutableList()
-        results.addAll(findClassesFromUsageInImports(usage)) // TODO support incomplete code
+        results += findClassesFromUsageInImports(usage) // TODO support incomplete code
+
+        val module = usage.parentOfType<FregeProgram>()
+        if (module != null) {
+            val name = usage.text
+            val imports = module.imports
+            results += tryFindClassesInImportsAliases(name, imports, incompleteCode)
+            if (module.name == name) {
+                results += module
+            }
+        }
         return results
     }
 
@@ -253,5 +262,17 @@ object FregeResolveUtil {
             classes.removeIf { referenceText != it.name }
         }
         return classes
+    }
+
+    private fun tryFindClassesInImportsAliases(
+        name: String,
+        imports: List<FregeImportDecl>,
+        incompleteCode: Boolean
+    ): List<PsiElement> {
+        return imports
+            .asSequence()
+            .mapNotNull { it.importDeclAlias }
+            .filter { incompleteCode || it.name == name }
+            .toList()
     }
 }

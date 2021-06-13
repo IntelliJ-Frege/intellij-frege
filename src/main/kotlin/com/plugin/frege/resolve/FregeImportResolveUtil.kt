@@ -122,7 +122,7 @@ object FregeImportResolveUtil {
             val importList = import.importList
             val isImportPublic = isElementTypeWithinChildren(import, FregeTypes.PUBLIC_MODIFIER)
             val isHiding = importList?.strongKeyword?.firstChild?.elementType === FregeTypes.HIDING
-            val alias = import.conidUsage // TODO maybe introduce a rule for alias
+            val alias = import.importDeclAlias
             val module = getModuleByImport(import) ?: continue
             val moduleName = if (alias != null) alias.text else module.name
             if (moduleName == qualifier) {
@@ -133,7 +133,7 @@ object FregeImportResolveUtil {
                 if (importSpecs != null) {
                     for (importSpec in importSpecs) {
                         val isSpecPublic = isElementTypeWithinChildren(importSpec, FregeTypes.PUBLIC_MODIFIER)
-                        if (!isStartPoint && !isImportPublic && !isSpecPublic) {
+                        if (!isStartPoint && !isImportPublic && !isSpecPublic && !isHiding) {
                             continue
                         }
                         val importItem = importSpec.importItem

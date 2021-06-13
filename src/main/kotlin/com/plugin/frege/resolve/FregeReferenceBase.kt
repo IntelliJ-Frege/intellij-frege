@@ -29,6 +29,20 @@ abstract class FregeReferenceBase(@JvmField protected val psiElement: PsiElement
         return resolveInner(true).toTypedArray()
     }
 
+    override fun bindToElement(element: PsiElement): PsiElement {
+        return if (element is PsiNamedElement && psiElement !is PsiNamedElement) {
+            val newName = element.name
+            val oldName = psiElement.text
+            if (newName != null && oldName != newName) {
+                return handleElementRename(newName)
+            } else {
+                psiElement
+            }
+        } else {
+            super.bindToElement(element)
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         return if (other is FregeReferenceBase) psiElement == other.psiElement else false
     }

@@ -35,6 +35,7 @@ abstract class LightFregePsiClassBase(node: ASTNode) :
         get() = LightPsiClassBuilder(containingClass ?: this, name ?: DEFAULT_NAME)
 
     override fun setName(name: String): PsiElement {
+        nameIdentifier?.reference?.handleElementRename(name)
         return this
     }
 
