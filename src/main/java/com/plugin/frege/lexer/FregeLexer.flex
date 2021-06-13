@@ -73,7 +73,7 @@ blockCommentEnd      = {dash}{rightBrace}
 blockComment         = {blockCommentStart}~{blockCommentEnd}
 
 /* Identifiers */
-conid                = \p{Lu}(\d | {underscore} | \p{L})*
+conid                = \p{Lu}(\d | {underscore} | \p{L})*{quote}*
 varid                = \p{Ll}(\d | {underscore} | \p{L})*{quote}*
 
 /* Operators */

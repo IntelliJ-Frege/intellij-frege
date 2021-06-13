@@ -1,0 +1,7 @@
+package psi.VaridConidQuotes where
+import Data as Data'
+f = x
+f' = x'
+f'' = x''''
+class A''' x'''' where
+    g' :: a' -> b' -> Point'''' a
