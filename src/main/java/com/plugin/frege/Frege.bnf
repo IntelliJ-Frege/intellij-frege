@@ -70,6 +70,9 @@ private strongHiding ::= <<strongKeyword HIDING>>
 private strongInline ::= <<strongKeyword INLINE>>
 private strongMutable ::= <<strongKeyword MUTABLE>>
 private strongPure ::= <<strongKeyword PURE>>
+// for detecting usage 'package' instead of 'module' TODO
+strongPackage ::= <<strongKeyword PACKAGE>>
+strongModule ::= <<strongKeyword MODULE>>
 
 
 /* Literals */
@@ -93,7 +96,7 @@ documentation ::= lineDocumentation | blockDocumentation {
 }
 
 /* Frege Program */
-program ::= ((documentation VIRTUAL_END_DECL)* PROTECTED_MODIFIER? (PACKAGE | MODULE) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION)? body {
+program ::= ((documentation VIRTUAL_END_DECL)* PROTECTED_MODIFIER? (strongPackage | strongModule) packageName inlineRule? WHERE VIRTUAL_OPEN_SECTION)? body {
     pin=1
     implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.FregeProgramMixin"
