@@ -10,6 +10,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.getQualifiedNameFromUsage
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.isElementTypeWithinChildren
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
+import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
 import com.plugin.frege.stubs.index.FregeShortClassNameIndex
 
 object FregeImportResolveUtil {
@@ -26,9 +27,9 @@ object FregeImportResolveUtil {
         project: Project,
         element: PsiElement
     ): List<FregeProgram> {
-        val program = element.parentOfType<FregeProgram>() ?: return emptyList()
-        val imports = findImportsInModule(program) + getPreludeImport(project)
-        return findAvailableModulesInImports(imports) - program
+        val module = element.parentOfType<FregeProgram>() ?: return emptyList()
+        val imports = module.imports + getPreludeImport(project)
+        return findAvailableModulesInImports(imports) - module
     }
 
     private fun findAvailableModulesInImports(
@@ -46,19 +47,14 @@ object FregeImportResolveUtil {
                 continue
             }
             if (visitedWithPublic.add(module)) {
-                val newImports = findImportsInModule(module)
+                val newImports = module.imports
                 findAvailableModulesInImports(newImports, visitedWithoutPublic, visitedWithPublic, false)
             }
         }
     }
 
     private fun getPreludeImport(project: Project): FregeImportDecl {
-        return FregeElementFactory.createImportDecl(project, "frege.Prelude")
-    }
-
-    @JvmStatic
-    fun findImportsInModule(module: FregeProgram): List<FregeImportDecl> {
-        return module.body?.topDeclList?.mapNotNull { it.firstChild as? FregeImportDecl } ?: emptyList()
+        return FregeElementFactory.createImportDeclByPackage(project, "frege.Prelude")
     }
 
     @JvmStatic
@@ -73,7 +69,7 @@ object FregeImportResolveUtil {
         val qualifiedName = getQualifiedNameFromUsage(usage)
         val qualifier = qualifierFromQualifiedName(qualifiedName).let { it.ifEmpty { null } }
         val name = nameFromQualifiedName(qualifiedName)
-        val imports = findImportsInModule(module) + getPreludeImport(project)
+        val imports = module.imports + getPreludeImport(project)
         return findClassesByNameInImports(name, qualifier, module, imports)
     }
 
@@ -117,7 +113,7 @@ object FregeImportResolveUtil {
                 }
             }
             findClassesByNameInImportsImpl(
-                name, qualifier, findImportsInModule(module),
+                name, qualifier, module.imports,
                 possibleClassResults, results, visited, false
             )
         }
