@@ -80,4 +80,8 @@ public class FregeSuccessfulParsingValidProgramsTest extends FregeParsingTestAbs
     public void testPrimary() throws IOException {
         doSuccessfulParsingTest();
     }
+
+    public void testVaridConidQuotes() throws IOException {
+        doSuccessfulParsingTest();
+    }
 }
