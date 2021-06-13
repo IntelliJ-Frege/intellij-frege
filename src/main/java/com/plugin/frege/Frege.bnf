@@ -117,7 +117,7 @@ private declRecover ::= !(VIRTUAL_END_DECL)
 
 
 /* Importing Packages */
-importDecl ::= IMPORT importPackageName (strongAs? conidUsage)? PUBLIC_MODIFIER? importList? {
+importDecl ::= IMPORT importPackageName (strongAs? importDeclAlias)? PUBLIC_MODIFIER? importList? {
     pin=1
 }
 importList ::= strongHiding? LEFT_PAREN (<<commaSequence importSpec>>)? RIGHT_PAREN
@@ -132,6 +132,11 @@ importAlias ::= extendedVarid | CONID | symbolOperatorQuoted
 importMembers ::= LEFT_PAREN (<<commaSequence importMemberSpec>>)? RIGHT_PAREN
 importMemberSpec ::= PUBLIC_MODIFIER? importMember importAlias?
 importMember ::= extendedVarid | symbolOperatorQuoted | conidUsage
+/* Aliases for imports */
+importDeclAlias ::= conidUsage {
+    implements="com.plugin.frege.psi.FregePsiClass"
+    mixin="com.plugin.frege.psi.mixin.imports.FregeImportDeclAliasMixin"
+}
 
 importPackageName ::= packagePrefix importPackageClassName
 importPackageClassName ::= CONID {

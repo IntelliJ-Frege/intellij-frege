@@ -2,7 +2,6 @@ package com.plugin.frege.resolve
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiNamedElement
 import com.plugin.frege.psi.FregeElementFactory.createConidUsage
 import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.resolve.FregeResolveUtil.findClassesFromUsage
@@ -16,20 +15,6 @@ class FregeConidUsageReference(element: PsiElement) : FregeReferenceBase(element
         }
 
         return results.filter { it !is FregePsiClass || it.canBeReferenced() }
-    }
-
-    override fun bindToElement(element: PsiElement): PsiElement {
-        return if (element is PsiNamedElement) {
-            val newName = element.name
-            val oldName = psiElement.text
-            if (newName != null && oldName != newName) {
-                return handleElementRename(newName)
-            } else {
-                psiElement
-            }
-        } else {
-            super.bindToElement(element)
-        }
     }
 
     override fun handleElementRename(name: String): PsiElement {
