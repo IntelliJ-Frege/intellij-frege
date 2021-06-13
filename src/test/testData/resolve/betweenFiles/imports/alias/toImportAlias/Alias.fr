@@ -1,0 +1,6 @@
+module kek.Alias where
+
+import other.Other as Oth
+
+test :: Ot<caret>h.MyData Int
+test = undefined

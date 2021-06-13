@@ -181,7 +181,6 @@ class FregeResolveTest : FregeCodeInsightTest() {
     }
 
     fun `test file instance ToInstancedMethod`() = doTest {
-        println(it?.text)
         it is FregeBinding && it.name == "love"
                 && it.containingClass?.qualifiedName == "ToInstancedMethod.Partner"
     }
@@ -367,6 +366,10 @@ class FregeResolveTest : FregeCodeInsightTest() {
     }
 
     fun `test dir betweenFiles imports alias noImportAliasClass Third`() = doNullTest()
+
+    fun `test dir betweenFiles imports alias toImportAlias Alias`() = doTest {
+        it is FregeImportDeclAlias && it.name == "Oth"
+    }
 
     // Testing from Java
 
