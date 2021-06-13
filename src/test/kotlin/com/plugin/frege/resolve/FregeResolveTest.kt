@@ -54,9 +54,7 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeBinding && it.name == "second"
     }
 
-    fun `test file bindings NoBinding`() = doTest {
-        it == null
-    }
+    fun `test file bindings NoBinding`() = doNullTest()
 
     // Testing parameters
 
@@ -72,9 +70,7 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeParameter && it.text == "x" && it.parentOfTypes(FregeLambda::class) != null
     }
 
-    fun `test file parameters NoParameter`() = doTest {
-        it == null
-    }
+    fun `test file parameters NoParameter`() = doNullTest()
 
     // Testing operators
 
@@ -94,9 +90,7 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeBinding && it.name == "$+*+"
     }
 
-    fun `test file operators NoOperator`() = doTest {
-        it == null
-    }
+    fun `test file operators NoOperator`() = doNullTest()
 
     // Testing where
 
@@ -112,9 +106,7 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeParameter && it.name == "y"
     }
 
-    fun `test file where NoBindingBelow`() = doTest {
-        it == null
-    }
+    fun `test file where NoBindingBelow`() = doNullTest()
 
     fun `test file where NearestParameter`() = doTest {
         it is FregeParameter && it.name == "x" && it.parentOfTypes(FregeBinding::class)?.name == "saySmth"
@@ -124,9 +116,7 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeBinding && it.text == "bindingImpl a b = a - b"
     }
 
-    fun `test file where NoAvailableBinding`() = doTest {
-        it == null
-    }
+    fun `test file where NoAvailableBinding`() = doNullTest()
 
     // Testing classes
 
@@ -170,9 +160,7 @@ class FregeResolveTest : FregeCodeInsightTest() {
                 && it.containingClass?.qualifiedName == "ToBinding.MyType"
     }
 
-    fun `test file newtype NoBinding`() = doTest {
-        it == null
-    }
+    fun `test file newtype NoBinding`() = doNullTest()
 
     // Testing data
 
@@ -209,9 +197,7 @@ class FregeResolveTest : FregeCodeInsightTest() {
                 && it.containingClass?.qualifiedName == "ToMethod.JList"
     }
 
-    fun `test file nativeData NoMethod`() = doTest {
-        it == null
-    }
+    fun `test file nativeData NoMethod`() = doNullTest()
 
     // Testing let
 
@@ -340,9 +326,7 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeDataDecl && it.qualifiedName == "hello.world.Declaration.MyData"
     }
 
-    fun `test dir betweenFiles data noReference Usage`() = doTest {
-        it == null
-    }
+    fun `test dir betweenFiles data noReference Usage`() = doNullTest()
 
     fun `test dir betweenFiles nativeName ToClassWithoutString NativeName`() = doTest {
         it is PsiClass && it.qualifiedName == "my.pack.petya.Clazz"
@@ -364,9 +348,7 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeBinding && it.name == "test1" && it.containingClass?.qualifiedName == "first.First"
     }
 
-    fun `test dir betweenFiles imports public notPublicSequence Fourth`() = doTest {
-        it == null
-    }
+    fun `test dir betweenFiles imports public notPublicSequence Fourth`() = doNullTest()
 
     fun `test dir betweenFiles imports public publicClassImport Third`() = doTest {
         it is FregeDataDecl && it.qualifiedName == "first.First.Kek"
@@ -376,21 +358,15 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeDataDecl && it.qualifiedName == "first.First.Kek"
     }
 
-    fun `test dir betweenFiles imports public notPublicClassImport Third`() = doTest {
-        it == null
-    }
+    fun `test dir betweenFiles imports public notPublicClassImport Third`() = doNullTest()
 
-    fun `test dir betweenFiles imports public publicNoItems Hello`() = doTest {
-        it == null
-    }
+    fun `test dir betweenFiles imports public publicNoItems Hello`() = doNullTest()
 
     fun `test dir betweenFiles imports alias importAliasClass Jury`() = doTest {
         it is FregeDataDecl && it.qualifiedName == "ru.hse.Petya.Lover"
     }
 
-    fun `test dir betweenFiles imports alias noImportAliasClass Third`() = doTest {
-        it == null
-    }
+    fun `test dir betweenFiles imports alias noImportAliasClass Third`() = doNullTest()
 
     // Testing from Java
 
@@ -418,6 +394,10 @@ class FregeResolveTest : FregeCodeInsightTest() {
             "dir" -> doTestDirectory(filePath, verify)
             else -> fail("Incorrect format of test")
         }
+    }
+
+    private fun doNullTest() {
+        doTest { it == null }
     }
 
     private fun doTestSingleFile(path: Path, verify: (elem: PsiElement?) -> Boolean) {
