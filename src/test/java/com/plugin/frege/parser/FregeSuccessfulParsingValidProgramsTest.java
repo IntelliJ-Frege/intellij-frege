@@ -88,4 +88,12 @@ public class FregeSuccessfulParsingValidProgramsTest extends FregeParsingTestAbs
     public void testMinus() throws IOException {
         doSuccessfulParsingTest();
     }
+
+    public void testNestedComments() throws IOException {
+        doSuccessfulParsingTest();
+    }
+
+    public void testNestedDocs() throws IOException {
+        doSuccessfulParsingTest();
+    }
 }

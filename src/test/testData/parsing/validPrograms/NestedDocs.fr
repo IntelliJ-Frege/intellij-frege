@@ -1,0 +1,13 @@
+package psi.NestedDoc where
+{-- doc1 doc1
+doc1 doc1 -}
+
+{-- doc1 doc1
+doc1 {-- doc2 doc2
+        doc2 doc2 -} doc2 -}
+
+{-- doc1 doc1
+doc1 {--
+{-- doc3 -} doc2 doc2
+        doc2 doc2 -} doc2 -}
+f = undefined
