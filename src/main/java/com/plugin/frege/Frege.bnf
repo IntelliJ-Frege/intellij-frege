@@ -387,8 +387,10 @@ primary ::= (term | doExpression) (DOT (
               | QUESTION_MARK
               | LEFT_BRACE fieldsOrVaridInit RIGHT_BRACE
               | LEFT_BRACKET expr RIGHT_BRACKET))*
-fieldsOrVaridInit ::= extendedVarid (QUESTION_MARK | EQUAL | LEFT_ARROW)? (
-    expr (COMMA getField)* COMMA?)?
+fieldsOrVaridInit ::= extendedVarid (
+                                     QUESTION_MARK
+                                   | COMMA <<commaSequence getField>>
+                                   | (LEFT_ARROW | EQUAL) expr? (COMMA <<commaSequence getField>>)?)? COMMA?
 getField ::= extendedVarid ((LEFT_ARROW | EQUAL) expr)?
 
 /* Terms */

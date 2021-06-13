@@ -1,0 +1,9 @@
+package psi.Primary where
+
+f1 = Point.{x=0, y=0}
+f2 = Point.{x=0, y<-0}
+f3 = Point.{x, y=0}
+f4 = Point.{x=0, y}
+f5 = Point.{x, y}
+f6 = Point.{x=}
+f7 = Point.{x?}

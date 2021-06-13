@@ -4,3 +4,6 @@ data Point = Point {x::Double, y::Double}
 
 f1 = Point 0 0
 f2 = Point {x=0, y=0}
+f3 = Point {x, y=0}
+f4 = Point {x=0, y}
+f5 = Point {x, y}
