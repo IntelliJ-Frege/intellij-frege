@@ -239,7 +239,7 @@ backQuote            = \`
 
     <MAYBE_FIRST_DOT_OPERATOR> {
         {dot} / {whitespace}         { yybegin(YYINITIAL); return FregeTypes.SYMOP_NO_RESERVED; }
-        {dot} / {rightBrace}         { yybegin(YYINITIAL); return FregeTypes.SYMOP_NO_RESERVED; }
+        {dot} / {rightParen}         { yybegin(YYINITIAL); return FregeTypes.SYMOP_NO_RESERVED; }
         {dot}{dot}                   { yybegin(YYINITIAL); return FregeTypes.DOUBLE_DOT; }
         {dot}{symop_not_first_dot}   { yybegin(YYINITIAL); return FregeTypes.SYMOP_NO_RESERVED; }
         {dot}                        { yybegin(YYINITIAL); return FregeTypes.DOT; }
