@@ -12,4 +12,12 @@ public class FregeFailParsingInvalidProgramsTest extends FregeParsingTestAbstrac
     public void testNewtypeTwoConstructors() throws IOException {
         doFailParsingTest();
     }
+
+    public void testPrimaryManyVaridInit() throws IOException {
+        doFailParsingTest();
+    }
+
+    public void testPrimaryQuestionMarkInGetFields() throws IOException {
+        doFailParsingTest();
+    }
 }
