@@ -202,6 +202,7 @@ backQuote            = \`
           {backSlash}                  { return FregeTypes.BACK_SLASH; }
           {underscore}                 { return FregeTypes.UNDERSCORE; }
           {star}                       { return FregeTypes.STAR; }
+          {dash}                       { return FregeTypes.DASH; }
           {at}                         { return FregeTypes.AT; }
           {tilda}                      { return FregeTypes.TILDA; }
           {backQuote}                  { return FregeTypes.BACK_QUOTE; }

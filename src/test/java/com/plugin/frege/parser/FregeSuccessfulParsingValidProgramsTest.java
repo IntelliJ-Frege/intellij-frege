@@ -84,4 +84,8 @@ public class FregeSuccessfulParsingValidProgramsTest extends FregeParsingTestAbs
     public void testVaridConidQuotes() throws IOException {
         doSuccessfulParsingTest();
     }
+
+    public void testMinus() throws IOException {
+        doSuccessfulParsingTest();
+    }
 }

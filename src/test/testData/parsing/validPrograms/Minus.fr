@@ -1,0 +1,7 @@
+package psi.Minus where
+f = -1
+f = -x
+f = -x + 1
+f = -if x then y else z
+f = -if -x then -y else -z
+f = [-x, -1, -3]
