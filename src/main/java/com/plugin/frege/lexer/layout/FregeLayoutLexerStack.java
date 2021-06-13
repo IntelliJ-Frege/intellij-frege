@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class FregeLayoutLexerStack {
     private final @NotNull Stack<@NotNull Integer> indentStack = new Stack<>();
-    private final @NotNull Stack<@NotNull Integer> sectionGeneratingBrace = new Stack<>();
+    private final @NotNull Stack<@NotNull Integer> braceStack = new Stack<>();
     private int braceLevel = 0;
 
     public FregeLayoutLexerStack() {
@@ -14,12 +14,10 @@ public class FregeLayoutLexerStack {
         indentStack.push(0); // global section
     }
 
-    public void enterLeftBrace(boolean isSectionGenerating) {
+    public void enterLeftBrace() {
         braceLevel++;
-        if (isSectionGenerating) {
-            sectionGeneratingBrace.push(braceLevel);
-            indentStack.push(-1);
-        }
+        braceStack.push(braceLevel);
+        indentStack.push(-1);
     }
 
     public int skipToBottom() {
@@ -33,9 +31,9 @@ public class FregeLayoutLexerStack {
 
     public int enterRightBrace() {
         int skippedIndents = 0;
-        if (!sectionGeneratingBrace.empty() &&
-                sectionGeneratingBrace.peek() == braceLevel) {
-            sectionGeneratingBrace.pop();
+        if (!braceStack.empty() &&
+                braceStack.peek() == braceLevel) {
+            braceStack.pop();
             skippedIndents = skipToBottom();
             indentStack.pop();
         }

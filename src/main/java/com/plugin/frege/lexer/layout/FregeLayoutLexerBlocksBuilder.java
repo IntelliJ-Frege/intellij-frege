@@ -54,7 +54,7 @@ public class FregeLayoutLexerBlocksBuilder {
 
     public void add(@NotNull FregeLayoutLexerToken token) {
         if (token.isLeftBrace()) {
-            stack.enterLeftBrace(token.isSectionGenerating);
+            stack.enterLeftBrace();
         }
         if (token.isRightBrace()) {
             int endedVirtualSections = stack.enterRightBrace();
@@ -70,7 +70,6 @@ public class FregeLayoutLexerBlocksBuilder {
 
     public boolean tryStartSectionWith(@NotNull FregeLayoutLexerToken token) {
         if (token.isLeftBrace()) {
-            token.isSectionGenerating = true;
             add(token);
             return true;
         }
@@ -113,6 +112,7 @@ public class FregeLayoutLexerBlocksBuilder {
         }
         return false;
     }
+
     public void globalSectionStart() {
         stack.enterVirtualSectionStart(-1);
     }

@@ -20,7 +20,6 @@ public class FregeLayoutLexerToken {
     public final int column;
     public final @NotNull String text;
     public final @NotNull Line line;
-    public boolean isSectionGenerating = false;
 
     public FregeLayoutLexerToken(@Nullable IElementType type, int start, int end, int column, @NotNull String text, @NotNull Line line) {
         this.type = type;
@@ -36,12 +35,8 @@ public class FregeLayoutLexerToken {
         if (!VIRTUAL_TOKENS.contains(type)) {
             throw new IllegalArgumentException(type + " is not a virtual type");
         }
-        FregeLayoutLexerToken token = new FregeLayoutLexerToken(type, precedesToken.start,
+        return new FregeLayoutLexerToken(type, precedesToken.start,
                 precedesToken.end, precedesToken.column, "", precedesToken.line);
-        if (VIRTUAL_OPEN_SECTION.equals(type)) {
-            token.isSectionGenerating = true;
-        }
-        return token;
     }
 
     @Override
