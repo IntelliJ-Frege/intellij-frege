@@ -37,6 +37,7 @@
         <stubIndex implementation="com.plugin.frege.stubs.index.FregeMethodNameIndex"/>
         <colorSettingsPage implementation="com.plugin.frege.highlighter.FregeColorSettingsPage"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
+        <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeWarningAnnotator"/>
 
         <codeInsight.lineMarkerProvider language="Frege"
                                         implementationClass="com.plugin.frege.linemarker.related.FregeRelatedItemLineMarkerProvider"/>

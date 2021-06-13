@@ -36,6 +36,12 @@ object FregeElementFactory {
     }
 
     @JvmStatic
+    fun createModuleKeyword(project: Project): FregeStrongModule {
+        val fakeModule = "module $fakeModuleName where\nfunc = undefined"
+        return createElement(project, fakeModule)
+    }
+
+    @JvmStatic
     fun createFunctionName(project: Project, name: String): FregeFunctionName {
         val fakeFunction = "$fakeProgram$name = undefined"
         return createElement(project, fakeFunction)
