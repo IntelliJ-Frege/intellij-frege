@@ -198,8 +198,9 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun getQualifiedNameFromUsage(usage: PsiElement): String {
-        val firstQualifier = usage.prevSibling ?: return usage.text
-        val secondQualifier = firstQualifier.prevSibling ?: return "${firstQualifier.text}${usage.text}"
+        val firstQualifier = (usage.prevSibling as? FregeQualifier) ?: return usage.text
+        val secondQualifier = (firstQualifier.prevSibling as? FregeQualifier)
+            ?: return "${firstQualifier.text}${usage.text}"
         return "${secondQualifier.text}${firstQualifier.text}${usage.text}"
     }
 
