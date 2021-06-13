@@ -108,6 +108,8 @@ star                 = \* | \u2605
 at                   = @
 tilda                = \~
 forall               = \u2200
+leq                  = \u2264
+geq                  = \u2265
 
 /* parentheses  */
 leftParen            = \(
@@ -215,6 +217,8 @@ backQuote            = \`
         {dot}                        { return FregeTypes.DOT; }
         {forall}                     { return FregeTypes.FORALL; }
         {superOrSubscript}           { return FregeTypes.SUPER_OR_SUBSCRIPT; }
+        {leq}                        { return FregeTypes.LEQ; }
+        {geq}                        { return FregeTypes.GEQ; }
 
     /* operators */
         {dot} / {rightParen}         { return FregeTypes.SYMOP_NO_RESERVED; }

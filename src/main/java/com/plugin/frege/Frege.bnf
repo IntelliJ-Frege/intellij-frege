@@ -477,7 +477,7 @@ typedConid ::= qConid
              | unit
              | tupleConstructor
              | RIGHT_ARROW
-typeParameter ::= extendedVarid {
+typeParameter ::= extendedVarid | LEFT_PAREN (extendedVarid LEQ typeApplication | GEQ extendedVarid) RIGHT_PAREN {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.FregeTypeParameterMixin"
 }
