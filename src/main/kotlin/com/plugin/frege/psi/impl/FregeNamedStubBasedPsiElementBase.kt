@@ -14,11 +14,6 @@ abstract class FregeNamedStubBasedPsiElementBase<T : StubElement<*>> : StubBased
 
     constructor(node: ASTNode) : super(node)
 
-    /**
-     * Returns `true` if this element can be used as a resolved reference.
-     */
-    open val canBeReferenced: Boolean = true
-
     override fun setName(name: String): PsiElement {
         nameIdentifier?.reference?.handleElementRename(name)
         return this

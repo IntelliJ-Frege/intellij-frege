@@ -4,7 +4,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.plugin.frege.psi.FregeElementFactory.createConidUsage
-import com.plugin.frege.psi.impl.FregeNamedStubBasedPsiElementBase
+import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.resolve.FregeResolveUtil.findClassesFromUsage
 import com.plugin.frege.resolve.FregeResolveUtil.findMethodsFromUsage
 
@@ -15,7 +15,7 @@ class FregeConidUsageReference(element: PsiElement) : FregeReferenceBase(element
             results.addAll(findMethodsFromUsage(psiElement, incompleteCode))
         }
 
-        return results.filter { it !is FregeNamedStubBasedPsiElementBase<*> || it.canBeReferenced }
+        return results.filter { it !is FregePsiClass || it.canBeReferenced() }
     }
 
     override fun bindToElement(element: PsiElement): PsiElement {

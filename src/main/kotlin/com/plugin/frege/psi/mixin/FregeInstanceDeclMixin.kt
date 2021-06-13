@@ -17,7 +17,9 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl, FregeInstanceDecl {
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override val canBeReferenced: Boolean = false
+    override fun canBeReferenced(): Boolean {
+        return false
+    }
 
     override fun getNameWithoutStub(): @NlsSafe String {
         return nameIdentifier?.text ?: DEFAULT_CLASS_NAME

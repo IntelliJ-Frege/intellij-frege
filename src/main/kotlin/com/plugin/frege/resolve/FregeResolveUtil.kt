@@ -28,6 +28,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.notWeakScopeOfElement
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 import com.plugin.frege.resolve.FregeImportResolveUtil.findAvailableModulesInImportsForElement
+import com.plugin.frege.resolve.FregeImportResolveUtil.findClassesFromUsageInImports
 import com.plugin.frege.stubs.index.FregeClassNameIndex
 import com.plugin.frege.stubs.index.FregeMethodNameIndex
 
@@ -238,7 +239,7 @@ object FregeResolveUtil {
     ): List<PsiElement> {
         // TODO take into account qualified names
         val results = tryFindClassesInCurrentFileFromUsage(usage, incompleteCode).toMutableList()
-        results.addAll(tryFindClassesByImportsFromUsage(usage)) // TODO support incomplete code
+        results.addAll(findClassesFromUsageInImports(usage)) // TODO support incomplete code
         return results
     }
 
@@ -252,20 +253,5 @@ object FregeResolveUtil {
             classes.removeIf { referenceText != it.name }
         }
         return classes
-    }
-
-    private fun tryFindClassesByImportsFromUsage(usage: PsiElement): List<PsiElement> {
-        val className = usage.text
-        val project = usage.project
-        val modules = findAvailableModulesInImportsForElement(project, usage)
-        for (module in modules) {
-            val moduleName = module.qualifiedName ?: continue
-            val qualifiedName = mergeQualifiedNames(moduleName, className)
-            val classes = findClassesByQualifiedName(project, qualifiedName)
-            if (classes.isNotEmpty()) {
-                return classes
-            }
-        }
-        return emptyList()
     }
 }
