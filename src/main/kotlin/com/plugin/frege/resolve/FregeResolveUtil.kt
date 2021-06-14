@@ -15,7 +15,6 @@ import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.FregeFileType
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeNamedStubBasedPsiElementBase
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getQualifiedNameFromUsage
@@ -135,8 +134,7 @@ object FregeResolveUtil {
      */
     @JvmStatic
     fun findClassesInCurrentFile(element: PsiElement): List<FregePsiClass> {
-        val globalScope = FregePsiUtilImpl.globalScopeOfElement(element) ?: return emptyList()
-        check(globalScope is FregeBody) { "Global scope must be Frege body." }
+        val globalScope = element.parentOfType<FregeProgram>(true)?.body ?: return emptyList()
         return globalScope.topDeclList.mapNotNull { it.firstChild as? FregePsiClass }
     }
 
@@ -153,23 +151,23 @@ object FregeResolveUtil {
     ): List<PsiElement> {
         val qualifiedName = getQualifiedNameFromUsage(usage)
         val result = findBindings(qualifiedName, usage, incompleteCode).toMutableList()
-        if (result.isNotEmpty() && !incompleteCode) {
-            return result
+        if (!incompleteCode) {
+            result += findMethodsInClassesInCurrentFile(qualifiedName, usage)
+            result += findMethodsByImports(qualifiedName, usage)
+        } else {
+            result += findClassesInCurrentFile(usage).flatMap {
+                it.methods.asSequence()
+            }
+            result += findAllAvailableClassesInImportsForElement(usage.project, usage).flatMap {
+                it.methods.asSequence()
+            }
         }
-
-        result.addAll(findMethodsInClassesInCurrentFile(qualifiedName, usage)) // TODO incomplete code
-        if (result.isNotEmpty() && !incompleteCode) {
-            return result
-        }
-
-        result.addAll(findMethodsByImports(qualifiedName, usage, incompleteCode))
         return result
     }
 
     private fun findMethodsByImports(
         name: String,
         usage: PsiElement,
-        incompleteCode: Boolean
     ): List<PsiMethod> {
         val project = usage.project
         val usageQualified = isNameQualified(name)
@@ -177,14 +175,10 @@ object FregeResolveUtil {
         val methods = mutableListOf<PsiMethod>()
         for (module in modules) {
             val moduleName = module.qualifiedName ?: continue
-            if (incompleteCode) {
-                methods.addAll(module.allMethods)
-            } else {
-                val qualifiedName = mergeQualifiedNames(moduleName, name)
-                methods.addAll(findMethodsByQualifiedName(project, qualifiedName, usageQualified))
-                if (methods.isNotEmpty()) {
-                    break
-                }
+            val qualifiedName = mergeQualifiedNames(moduleName, name)
+            methods.addAll(findMethodsByQualifiedName(project, qualifiedName, usageQualified))
+            if (methods.isNotEmpty()) {
+                break
             }
         }
         return methods
@@ -238,7 +232,11 @@ object FregeResolveUtil {
     ): List<PsiElement> {
         // TODO take into account qualified names
         val results = tryFindClassesInCurrentFileFromUsage(usage, incompleteCode).toMutableList()
-        results += findClassesFromUsageInImports(usage) // TODO support incomplete code
+        results += if (!incompleteCode) {
+            findClassesFromUsageInImports(usage)
+        } else {
+            findAllAvailableClassesInImportsForElement(usage.project, usage)
+        }
 
         val module = usage.parentOfType<FregeProgram>()
         if (module != null) {
@@ -274,5 +272,14 @@ object FregeResolveUtil {
             .mapNotNull { it.importDeclAlias }
             .filter { incompleteCode || it.name == name }
             .toList()
+    }
+
+    private fun findAllAvailableClassesInImportsForElement(
+        project: Project,
+        element: PsiElement
+    ): List<FregePsiClass> {
+        val modules = findAvailableModulesInImportsForElement(project, element)
+        val inners = modules.flatMap { findClassesInCurrentFile(it) }
+        return modules + inners
     }
 }
