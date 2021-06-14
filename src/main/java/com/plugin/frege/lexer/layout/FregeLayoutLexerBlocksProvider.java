@@ -59,7 +59,7 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
                         throw new FregeLayoutLexerException(
                                 new IllegalStateException("First code token is undefined"));
                     }
-                    if (firstCodeToken.isModuleStart() || (firstCodeToken.isProtectModifier() || token.isModuleStart())) {
+                    if (firstCodeToken.isModuleStart() || (firstCodeToken.isType(PROTECTED_MODIFIER) || token.isModuleStart())) {
                         expectedGlobalWhere = true;
                     }
                 }
@@ -107,7 +107,7 @@ public class FregeLayoutLexerBlocksProvider implements Iterator<FregeLayoutLexer
             currentLine.columnWhereNotSkippingStarts = currentColumn;
         }
         currentColumn += token.end - token.start;
-        if (token.isNewLine()) {
+        if (token.isType(NEW_LINE)) {
             currentLine = new FregeLayoutLexerToken.Line();
             currentColumn = 0;
         }

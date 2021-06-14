@@ -1,5 +1,6 @@
 package com.plugin.frege.lexer.layout;
 
+import com.plugin.frege.psi.FregeTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class FregeLayoutLexerBlock {
         if (!token.isSkipping()) {
             containsNotSkipping = true;
         }
-        if (token.isLet()) {
+        if (token.isType(FregeTypes.LET)) {
             containsLet = true;
         }
     }
