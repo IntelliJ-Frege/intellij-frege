@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
+import com.intellij.util.containers.addIfNotNull
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getQualifiedNameFromUsage
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.isElementTypeWithinChildren
@@ -84,71 +85,120 @@ object FregeImportResolveUtil {
         val possibleResults = PossibleClassResults.getPossibleResultsForName(name, project)
         val results = mutableListOf<FregePsiClass>()
         val visited = HashSet<Triple<String, String?, FregeProgram>>()
-        findClassesByNameInImportsImpl(
-            name, qualifier, imports, possibleResults,
-            results, visited, true
-        )
+        visitImports(imports, object : ImportsProcessor<FregePsiClass>() {
+            private fun actualQualifier(alias: String?): String? {
+                return if (qualifier == alias) null else qualifier
+            }
+
+            override fun processModule(module: FregeProgram, hidden: Set<FregePsiClass>, alias: String?): Boolean {
+                if (module in possibleResults.classes && module !in hidden) {
+                    results += module
+                }
+                val actualQualifier = actualQualifier(alias)
+                if (!visited.add(Triple(name, qualifier, module))) {
+                    return false
+                }
+                if (actualQualifier == null) {
+                    val clazz = possibleResults.moduleToClass[module]
+                    if (clazz != null) {
+                        results += clazz
+                    }
+                }
+                return true
+            }
+
+            override fun processImportSpec(importSpec: FregeImportSpec, alias: String?) {
+                val actualQualifier = actualQualifier(alias)
+                if (actualQualifier != null) {
+                    return
+                }
+                if (importSpec.importAlias != null) {
+                    return // TODO
+                }
+                val conid = importSpec.importItem.conidUsageFromImportList
+                if (conid != null && importSpec.importItem.importMembers == null && conid.text == name) {
+                    results.addIfNotNull(conid.reference?.resolve() as? FregePsiClass)
+                }
+            }
+
+            override fun hideElements(importItem: FregeImportItem): List<FregePsiClass> {
+                val conid = importItem.conidUsageFromImportList
+                val hidden = if (conid != null && importItem.importMembers == null) {
+                    conid.reference?.resolve() as? FregePsiClass
+                } else {
+                    null
+                }
+                return if (hidden != null) listOf(hidden) else emptyList()
+            }
+        })
+
         return results.distinct().filter { it !== module && it.containingClass !== module } // TODO without workaround
     }
 
-    private fun findClassesByNameInImportsImpl(
-        name: String,
-        qualifier: String?,
+    private fun <E : PsiElement> visitImports(
         imports: List<FregeImportDecl>,
-        possibleClassResults: PossibleClassResults,
-        results: MutableList<FregePsiClass>,
-        visited: MutableSet<Triple<String, String?, FregeProgram>>,
-        isStartPoint: Boolean
+        processor: ImportsProcessor<E>,
+        isStartPoint: Boolean = true,
+        alias: String? = null
     ) {
-        fun visitModule(name: String, qualifier: String?, module: FregeProgram) {
-            if (!visited.add(Triple(name, qualifier, module))) {
-                return
-            }
-            if (possibleClassResults.classes.contains(module)) {
-                results.add(module)
-            } else {
-                val clazz = possibleClassResults.moduleToClass[module]
-                if (clazz != null) {
-                    results.add(clazz)
+        for (import in imports) {
+            visitImport(import, processor, isStartPoint, alias)
+        }
+    }
+
+    private fun <E : PsiElement> visitImport(
+        import: FregeImportDecl,
+        processor: ImportsProcessor<E>,
+        isStartPoint: Boolean,
+        alias: String?
+    ) {
+        val importList = import.importList
+        val isImportPublic = isElementTypeWithinChildren(import, FregeTypes.PUBLIC_MODIFIER)
+        val isHiding = importList?.strongKeyword?.firstChild?.elementType === FregeTypes.HIDING
+        val currentAlias = if (isStartPoint) import.importDeclAlias?.name else alias
+        val hidden = HashSet<E>()
+        val importSpecs = importList?.importSpecList
+        if (importSpecs != null) {
+            for (importSpec in importSpecs) {
+                val isSpecPublic = isElementTypeWithinChildren(importSpec, FregeTypes.PUBLIC_MODIFIER)
+                if (isHiding) {
+                    hidden += processor.hideElements(importSpec.importItem)
+                } else if (isStartPoint || isImportPublic || isSpecPublic) {
+                    processor.processImportSpec(importSpec, currentAlias)
                 }
             }
-            findClassesByNameInImportsImpl(
-                name, qualifier, module.imports,
-                possibleClassResults, results, visited, false
-            )
         }
 
-        for (import in imports) {
-            val importList = import.importList
-            val isImportPublic = isElementTypeWithinChildren(import, FregeTypes.PUBLIC_MODIFIER)
-            val isHiding = importList?.strongKeyword?.firstChild?.elementType === FregeTypes.HIDING
-            val alias = import.importDeclAlias
-            val module = getModuleByImport(import) ?: continue
-            val moduleName = if (alias != null) alias.text else module.name
-            if (moduleName == qualifier) {
-                visitModule(name, null, module)
-            } else if (qualifier == null) {
-                val importSpecs = importList?.importSpecList
-                var foundItem = false
-                if (importSpecs != null) {
-                    for (importSpec in importSpecs) {
-                        val isSpecPublic = isElementTypeWithinChildren(importSpec, FregeTypes.PUBLIC_MODIFIER)
-                        if (!isStartPoint && !isImportPublic && !isSpecPublic && !isHiding) {
-                            continue
-                        }
-                        val importItem = importSpec.importItem
-                        val currentSpecName = importItem.conidUsageFromImportList?.text
-                        if (importItem.importMembers == null && currentSpecName == name) {
-                            foundItem = true
-                            break
-                        }
-                    }
-                }
-                if ((!isHiding && foundItem) || (!foundItem && (importList == null || isHiding))) {
-                    visitModule(name, null, module)
+        if ((isHiding || importList == null) && (isImportPublic || isStartPoint)) {
+            val module = getModuleByImport(import)
+            if (module != null) {
+                val shouldVisit = processor.processModule(module, hidden, currentAlias)
+                if (shouldVisit) {
+                    visitImports(module.imports, processor, false, currentAlias)
                 }
             }
         }
+    }
+
+    private open class ImportsProcessor<E : PsiElement> {
+        /**
+         * Processes [module], considering that [hidden] cannot be resolved.
+         *
+         * [alias] presents the first alias in the import sequence (file -> file -> file).
+         * @return if imports in the [module] should be processed as well.
+         */
+        open fun processModule(module: FregeProgram, hidden: Set<E>, alias: String?): Boolean = false
+
+        /**
+         * Processes [importSpec],
+         * considering that [alias] is the first alias on the import sequence (file -> file -> file).
+         */
+        open fun processImportSpec(importSpec: FregeImportSpec, alias: String?) = Unit
+
+        /**
+         * @return result of hiding [importItem]. These elements will be added to `hidden` in [processModule].
+         */
+        open fun hideElements(importItem: FregeImportItem): List<E> = emptyList()
     }
 
     private data class PossibleClassResults(
