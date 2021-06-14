@@ -12,7 +12,7 @@ public class FregeLayoutLexerBlocksBuilder {
     private @Nullable FregeLayoutLexerToken newlineStickyToken;
 
     public boolean canFinishBlockWith(@NotNull FregeLayoutLexerToken token) {
-        return token.isEof() || (token.isNewLine() && block.isContainsNotSkipping());
+        return token.isEof() || (token.isType(NEW_LINE) && block.isContainsNotSkipping());
     }
 
 
@@ -33,7 +33,7 @@ public class FregeLayoutLexerBlocksBuilder {
             throw new FregeLayoutLexerException(
                     new IllegalStateException("Cannot finish block using token " + token));
         }
-        if (token.isNewLine()) {
+        if (token.isType(NEW_LINE)) {
             add(token);
             newlineStickyToken = token;
         } else {
@@ -53,10 +53,23 @@ public class FregeLayoutLexerBlocksBuilder {
     }
 
     public void add(@NotNull FregeLayoutLexerToken token) {
-        if (token.isLeftBrace()) {
+        if (token.isType(COMMA) || token.isType(RIGHT_BRACKET)) {
+            if (LEFT_BRACKET.equals(stack.previousRegion()) && VIRTUAL_OPEN_SECTION.equals(stack.currentRegion())) {
+                FregeLayoutLexerToken precedes = getPrecedesToken();
+                add(createVirtualToken(VIRTUAL_END_SECTION, precedes));
+                stack.enterVirtualSectionEnd();
+            }
+        }
+        if (token.isType(LEFT_BRACE)) {
             stack.enterLeftBrace();
         }
-        if (token.isRightBrace()) {
+        if (token.isType(LEFT_PAREN)) {
+            stack.enterLeftParen();
+        }
+        if (token.isType(LEFT_BRACKET)) {
+            stack.enterLeftBracket();
+        }
+        if (token.isType(RIGHT_BRACE)) {
             int endedVirtualSections = stack.enterRightBrace();
             if (endedVirtualSections > 0) {
                 FregeLayoutLexerToken precedes = getPrecedesToken();
@@ -65,11 +78,17 @@ public class FregeLayoutLexerBlocksBuilder {
                 }
             }
         }
+        if (token.isType(RIGHT_PAREN)) {
+            stack.enterRightParen();
+        }
+        if (token.isType(RIGHT_BRACKET)) {
+            stack.enterRightBracket();
+        }
         block.add(token);
     }
 
     public boolean tryStartSectionWith(@NotNull FregeLayoutLexerToken token) {
-        if (token.isLeftBrace()) {
+        if (token.isType(LEFT_BRACE)) {
             add(token);
             return true;
         }
@@ -83,7 +102,7 @@ public class FregeLayoutLexerBlocksBuilder {
     }
 
     public boolean tryHandleSingleLineLetIn(@NotNull FregeLayoutLexerToken token) {
-        if (token.isIn() && block.isContainsLet()) {
+        if (token.isType(IN) && block.isContainsLet()) {
             add(createVirtualToken(VIRTUAL_END_SECTION, getPrecedesToken()));
             stack.enterVirtualSectionEnd();
             add(token);

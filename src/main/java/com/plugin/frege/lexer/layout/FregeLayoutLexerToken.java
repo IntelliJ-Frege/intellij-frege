@@ -44,12 +44,12 @@ public class FregeLayoutLexerToken {
         return type == null ? "EOF" : type + "(" + start + ", " + end + ")";
     }
 
-    public boolean isNewLine() {
-        return NEW_LINE.equals(type);
-    }
-
     public boolean isEof() {
         return type == null;
+    }
+
+    public boolean isType(@NotNull IElementType elementType) {
+        return elementType.equals(type);
     }
 
     public boolean isSkipping() {
@@ -64,32 +64,12 @@ public class FregeLayoutLexerToken {
         return !isSkipping() && !isDocumentation() && !isEof();
     }
 
-    public boolean isLet() {
-        return LET.equals(type);
-    }
-
-    public boolean isIn() {
-        return IN.equals(type);
-    }
-
-    public boolean isLeftBrace() {
-        return LEFT_BRACE.equals(type);
-    }
-
-    public boolean isRightBrace() {
-        return RIGHT_BRACE.equals(type);
-    }
-
     public boolean isVirtual() {
         return VIRTUAL_TOKENS.contains(type);
     }
 
     public boolean isModuleStart() {
-        return MODULE.equals(type) || PACKAGE.equals(type);
-    }
-
-    public boolean isProtectModifier() {
-        return PROTECTED_MODIFIER.equals(type);
+        return isType(MODULE) || isType(PACKAGE);
     }
 
     public boolean isFirstNotSkippingTokenOnLine() {

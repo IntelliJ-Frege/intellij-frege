@@ -33,3 +33,7 @@ lcm6 = [x * y | x <- [2, 5, 10], y <- [8, 10, 11], x * y > 50]
 
 len xs = sum [1 | _ <- xs]
 removeNonUppercase st = [c | c <- st, c `elem` ['A'..'Z']]
+ll1 = [(1,a) | let a = x,
+               abs (r) > 2e-16z ]
+ll1 = [(a,b) | let a = x,
+               let b = x ]

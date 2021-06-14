@@ -1,12 +1,16 @@
 package com.plugin.frege.lexer.layout;
 
+import com.intellij.psi.tree.IElementType;
+import com.plugin.frege.psi.FregeTypes;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Stack;
 
 public class FregeLayoutLexerStack {
     private final @NotNull Stack<@NotNull Integer> indentStack = new Stack<>();
     private final @NotNull Stack<@NotNull Integer> braceStack = new Stack<>();
+    private final @NotNull Stack<@NotNull IElementType> regionsStack = new Stack<>();
     private int braceLevel = 0;
 
     public FregeLayoutLexerStack() {
@@ -15,9 +19,18 @@ public class FregeLayoutLexerStack {
     }
 
     public void enterLeftBrace() {
+        regionsStack.push(FregeTypes.LEFT_BRACE);
         braceLevel++;
         braceStack.push(braceLevel);
         indentStack.push(-1);
+    }
+
+    public void enterLeftParen() {
+        regionsStack.push(FregeTypes.LEFT_PAREN);
+    }
+
+    public void enterLeftBracket() {
+        regionsStack.push(FregeTypes.LEFT_BRACKET);
     }
 
     public int skipToBottom() {
@@ -30,6 +43,9 @@ public class FregeLayoutLexerStack {
     }
 
     public int enterRightBrace() {
+        if (!regionsStack.empty()) {
+            regionsStack.pop();
+        }
         int skippedIndents = 0;
         if (!braceStack.empty() &&
                 braceStack.peek() == braceLevel) {
@@ -41,7 +57,28 @@ public class FregeLayoutLexerStack {
         return skippedIndents;
     }
 
+    public void enterRightParen() {
+        if (!regionsStack.empty()) {
+            regionsStack.pop();
+        }
+    }
+
+    public void enterRightBracket() {
+        if (!regionsStack.empty()) {
+            regionsStack.pop();
+        }
+    }
+
+    public @Nullable IElementType previousRegion() {
+        return regionsStack.size() > 1 ? regionsStack.get(regionsStack.size() - 2) : null;
+    }
+
+    public @Nullable IElementType currentRegion() {
+        return regionsStack.empty() ? null : regionsStack.peek();
+    }
+
     public void enterVirtualSectionStart(int level) {
+        regionsStack.push(FregeTypes.VIRTUAL_OPEN_SECTION);
         indentStack.push(level);
     }
 
@@ -50,6 +87,9 @@ public class FregeLayoutLexerStack {
     }
 
     public void enterVirtualSectionEnd() {
+        if (!regionsStack.empty()) {
+            regionsStack.pop();
+        }
         indentStack.pop();
     }
 }
