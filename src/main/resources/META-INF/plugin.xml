@@ -26,6 +26,7 @@
                            implementationClass="com.plugin.frege.editor.FregeBraceMatcher"/>
         <lang.commenter language="Frege"
                         implementationClass="com.plugin.frege.editor.FregeCommenter"/>
+        <spellchecker.support language="Frege" implementationClass="com.plugin.frege.editor.FregeSpellcheckingStrategy"/>
         <lang.findUsagesProvider language="Frege"
                                  implementationClass="com.plugin.frege.findusages.FregeFindUsagesProvider"/>
         <lang.refactoringSupport language="Frege"
