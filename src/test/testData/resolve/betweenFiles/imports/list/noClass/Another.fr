@@ -1,0 +1,3 @@
+module other.Another where
+
+func = 10

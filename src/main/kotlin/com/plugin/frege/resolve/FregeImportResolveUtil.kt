@@ -137,7 +137,7 @@ object FregeImportResolveUtil {
                             continue
                         }
                         val importItem = importSpec.importItem
-                        val currentSpecName = importItem.conidUsage?.text
+                        val currentSpecName = importItem.conidUsageFromImportList?.text
                         if (importItem.importMembers == null && currentSpecName == name) {
                             foundItem = true
                             break
