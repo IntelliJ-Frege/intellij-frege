@@ -23,7 +23,7 @@
         <lang.syntaxHighlighterFactory language="Frege"
                                        implementationClass="com.plugin.frege.highlighter.FregeSyntaxHighlighterFactory"/>
         <lang.braceMatcher language="Frege"
-                           implementationClass="com.plugin.frege.highlighter.FregeBraceMatcher"/>
+                           implementationClass="com.plugin.frege.editor.FregeBraceMatcher"/>
         <lang.commenter language="Frege"
                         implementationClass="com.plugin.frege.editor.FregeCommenter"/>
         <lang.findUsagesProvider language="Frege"
