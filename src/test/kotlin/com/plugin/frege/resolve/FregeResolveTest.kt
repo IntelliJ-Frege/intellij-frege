@@ -307,6 +307,8 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeDataDecl && it.qualifiedName == "there.ToInnerData.Mine"
     }
 
+    fun `test file program NoInnerData`() = doNullTest()
+
     // Testing between files
 
     fun `test dir betweenFiles binding Second`() = doTest {

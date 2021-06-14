@@ -230,7 +230,6 @@ object FregeResolveUtil {
         usage: PsiElement,
         incompleteCode: Boolean
     ): List<PsiElement> {
-        // TODO take into account qualified names
         val results = tryFindClassesInCurrentFileFromUsage(usage, incompleteCode).toMutableList()
         results += if (!incompleteCode) {
             findClassesFromUsageInImports(usage)
@@ -254,10 +253,16 @@ object FregeResolveUtil {
         usage: PsiElement,
         incompleteCode: Boolean
     ): List<PsiElement> {
-        val referenceText = usage.text
+        val name = usage.text
         val classes = findClassesInCurrentFile(usage).toMutableList()
         if (!incompleteCode) {
-            classes.removeIf { referenceText != it.name }
+            val qualifiedName = getQualifiedNameFromUsage(usage)
+            val qualifier = qualifierFromQualifiedName(qualifiedName)
+            val isQualified = isNameQualified(qualifiedName)
+            val moduleName = usage.parentOfType<FregeProgram>()?.name
+            classes.removeIf {
+                isQualified && qualifier != moduleName || name != it.name
+            }
         }
         return classes
     }

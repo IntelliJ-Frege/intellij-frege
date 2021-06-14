@@ -1,0 +1,6 @@
+module mine.NoInnerData where
+
+data Mine a = Petya a
+
+test :: OtherProgram.Min<caret>e Int
+test = undefined
