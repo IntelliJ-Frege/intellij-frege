@@ -383,6 +383,12 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeImportDeclAlias && it.name == "Oth"
     }
 
+    fun `test dir betweenFiles imports list toClass Usage`() = doTest {
+        it is FregeDataDecl && it.qualifiedName == "other.Other.Kek"
+    }
+
+    fun `test dir betweenFiles imports list noClass Usage`() = doNullTest()
+
     // Testing from Java
 
     fun `test dir fromJava ToModule JavaClass`() = doTest {

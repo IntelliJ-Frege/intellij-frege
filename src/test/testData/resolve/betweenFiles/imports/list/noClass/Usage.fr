@@ -1,0 +1,6 @@
+module mine.Usage where
+
+import other.Other (Kek)
+import other.Another (Ke<caret>k)
+
+data Kek a = Kek a

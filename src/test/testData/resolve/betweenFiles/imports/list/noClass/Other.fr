@@ -1,0 +1,3 @@
+module other.Other where
+
+data Kek a = Kek a

@@ -123,19 +123,23 @@ importDecl ::= IMPORT importPackageName (strongAs? importDeclAlias)? PUBLIC_MODI
 importList ::= strongHiding? LEFT_PAREN (<<commaSequence importSpec>>)? RIGHT_PAREN
 importSpec ::= PUBLIC_MODIFIER? importItem importAlias?
 importItem ::= qVarid
-             | conidUsage importMembers?
+             | conidUsageFromImportList importMembers?
              | symbolOperatorQuoted
              | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN
              | BACK_QUOTE symbolOperatorQuoted BACK_QUOTE
-             | conidUsage DOT (extendedVarid | conidUsage | symbolOperatorQuoted)
+             | conidUsageFromImportList DOT (extendedVarid | conidUsageFromImportList | symbolOperatorQuoted)
 importAlias ::= extendedVarid | CONID | symbolOperatorQuoted
 importMembers ::= LEFT_PAREN (<<commaSequence importMemberSpec>>)? RIGHT_PAREN
 importMemberSpec ::= PUBLIC_MODIFIER? importMember importAlias?
-importMember ::= extendedVarid | symbolOperatorQuoted | conidUsage
-/* Aliases for imports */
+importMember ::= extendedVarid | symbolOperatorQuoted | conidUsageFromImportList
+/* Names and aliases for imports */
 importDeclAlias ::= conidUsage {
     implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.imports.FregeImportDeclAliasMixin"
+}
+conidUsageFromImportList ::= CONID {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.imports.FregeConidUsageFromImportList"
 }
 
 importPackageName ::= packagePrefix importPackageClassName
