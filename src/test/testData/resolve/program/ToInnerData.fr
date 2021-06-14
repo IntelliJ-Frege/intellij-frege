@@ -1,0 +1,6 @@
+module there.ToInnerData where
+
+data Mine a = Petya a
+
+test :: ToInnerData.Mi<caret>ne
+test = undefined

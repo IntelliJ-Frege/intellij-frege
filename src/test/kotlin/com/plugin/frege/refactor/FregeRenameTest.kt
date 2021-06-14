@@ -33,6 +33,8 @@ class FregeRenameTest : FregeCodeInsightTest() {
 
     fun `test imports importAlias Alias`() = doTest("O")
 
+    fun `test program Program`() = doTest("Petya")
+
     private fun doTest(newName: String) {
         val name = getTestName(false)
         val parts = name.split(' ').drop(1).toTypedArray()
