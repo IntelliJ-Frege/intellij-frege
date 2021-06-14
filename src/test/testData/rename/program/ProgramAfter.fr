@@ -1,0 +1,10 @@
+module mine.other.Petya where
+
+test1 = 1
+test2 = 2 - Petya.test1
+test3 = Petya.test1 + Petya.test2
+
+data HeyMyHey a = Kekolol a
+
+mainTest :: Petya.HeyMyHey Int
+mainTest = Petya.HeyMyHey.Kekolol 2

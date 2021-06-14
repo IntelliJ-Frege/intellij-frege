@@ -1,0 +1,10 @@
+module mine.other.Program where
+
+test1 = 1
+test2 = 2 - Program.test1
+test3 = Program.test1 + Program.test2
+
+data HeyMyHey a = Kekolol a
+
+mainTest :: Prog<caret>ram.HeyMyHey Int
+mainTest = Program.HeyMyHey.Kekolol 2

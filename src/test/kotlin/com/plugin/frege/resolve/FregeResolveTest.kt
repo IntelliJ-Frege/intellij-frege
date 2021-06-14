@@ -297,6 +297,16 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeLabel && it.name == "test1" && it.containingClass?.qualifiedName == "Label.Hello"
     }
 
+    // Testing program
+
+    fun `test file program ToProgram`() = doTest {
+        it is FregeProgram && it.qualifiedName == "other.ToProgram"
+    }
+
+    fun `test file program ToInnerData`() = doTest {
+        it is FregeDataDecl && it.qualifiedName == "there.ToInnerData.Mine"
+    }
+
     // Testing between files
 
     fun `test dir betweenFiles binding Second`() = doTest {

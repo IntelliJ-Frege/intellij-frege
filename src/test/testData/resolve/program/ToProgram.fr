@@ -1,0 +1,5 @@
+module other.ToProgram where
+
+test = undefined
+
+otherTest = ToProgra<caret>m.test
