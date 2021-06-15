@@ -1,8 +1,8 @@
 package com.plugin.frege.linemarker.related
 
-import com.intellij.icons.AllIcons
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.plugin.frege.FregeIcons
 import com.plugin.frege.psi.impl.FregeBindingImpl
 import com.plugin.frege.psi.impl.FregeFunctionNameImpl
 import javax.swing.Icon
@@ -15,7 +15,7 @@ class FregeFunctionBindingToAnnotationLineMarker : FregeRelatedItemLineMarkerAbs
     }
 
     override val icon: Icon
-        get() = AllIcons.Gutter.ImplementingFunctionalInterface
+        get() = FregeIcons.AnnotationMarker
     override val tooltipText: String
         get() = "Navigate to type annotation"
 }
