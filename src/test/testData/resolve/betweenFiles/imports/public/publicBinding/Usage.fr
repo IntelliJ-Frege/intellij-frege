@@ -1,0 +1,5 @@
+module mine.Usage where
+
+import first.First (sayHello)
+
+test = sayHell<caret>o

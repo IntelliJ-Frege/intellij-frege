@@ -1,0 +1,3 @@
+package second.Second where
+
+sayHello = println "Hello !"
