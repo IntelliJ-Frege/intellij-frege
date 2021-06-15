@@ -1,0 +1,3 @@
+module first.First where
+
+import second.Second (sayHello)

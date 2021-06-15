@@ -373,6 +373,13 @@ class FregeResolveTest : FregeCodeInsightTest() {
 
     fun `test dir betweenFiles imports public publicNoItems Hello`() = doNullTest()
 
+    fun `test dir betweenFiles imports public publicBinding Usage`() = doTest {
+        it is FregeBinding && it.name == "sayHello"
+                && it.containingClass?.qualifiedName == "second.Second"
+    }
+
+    fun `test dir betweenFiles imports public notPublicBinding Usage`() = doNullTest()
+
     fun `test dir betweenFiles imports alias importAliasClass Jury`() = doTest {
         it is FregeDataDecl && it.qualifiedName == "ru.hse.Petya.Lover"
     }
@@ -383,11 +390,23 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeImportDeclAlias && it.name == "Oth"
     }
 
+    fun `test dir betweenFiles imports alias importAliasBinding Mine`() = doTest {
+        it is FregeBinding && it.name == "getKek" && it.containingClass?.qualifiedName == "other.Other"
+    }
+
+    fun `test dir betweenFiles imports alias noImportAliasBinding Mine`() = doNullTest()
+
     fun `test dir betweenFiles imports list toClass Usage`() = doTest {
         it is FregeDataDecl && it.qualifiedName == "other.Other.Kek"
     }
 
     fun `test dir betweenFiles imports list noClass Usage`() = doNullTest()
+
+    fun `test dir betweenFiles imports list toBinding Usage`() = doTest {
+        it is FregeBinding && it.name == "love" && it.containingClass?.qualifiedName == "lover.Lover"
+    }
+
+    fun `test dir betweenFiles imports list noBinding Usage`() = doNullTest()
 
     // Testing from Java
 

@@ -1,0 +1,5 @@
+module mine.Mine where
+
+import other.Other as Oth (getKek)
+
+test = Other.getKe<caret>k 3
