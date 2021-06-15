@@ -5,17 +5,12 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.util.parentOfType
-import com.plugin.frege.psi.FregeElementFactory
-import com.plugin.frege.psi.FregeImportDecl
-import com.plugin.frege.psi.FregeProgram
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
 import com.plugin.frege.resolve.FregeImportResolveUtil
 import com.plugin.frege.resolve.FregeReferenceBase
 
-open class FregeConidUsageFromImportList(node: ASTNode) : FregeCompositeElementImpl(node) {
+open class FregeVaridUsageImportMixin(node: ASTNode) : FregeCompositeElementImpl(node) {
     override fun getReference(): PsiReference {
         return object : FregeReferenceBase(this, TextRange(0, textLength)) {
             override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
@@ -28,16 +23,30 @@ open class FregeConidUsageFromImportList(node: ASTNode) : FregeCompositeElementI
                 val fakeImport = FregeElementFactory.createImportDeclByPackage(
                     psiElement.project, importPackage.text
                 )
-                val qualifiedName = FregePsiUtilImpl.getQualifiedNameFromUsage(psiElement)
-                val name = nameFromQualifiedName(qualifiedName)
-                val qualifier = qualifierFromQualifiedName(qualifiedName).ifEmpty { null }
-                return FregeImportResolveUtil.findClassesByNameInImports(
-                    name, qualifier, module, listOf(fakeImport)
+                val name: String = psiElement.text
+                val firstQualifier: String?
+                val secondQualifier: String?
+                when (val parent = psiElement.parent) {
+                    is FregeQVaridUsageImport -> {
+                        firstQualifier = parent.conidUsageImportList.firstOrNull()?.text
+                        secondQualifier = parent.conidUsageImportList.getOrNull(1)?.text
+                    }
+                    is FregeImportItem -> {
+                        firstQualifier = null
+                        secondQualifier = parent.conidUsageImport?.text
+                    }
+                    else -> { // TODO support importMembers
+                        firstQualifier = null
+                        secondQualifier = null
+                    }
+                }
+                return FregeImportResolveUtil.findMethodsByNameInImports(
+                    name, firstQualifier, secondQualifier, module, listOf(fakeImport)
                 )
             }
 
             override fun handleElementRename(name: String): PsiElement {
-                return psiElement.replace(FregeElementFactory.createConidUsageFromImportList(psiElement.project, name))
+                return psiElement.replace(FregeElementFactory.createVaridUsageImport(project, name))
             }
         }
     }

@@ -12,6 +12,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.isElementTypeWithinChildren
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
 import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
+import com.plugin.frege.stubs.index.FregeMethodNameIndex
 import com.plugin.frege.stubs.index.FregeShortClassNameIndex
 
 object FregeImportResolveUtil {
@@ -64,11 +65,11 @@ object FregeImportResolveUtil {
     }
 
     @JvmStatic
-    fun findClassesFromUsageInImports(usage: PsiElement): List<FregePsiClass> { // TODO incomplete code
+    fun findClassesFromUsageInImports(usage: PsiElement): List<FregePsiClass> {
         val module = usage.parentOfType<FregeProgram>() ?: return emptyList()
         val project = usage.project
         val qualifiedName = getQualifiedNameFromUsage(usage)
-        val qualifier = qualifierFromQualifiedName(qualifiedName).let { it.ifEmpty { null } }
+        val qualifier = qualifierFromQualifiedName(qualifiedName).ifEmpty { null }
         val name = nameFromQualifiedName(qualifiedName)
         val imports = module.imports + getPreludeImport(project)
         return findClassesByNameInImports(name, qualifier, module, imports)
@@ -84,25 +85,23 @@ object FregeImportResolveUtil {
         val project = module.project
         val possibleResults = PossibleClassResults.getPossibleResultsForName(name, project)
         val results = mutableListOf<FregePsiClass>()
-        val visited = HashSet<Triple<String, String?, FregeProgram>>()
+        val visited = HashSet<FregeProgram>()
         visitImports(imports, object : ImportsProcessor<FregePsiClass>() {
             private fun actualQualifier(alias: String?): String? {
                 return if (qualifier == alias) null else qualifier
             }
 
             override fun processModule(module: FregeProgram, hidden: Set<FregePsiClass>, alias: String?): Boolean {
-                if (module in possibleResults.classes && module !in hidden) {
-                    results += module
-                }
                 val actualQualifier = actualQualifier(alias)
-                if (!visited.add(Triple(name, qualifier, module))) {
+                if (actualQualifier != null || !visited.add(module)) {
                     return false
                 }
-                if (actualQualifier == null) {
-                    val clazz = possibleResults.moduleToClass[module]
-                    if (clazz != null) {
-                        results += clazz
-                    }
+                val clazz = possibleResults.moduleToClass[module]
+                if (clazz != null && clazz !in hidden) {
+                    results += clazz
+                }
+                if (module in possibleResults.classes && module !in hidden) {
+                    results += module
                 }
                 return true
             }
@@ -115,14 +114,14 @@ object FregeImportResolveUtil {
                 if (importSpec.importAlias != null) {
                     return // TODO
                 }
-                val conid = importSpec.importItem.conidUsageFromImportList
+                val conid = importSpec.importItem.conidUsageImport
                 if (conid != null && importSpec.importItem.importMembers == null && conid.text == name) {
                     results.addIfNotNull(conid.reference?.resolve() as? FregePsiClass)
                 }
             }
 
             override fun hideElements(importItem: FregeImportItem): List<FregePsiClass> {
-                val conid = importItem.conidUsageFromImportList
+                val conid = importItem.conidUsageImport
                 val hidden = if (conid != null && importItem.importMembers == null) {
                     conid.reference?.resolve() as? FregePsiClass
                 } else {
@@ -133,6 +132,104 @@ object FregeImportResolveUtil {
         })
 
         return results.distinct().filter { it !== module && it.containingClass !== module } // TODO without workaround
+    }
+
+    @JvmStatic
+    fun findMethodsFromUsageInImports(usage: PsiElement): List<FregePsiMethod> {
+        val module = usage.parentOfType<FregeProgram>() ?: return emptyList()
+        val project = usage.project
+        val qualifiedName = getQualifiedNameFromUsage(usage)
+        val qualifier = qualifierFromQualifiedName(qualifiedName).ifEmpty { null }
+        val firstQualifier: String?
+        val secondQualifier: String?
+        if (qualifier != null) {
+            firstQualifier = qualifierFromQualifiedName(qualifier).ifEmpty { null }
+            secondQualifier = nameFromQualifiedName(qualifier)
+        } else {
+            firstQualifier = null
+            secondQualifier = null
+        }
+        val name = nameFromQualifiedName(qualifiedName)
+        val imports = module.imports + getPreludeImport(project)
+        return findMethodsByNameInImports(name, firstQualifier, secondQualifier, module, imports)
+    }
+
+    @JvmStatic
+    fun findMethodsByNameInImports(
+        name: String,
+        firstQualifier: String?,
+        secondQualifier: String?,
+        module: FregeProgram,
+        imports: List<FregeImportDecl>
+    ): List<FregePsiMethod> {
+        val project = module.project
+        val possibleMethodResults = PossibleMethodResults.getPossibleResultsForMethodName(name, project)
+        val results = mutableListOf<FregePsiMethod>()
+        val visited = HashSet<FregeProgram>()
+        visitImports(imports, object : ImportsProcessor<FregePsiMethod>() {
+            private fun actualFirstQualifier(alias: String?): String? {
+                return if (firstQualifier == alias) null else firstQualifier
+            }
+
+            private fun actualSecondQualifier(alias: String?): String? {
+                return if (firstQualifier == null && secondQualifier == alias) null else secondQualifier
+            }
+
+            private fun getVaridFromImportItem(importItem: FregeImportItem): FregeVaridUsageImport? {
+                return importItem.qVaridUsageImport?.varidUsageImport ?: importItem.varidUsageImport
+            }
+
+            override fun processModule(module: FregeProgram, hidden: Set<FregePsiMethod>, alias: String?): Boolean {
+                val actualFirstQualifier = actualFirstQualifier(alias)
+                if (actualFirstQualifier != null || !visited.add(module)) {
+                    return false
+                }
+                val actualSecondQualifier = actualSecondQualifier(alias)
+                val methodsFromModule = possibleMethodResults.moduleToMethods[module]
+                if (methodsFromModule != null) {
+                    results += if (actualSecondQualifier == null) {
+                        methodsFromModule.filter { it !in hidden }
+                    } else {
+                        methodsFromModule.filter {
+                            it.containingClass != module && it.containingClass?.name == secondQualifier
+                                    && it !in hidden
+                        }
+                    }
+                }
+
+                return true
+            }
+
+            override fun processImportSpec(importSpec: FregeImportSpec, alias: String?) {
+                val actualFirstQualifier = actualFirstQualifier(alias)
+                if (actualFirstQualifier != null) {
+                    return
+                }
+                if (importSpec.importAlias != null) {
+                    return // TODO
+                }
+                val actualSecondQualifier = actualSecondQualifier(alias)
+                val varid = getVaridFromImportItem(importSpec.importItem) // TODO support importMembers
+                if (varid?.text != name) {
+                    return
+                }
+                val resolved = varid.reference?.resolve() as? FregePsiMethod
+                val clazz = resolved?.containingClass
+                if (clazz?.name == actualSecondQualifier && clazz !is FregeProgram || actualSecondQualifier == null) {
+                    results.addIfNotNull(resolved)
+                }
+            }
+
+            override fun hideElements(importItem: FregeImportItem): List<FregePsiMethod> {
+                val resolved = getVaridFromImportItem(importItem)?.reference?.resolve() as? FregePsiMethod
+                return if (resolved != null) listOf(resolved) else emptyList()
+            }
+        })
+        return results.asSequence()
+            .distinct()
+            .filter{ (!it.onlyQualifiedSearch() || secondQualifier != null) }
+            .filter { it.containingClass != module && it.containingClass?.containingClass != module } // TODO
+            .toList()
     }
 
     private fun <E : PsiElement> visitImports(
@@ -155,7 +252,8 @@ object FregeImportResolveUtil {
         val importList = import.importList
         val isImportPublic = isElementTypeWithinChildren(import, FregeTypes.PUBLIC_MODIFIER)
         val isHiding = importList?.strongKeyword?.firstChild?.elementType === FregeTypes.HIDING
-        val currentAlias = if (isStartPoint) import.importDeclAlias?.name else alias
+        val moduleAlias = import.importDeclAlias?.name ?: import.importPackageName?.importPackageClassName?.text
+        val currentAlias = if (isStartPoint) moduleAlias else alias
         val hidden = HashSet<E>()
         val importSpecs = importList?.importSpecList
         if (importSpecs != null) {
@@ -218,6 +316,33 @@ object FregeImportResolveUtil {
                 }.toMap()
 
                 return PossibleClassResults(possibleClasses, possibleContainingModules)
+            }
+        }
+    }
+
+    private data class PossibleMethodResults(
+        val moduleToMethods: Map<FregeProgram, List<FregePsiMethod>>
+    ) {
+        companion object {
+            fun getPossibleResultsForMethodName(name: String, project: Project): PossibleMethodResults {
+                val methods = FregeMethodNameIndex.INSTANCE.findByName(
+                    name, project, GlobalSearchScope.everythingScope(project)
+                )
+                val moduleToMethods = methods.mapNotNull {
+                    val containingClass = it.containingClass
+                    if (containingClass is FregeProgram) {
+                        Pair(containingClass, it)
+                    } else {
+                        val program = containingClass?.containingClass
+                        if (program is FregeProgram) {
+                            Pair(program, it)
+                        } else {
+                            null
+                        }
+                    }
+                }.groupBy { it.first }.mapValues { (_, methods) -> methods.map { it.second } }
+
+                return PossibleMethodResults(moduleToMethods)
             }
         }
     }

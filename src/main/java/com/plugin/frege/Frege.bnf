@@ -122,25 +122,30 @@ importDecl ::= IMPORT importPackageName (strongAs? importDeclAlias)? PUBLIC_MODI
 }
 importList ::= strongHiding? LEFT_PAREN (<<commaSequence importSpec>>)? RIGHT_PAREN
 importSpec ::= PUBLIC_MODIFIER? importItem importAlias?
-importItem ::= qVarid
-             | conidUsageFromImportList importMembers?
+importItem ::= qVaridUsageImport
+             | conidUsageImport importMembers?
              | symbolOperatorQuoted
              | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN
              | BACK_QUOTE symbolOperatorQuoted BACK_QUOTE
-             | conidUsageFromImportList DOT (extendedVarid | conidUsageFromImportList | symbolOperatorQuoted)
-importAlias ::= extendedVarid | CONID | symbolOperatorQuoted
+             | conidUsageImport DOT (varidUsageImport | conidUsageImport | symbolOperatorQuoted)
+importAlias ::= varidUsageImport | CONID | symbolOperatorQuoted
 importMembers ::= LEFT_PAREN (<<commaSequence importMemberSpec>>)? RIGHT_PAREN
 importMemberSpec ::= PUBLIC_MODIFIER? importMember importAlias?
-importMember ::= extendedVarid | symbolOperatorQuoted | conidUsageFromImportList
+importMember ::= varidUsageImport | symbolOperatorQuoted | conidUsageImport
 /* Names and aliases for imports */
 importDeclAlias ::= conidUsage {
     implements="com.plugin.frege.psi.FregePsiClass"
     mixin="com.plugin.frege.psi.mixin.imports.FregeImportDeclAliasMixin"
 }
-conidUsageFromImportList ::= CONID {
+conidUsageImport ::= CONID {
     implements="com.plugin.frege.psi.FregeCompositeElement"
-    mixin="com.plugin.frege.psi.mixin.imports.FregeConidUsageFromImportList"
+    mixin="com.plugin.frege.psi.mixin.imports.FregeConidUsageImportMixin"
 }
+varidUsageImport ::= extendedVarid {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.imports.FregeVaridUsageImportMixin"
+}
+qVaridUsageImport ::= (conidUsageImport DOT)? (conidUsageImport DOT)? varidUsageImport
 
 importPackageName ::= packagePrefix importPackageClassName
 importPackageClassName ::= CONID {
