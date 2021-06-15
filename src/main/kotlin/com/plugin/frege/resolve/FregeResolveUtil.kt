@@ -27,6 +27,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
 import com.plugin.frege.resolve.FregeImportResolveUtil.findAvailableModulesInImportsForElement
 import com.plugin.frege.resolve.FregeImportResolveUtil.findClassesFromUsageInImports
+import com.plugin.frege.resolve.FregeImportResolveUtil.findMethodsFromUsageInImports
 import com.plugin.frege.stubs.index.FregeClassNameIndex
 import com.plugin.frege.stubs.index.FregeMethodNameIndex
 
@@ -153,7 +154,7 @@ object FregeResolveUtil {
         val result = findBindings(qualifiedName, usage, incompleteCode).toMutableList()
         if (!incompleteCode) {
             result += findMethodsInClassesInCurrentFile(qualifiedName, usage)
-            result += findMethodsByImports(qualifiedName, usage)
+            result += findMethodsFromUsageInImports(usage)
         } else {
             result += findClassesInCurrentFile(usage).flatMap {
                 it.methods.asSequence()
@@ -163,25 +164,6 @@ object FregeResolveUtil {
             }
         }
         return result
-    }
-
-    private fun findMethodsByImports(
-        name: String,
-        usage: PsiElement,
-    ): List<PsiMethod> {
-        val project = usage.project
-        val usageQualified = isNameQualified(name)
-        val modules = findAvailableModulesInImportsForElement(project, usage)
-        val methods = mutableListOf<PsiMethod>()
-        for (module in modules) {
-            val moduleName = module.qualifiedName ?: continue
-            val qualifiedName = mergeQualifiedNames(moduleName, name)
-            methods.addAll(findMethodsByQualifiedName(project, qualifiedName, usageQualified))
-            if (methods.isNotEmpty()) {
-                break
-            }
-        }
-        return methods
     }
 
     private fun findMethodsInClassesInCurrentFile(

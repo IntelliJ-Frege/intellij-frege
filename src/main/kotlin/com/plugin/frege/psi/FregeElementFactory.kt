@@ -148,8 +148,14 @@ object FregeElementFactory {
     }
 
     @JvmStatic
-    fun createConidUsageFromImportList(project: Project, name: String): FregeConidUsageFromImportList {
+    fun createConidUsageImport(project: Project, name: String): FregeConidUsageImport {
         val fakeConidUsage = "${fakeProgram}import hello.Hello ($name)"
         return createElement(project, fakeConidUsage)
+    }
+
+    @JvmStatic
+    fun createVaridUsageImport(project: Project, name: String): FregeVaridUsageImport {
+        val fakeVaridUsage = "${fakeProgram}import hello.Hello ($name)"
+        return createElement(project, fakeVaridUsage)
     }
 }
