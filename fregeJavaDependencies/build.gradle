@@ -21,6 +21,7 @@ repositories {
     }
 }
 
+// TODO Gradle download plugin
 void downloadFregeCompiler() {
     ant.mkdir(dir: fregeDir)
     ant.get(src: fregeCompilerUrl,

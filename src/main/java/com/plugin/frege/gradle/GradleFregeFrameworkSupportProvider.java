@@ -6,6 +6,8 @@ import com.intellij.openapi.externalSystem.model.project.ProjectId;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.roots.ModifiableModelsProvider;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.plugin.frege.FregeIcons;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +16,8 @@ import org.jetbrains.plugins.gradle.frameworkSupport.GradleFrameworkSupportProvi
 
 import javax.swing.*;
 import java.io.IOException;
+
+import static com.intellij.util.ResourceUtil.getResourceAsStream;
 
 public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportProvider {
     private static final String ID = "Frege";
@@ -55,11 +59,23 @@ public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportP
                            @NotNull ModifiableModelsProvider modifiableModelsProvider,
                            @NotNull BuildScriptDataBuilder buildScriptData) {
         try {
-            GradleFregeScriptBuilder gradleFregeScriptBuilder = new GradleFregeScriptBuilder(settingsForm);
-            byte[] contentBytes = gradleFregeScriptBuilder.build();
+            byte[] contentBytes = getResourceAsStream(this.getClass().getClassLoader(),
+                    "templates/gradle/minimal", "build.gradle").readAllBytes();
+
+//            GradleFregeScriptBuilder gradleFregeScriptBuilder = new GradleFregeScriptBuilder(settingsForm);
+//            byte[] contentBytes = gradleFregeScriptBuilder.build();
+
+//            VirtualFile[] contentRoots = ModuleRootManager.getInstance(module).getContentRoots();
+//            if (contentRoots.length == 0) {
+//                throw IllegalStateException("Unable to create " )
+//            }
+
+            VirtualFile gradlePropertiesFile = GradleFregePropertiesUtils.createGradlePropertiesFile(module);
+            GradleFregePropertiesUtils.writeSettingsToGradlePropertiesFile(gradlePropertiesFile, settingsForm);
+
 
             buildScriptData.getBuildScriptFile().setBinaryContent(contentBytes);
-        } catch (IOException e) {
+        } catch (IOException | GradleFregeException e) {
             throw new RuntimeException(e);
         }
     }

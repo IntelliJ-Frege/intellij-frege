@@ -55,10 +55,16 @@ public class GradleFregeScriptBuilder {
         lines.add(String.format("\tid \"%s\"", pluginName));
     }
 
+    @SuppressWarnings("SameParameterValue")
+    private void addPlugin(String pluginName, String version) {
+        lines.add(String.format("\tid \"%s\" version \"%s\"", pluginName, version));
+    }
+
     private void addPlugins() {
         lines.add("plugins {");
         addPlugin("application");
         addPlugin("idea");
+        addPlugin("de.undercouch.download", "4.1.1");
         lines.add("}");
         addNewline();
     }
@@ -69,9 +75,14 @@ public class GradleFregeScriptBuilder {
 
     private void addProjectProperties() {
         lines.add("ext {");
-        addProjectProperty("javaTarget", settings.getJavaTarget());
-        addProjectProperty("fregeRelease", settings.getFregeRelease());
-        addProjectProperty("fregeVersion", settings.getFregeVersion());
+        addProjectProperty("DEFAULT_JAVA_TARGET", "3.11");
+        addProjectProperty("DEFAULT_FREGE_RELEASE", "3.24alpha");
+        addProjectProperty("DEFAULT_FREGE_VERSION", "3.24.100");
+        addNewline();
+        addProjectProperty("javaTarget", "project.findProperty(\"javaTarget\") ?: DEFAULT_JAVA_TARGET");
+        addProjectProperty("fregeRelease", "project.findProperty(\"fregeRelease\") ?: DEFAULT_FREGE_RELEASE");
+        addProjectProperty("fregeVersion", "project.findProperty(\"fregeVersion\") ?: DEFAULT_FREGE_VERSION");
+        addNewline();
         if (settings.isCompilerAutoDownloaded()) {
             addProjectProperty("fregeDir",
                     "${rootProject.projectDir}/lib/org/frege-lang/frege/${fregeVersion}");

@@ -9,6 +9,8 @@ import frege.compiler.types.Global
 import frege.control.monad.trans.EitherT
 import frege.data.List
 
+import frege.compiler.enums.Flags
+
 outType (Success (Module s) global) = s
 outType (Success (Expression symbol) global) = label global symbol
 outType (Success (Definitions symbols) global) = show $ map (label global) symbols
@@ -18,7 +20,11 @@ outType (Failure m) = show m
 
 getTypeOfByFullText :: ClassLoader -> String -> String -> EitherT [FregeInterpreter.Message] IO String
 getTypeOfByFullText classLoader moduleText funcName = do
-      let myConfig = InterpreterConfig.initialState
+--      let myConfig = InterpreterConfig.initialState
+      let myConfig = InterpreterConfig {  predefs = ""
+                                       , compilerFlags = Flags.fromList [Flags.WARNINGS, Flags.HINTS, Flags.INLINE, Flags.WITHCP]
+                                       , useSandbox = false
+                                       }
 --      let myState = classLoader
       myState <- EitherT.lift $ InterpreterClassLoader.new classLoader
       let myInterpreter = interpret moduleText
@@ -49,4 +55,29 @@ getType :: EitherT [FregeInterpreter.Message] IO String -> String
 getType e = case (IO.performUnsafe $ EitherT.run e) of Left m -> error "Unable to get type from failed type inference"
                                                        Right t -> t
 
-main = print "123"
+main (moduleText:funcName:_) = do
+    let myConfig = InterpreterConfig.initialState
+    myState <- InterpreterClassLoader.new ()
+    let myInterpreter = interpret moduleText
+    (res, newState) <- Interpreter.run myInterpreter myConfig myState
+    let g = InterpreterResult.compilerState res
+    let srcInfo = InterpreterResult.sourceRepr res
+    let pkgName = case srcInfo of Module m -> m
+                                  _        -> "frege.interpreter.Console"
+    let toGet = QName.VName (Pack.new pkgName) funcName
+    let toPrint = case Global.find g toGet of Just sym -> showSymbol g sym
+                                              Nothing -> error "kukarek"
+    print ("INFERED TYPE!!!! " ++ toPrint)
+
+--    let toBrowseModule = "frege.data.Graph"
+--    let myBrowseModule = browseModule toBrowseModule
+--    (res, newState) <- Interpreter.run myBrowseModule myConfig myState
+--    let toGet = QName.VName (Pack.new "frege.data.Char") "isLower" -- not found, because not imported
+--    let toGet = QName.VName (Pack.new "frege.data.Tree") "draw" -- found, because imported in module
+--    toPrint = case res of Just (l, g) -> case Global.find g toGet of Just sym -> showSymbol g sym
+--                                                                     Nothing -> "Not found :("
+--                          Nothing -> "Error :("
+ --   println "Browsing:"
+ --   println toGet
+--    println "Got:"
+ --   println toPrint
