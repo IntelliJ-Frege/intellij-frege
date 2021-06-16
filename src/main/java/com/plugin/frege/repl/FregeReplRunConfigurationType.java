@@ -1,4 +1,4 @@
-package com.plugin.frege.runConfiguration;
+package com.plugin.frege.repl;
 
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
@@ -9,15 +9,15 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class FregeRunConfigurationType implements ConfigurationType {
+public class FregeReplRunConfigurationType implements ConfigurationType {
     @Override
     public @NotNull @Nls(capitalization = Nls.Capitalization.Title) String getDisplayName() {
-        return "Frege";
+        return "Frege REPL";
     }
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Sentence) String getConfigurationTypeDescription() {
-        return "Frege project configuration type";
+        return "Frege REPL run configuration";
     }
 
     @Override
@@ -28,10 +28,10 @@ public class FregeRunConfigurationType implements ConfigurationType {
     @Override
     public @NotNull
     @NonNls String getId() {
-        return "FregeRunConfiguration";
+        return "FregeReplRunConfiguration";
     }
 
     @Override
     public ConfigurationFactory[] getConfigurationFactories() {
-        return new ConfigurationFactory[]{new FregeRunConfigurationFactory(this)};    }
+        return new ConfigurationFactory[]{new FregeReplRunConfigurationFactory(this)};    }
 }

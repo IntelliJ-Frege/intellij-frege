@@ -1,4 +1,4 @@
-package com.plugin.frege.runConfiguration;
+package com.plugin.frege.repl;
 
 import com.intellij.execution.console.ConsoleHistoryController;
 import com.intellij.execution.console.ConsoleRootType;
@@ -22,24 +22,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-public class FregeConsoleView extends LanguageConsoleImpl {
+public class FregeReplView extends LanguageConsoleImpl {
     private final @NotNull Project consoleProject;
 
     private final ConsoleRootType consoleRootType = new ConsoleRootType("frege", "Frege") {
     };
-    private final @NotNull Module module;
     private final List<String> modulesToLoad;
 
     private ConsoleHistoryController historyController;
     private OutputStreamWriter outputStreamWriter;
 
-    public FregeConsoleView(@NotNull Project project, @NotNull String title, @NotNull Language language, @NotNull Module module, List<String> modulesToLoad) {
+    public FregeReplView(@NotNull Project project, @NotNull String title, @NotNull Language language, List<String> modulesToLoad) {
         super(project, title, language);
 
         this.consoleProject = project;
-        this.module = module;
         this.modulesToLoad = modulesToLoad;
-//        setConsoleEditorEnabled(false);
         setPrompt("frege> ");
     }
 
@@ -51,7 +48,6 @@ public class FregeConsoleView extends LanguageConsoleImpl {
 
     // TODO add MessageFilter (for urls)
 
-
     @Override
     public void attachToProcess(@NotNull ProcessHandler processHandler) {
         super.attachToProcess(processHandler);
@@ -60,14 +56,10 @@ public class FregeConsoleView extends LanguageConsoleImpl {
             outputStreamWriter = new OutputStreamWriter(processInput);
             historyController = new ConsoleHistoryController(consoleRootType, "frege", this);
             historyController.install();
-            FregeConsoleViewMap.addConsole(this);
+            FregeReplViewMap.addConsole(this);
 
             modulesToLoad.stream().map(m -> ModuleManager.getInstance(consoleProject).findModuleByName(m)).
                     forEach(this::loadAllFregeFilesInModule);
-//
-//            AnAction action = ActionManager.getInstance().getAction("Frege.ConsoleExecute");
-//            ShortcutSet enterShortcutSet = new CustomShortcutSet(new KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), null));
-//            action.registerCustomShortcutSet(enterShortcutSet, this.getEditor().getComponent());
         }
     }
 
@@ -79,8 +71,6 @@ public class FregeConsoleView extends LanguageConsoleImpl {
         Arrays.stream(ModuleRootManager.getInstance(module).getDependencies()).forEach(m -> getAllSourceRoots(m, roots, visited));
     }
 
-    // TODO make separate choosing module for config
-    // and list of modules added with :load
     public void loadAllFregeFilesInModule(Module module) {
         List<VirtualFile> contentRoots = Arrays.asList(ModuleRootManager.getInstance(module).getContentRoots());
         List<VirtualFile> sourceRoots = new ArrayList<>();
@@ -94,7 +84,6 @@ public class FregeConsoleView extends LanguageConsoleImpl {
             }
         }).filter(path -> Files.isRegularFile(path) && path.toString().endsWith(".fr")).forEach(path -> {
             try {
-                System.err.println(path);
                 loadFile(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -105,7 +94,6 @@ public class FregeConsoleView extends LanguageConsoleImpl {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        // TODO omg Kotlin is needed here
     }
 
     public void loadFile(Path path) throws IOException {
@@ -113,8 +101,9 @@ public class FregeConsoleView extends LanguageConsoleImpl {
             throw new IllegalArgumentException("Unable to load file with extension different to .fr");
         }
 
-        System.err.println("Print " + String.format(":load %s\n", path.toString()));
-        outputStreamWriter.write(String.format(":load %s\n", path.toString()));
+        String loadFileString = String.format(":load %s\n", path);
+        historyController.addToHistory(loadFileString);
+        outputStreamWriter.write(loadFileString);
     }
 
     @Override
@@ -125,9 +114,7 @@ public class FregeConsoleView extends LanguageConsoleImpl {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        FregeConsoleViewMap.delConsole(this);
-//        AnAction action = ActionManager.getInstance().getAction("Frege.ConsoleExecute");
-//        action.unregisterCustomShortcutSet(this.getEditor().getComponent());
+        FregeReplViewMap.delConsole(this);
     }
 
     public void execute() {
@@ -144,20 +131,15 @@ public class FregeConsoleView extends LanguageConsoleImpl {
         String trimmedCommand = text.trim();
         historyController.addToHistory(trimmedCommand);
 
-//        print("frege> " + trimmedCommand, ConsoleViewContentType.SYSTEM_OUTPUT);
-
         String commandInputText = trimmedCommand + "\n";
 
         try {
             outputStreamWriter.write(commandInputText);
             outputStreamWriter.flush();
         } catch (IOException e) {
-            // TODO write to log
             throw new RuntimeException(e);
         }
 
         scrollToEnd();
     }
-
-
 }

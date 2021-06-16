@@ -1,4 +1,4 @@
-package com.plugin.frege.runConfiguration;
+package com.plugin.frege.repl;
 
 import com.intellij.configurationStore.XmlSerializer;
 import com.intellij.execution.ExecutionException;
@@ -11,7 +11,6 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
-import com.intellij.serialization.SerializationException;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,13 +21,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FregeRunConfiguration extends ModuleBasedConfiguration<RunConfigurationModule, FregeRunConfiguration> {
-    private static final String TAG_MODULE_NAME_NOT_SELECTED = "MODULE_NAME_NOT_SELECTED";
-    private static final String TAG_SELECTED_MODULE_NAME = "SELECTED_MODULE_NAME";
-    private static final String TAG_ADDITIONAL_ARGUMENTS = "ADDITIONAL_ARGUMENTS";
-    private static final String TAG_MODULES_TO_LOAD = "MODULES_TO_LOAD";
+public class FregeReplRunConfiguration extends ModuleBasedConfiguration<RunConfigurationModule, FregeReplRunConfiguration> {
     private final Project project;
-    private final FregeConfigurationEditor editor;
+    private final FregeReplConfigurationEditor editor;
 
     static class FregeRunConfigurationBean {
         public boolean moduleSelected = false;
@@ -40,10 +35,10 @@ public class FregeRunConfiguration extends ModuleBasedConfiguration<RunConfigura
     FregeRunConfigurationBean myBean = new FregeRunConfigurationBean();
 
 
-    protected FregeRunConfiguration(Project project, ConfigurationFactory factory, String name) {
+    protected FregeReplRunConfiguration(Project project, ConfigurationFactory factory, String name) {
         super(name, new RunConfigurationModule(project), factory);
         this.project = project;
-        editor = new FregeConfigurationEditor(project);
+        editor = new FregeReplConfigurationEditor(project);
     }
 
     @NotNull
@@ -62,11 +57,6 @@ public class FregeRunConfiguration extends ModuleBasedConfiguration<RunConfigura
     @Nullable
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment executionEnvironment) throws ExecutionException {
-//        FregeReplSettings settings = new FregeReplSettings(project, additionalArguments);
-//        executionEnvironment.getProject().
-//        ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-//        fileIndex.get
-
         return new FregeReplState(this, executionEnvironment);
     }
 
