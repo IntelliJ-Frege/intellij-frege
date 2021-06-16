@@ -49,11 +49,13 @@ meta nestedIndentSection ::= VIRTUAL_OPEN_SECTION <<nestedIndentSectionItemsVirt
 private extendedVarid ::= VARID | weakKeyword
 private weakKeyword ::= AS | HIDING | INLINE | MUTABLE | PURE
 varidUsage ::= extendedVarid {
-    implements="com.plugin.frege.psi.FregeCompositeElement"
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.plugin.frege.psi.FregeResolvableElement"]
     mixin="com.plugin.frege.psi.mixin.FregeVaridUsageMixin"
 }
 conidUsage ::= CONID {
     implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.plugin.frege.psi.FregeResolvableElement"
                 "com.intellij.psi.PsiIdentifier"]
     mixin="com.plugin.frege.psi.mixin.FregeConidUsageMixin"
 }
@@ -523,6 +525,7 @@ private reservedAloneOperators ::= DASH | STAR | COLON | SUPER_OR_SUBSCRIPT
                                   | AT | TILDA | EXLAMATION_MARK | QUESTION_MARK // TODO AT is not an operator
 symbolOperator ::= SYMOP_NO_RESERVED | reservedAloneOperators {
     implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.plugin.frege.psi.FregeResolvableElement"
                 "com.intellij.psi.PsiIdentifier"]
     mixin="com.plugin.frege.psi.mixin.FregeSymbolOperatorMixin"
 }

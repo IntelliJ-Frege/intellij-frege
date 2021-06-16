@@ -13,7 +13,9 @@ import com.plugin.frege.resolve.FregeReferenceBase
 import com.plugin.frege.resolve.FregeResolveUtil.findMethodsFromUsage
 import com.plugin.frege.resolve.FregeResolveUtil.resolveBindingByNameElement
 
-open class FregeSymbolOperatorMixin(node: ASTNode) : FregeCompositeElementImpl(node), PsiIdentifier {
+open class FregeSymbolOperatorMixin(node: ASTNode) :
+    FregeCompositeElementImpl(node), FregeResolvableElement, PsiIdentifier {
+
     override fun getReference(): PsiReference {
         return object : FregeReferenceBase(this, TextRange(0, textLength)) {
             override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
