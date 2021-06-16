@@ -2,6 +2,7 @@ package com.plugin.frege.runConfiguration;
 
 import com.intellij.execution.process.ColoredProcessHandler;
 import com.intellij.util.io.BaseInputStreamReader;
+import com.intellij.util.io.BaseOutputReader;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -23,6 +24,12 @@ public class FregeConsoleProcessHandler extends ColoredProcessHandler {
     @Override
     protected @NotNull Reader createProcessOutReader() {
         System.err.println("Out reader created");
-        return new FregeReplReader(new BaseInputStreamReader(process.getInputStream(), charset), skipNLastLines);
+        return new FregeReplReader(process.getInputStream(), charset, skipNLastLines);
+    }
+
+    @NotNull
+    @Override
+    protected BaseOutputReader.Options readerOptions() {
+        return BaseOutputReader.Options.forMostlySilentProcess();
     }
 }

@@ -1,22 +1,28 @@
 package com.plugin.frege.runConfiguration;
 
+import com.intellij.util.io.BaseInputStreamReader;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+/**
+ * HACK:
+ * We want
+ */
 // TODO docs, link to BaseInputStreamReader
 // TODO ScalaLanguageConsole.scala, 224 line, same hack, but much more easy
-public class FregeReplReader extends Reader {
-    private final Reader in;
+public class FregeReplReader extends BaseInputStreamReader {
+    private final InputStream in;
     private final int skipNLastLines;
     private final Deque<Character> buffer = new ArrayDeque<>();
     private int breaksCount = 0;
 
-    public FregeReplReader(Reader in, int skipNLastLines) {
+    public FregeReplReader(InputStream in, Charset charset, int skipNLastLines) {
+        super(in, charset);
         this.in = in;
         this.skipNLastLines = skipNLastLines;
     }
@@ -29,7 +35,7 @@ public class FregeReplReader extends Reader {
     public int read(char @NotNull [] cbuf, int off, int len) throws IOException {
         System.err.println("One read");
         char[] readFromIn = new char[len];
-        int bytesReadFromIn = in.read(readFromIn, 0, len);
+        int bytesReadFromIn = super.read(readFromIn, 0, len);
         new String(readFromIn, 0, bytesReadFromIn).chars().forEach(c -> {
             if (isLineBreak((char) c)) {
                 breaksCount++;
@@ -62,6 +68,6 @@ public class FregeReplReader extends Reader {
 
     @Override
     public boolean ready() throws IOException {
-        return in.ready();
+        return super.ready();
     }
 }
