@@ -6,7 +6,7 @@
 [![Frege Plugin Build & Test](https://github.com/IntelliJ-Frege/intellij-frege/actions/workflows/tests.yml/badge.svg)](https://github.com/IntelliJ-Frege/intellij-frege/actions/workflows/tests.yml)
 
 ## Attention
-The plugin is under development and is unstable. According to our estimates, the first stable version with the declared features will be available not earlier than 2-3 months (end of July).
+The plugin is under development and is unstable. According to our estimates, the first stable version with the declared features will be available not earlier than July (2021).
 
 ## What is Frege
 
@@ -21,27 +21,26 @@ Plugin is currently under development and is not yet loaded to JetBrains plugin 
 
 ## Current progress
 
-The project is currently under active development. 
-
 Features implemented partially or completely:
-- Frege lexer
-- Frege parser 
-- Syntax highlighting
-    - Color settings
-- Frege build system
-- Frege nagivation (from Frege to Java, from Java to Frege, from Frege to Frege)
+- Lexer
+- Parser 
+- Syntax highlighting and color schemes
+- Gradle-based build system
+- Navigation
 - Find usages
 - Code completion
-- Rename
+- Rename refactoring
 - File templates
-- Index Frege files
+- Index files
+- Frege REPL
+- 'Add import' quickfix for unresolved references
+- Documentation viewer
 
 Features desired:
 - Structure view
 - Formatter
-- Quick fixes
-- View quick documentation
-- Refactor
+- More quickfixes
+- More refactorings
 - Type system
 - and more
 
@@ -58,6 +57,4 @@ Special thanks to [Semyon Atamas](https://github.com/satamas) and [Dierk König]
 
 ## License
 
-MIT License
-
-Copyright (c) 2021 psurkov, kkarnauk, 23jura23
+Apache-2.0
