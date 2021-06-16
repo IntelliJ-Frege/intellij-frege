@@ -1,5 +1,5 @@
 <a href="https://github.com/IntelliJ-Frege/intellij-frege/">
-    <img src="https://raw.githubusercontent.com/IntelliJ-Frege/intellij-frege/master/src/main/resources/icons/PluginLogo.png" alt="Plugin logo" title="Plugin logo" align="right" height="60" />
+    <img src="https://raw.githubusercontent.com/IntelliJ-Frege/intellij-frege/master/src/main/resources/META-INF/pluginIcon.svg" alt="Plugin logo" title="Plugin logo" align="right" height="60" />
 </a>
 
 # IntelliJ IDEA plugin for Frege language
