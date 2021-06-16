@@ -9,7 +9,7 @@ import com.plugin.frege.psi.FregeResolvableElement
 
 class FregeUnresolvedReferenceInspection : FregeLocalInspection() {
     override fun visitElement(element: FregeCompositeElement, holder: ProblemsHolder, isOnTheFly: Boolean) {
-        if (element !is FregeResolvableElement) {
+        if (element !is FregeResolvableElement || element.textLength == 0) {
             return
         }
 
