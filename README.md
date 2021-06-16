@@ -1,4 +1,9 @@
+<a href="https://github.com/IntelliJ-Frege/intellij-frege/">
+    <img src="https://raw.githubusercontent.com/IntelliJ-Frege/intellij-frege/master/src/main/resources/icons/PluginLogo.png" alt="Plugin logo" title="Plugin logo" align="right" height="60" />
+</a>
+
 # IntelliJ IDEA plugin for Frege language
+[![Frege Plugin Build & Test](https://github.com/IntelliJ-Frege/intellij-frege/actions/workflows/tests.yml/badge.svg)](https://github.com/IntelliJ-Frege/intellij-frege/actions/workflows/tests.yml)
 
 ## Attention
 The plugin is under development and is unstable. According to our estimates, the first stable version with the declared features will be available not earlier than 2-3 months (end of July).
