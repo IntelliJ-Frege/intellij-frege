@@ -12,7 +12,7 @@
  * Compiles, tests, etc. any Frege code.
  * Any additional Java code will be processed afterwards and can depend on the Frege code.
  * Any Java code that Frege depends upon must be
- * - in a dependency (e.g. a Java project that this build depends on) or
+ * - in a dependency (e.g. a Java consoleProject that this build depends on) or
  * - in a native module "inlined" in the Frege code.
  * Calling the usual java targets will also execute the respective Frege targets.
 */
@@ -67,7 +67,7 @@ repositories {
     jcenter()    // not needed right now, only for later dependenciesGradleBased02
 }
 
-// we manage dependencies as if it was a Java project
+// we manage dependencies as if it was a Java consoleProject
 dependencies {
     // later dependencies go here
 }
@@ -151,9 +151,10 @@ task fregeRepl(type: JavaExec) {
     group         = "frege"
     description   = "Frege REPL start via: gradlew --console=plain --no-daemon fregeRepl"
     standardInput = System.in 								// this should run interactively, so we need stdin
-    classpath     = files sourceSets.main.java.outputDir, fregeJar // start with all compiled project classes
+    classpath     = files sourceSets.main.java.outputDir, fregeJar // start with all compiled consoleProject classes
     main          = "frege.repl.FregeRepl"
 }
+
 fregeRepl.doFirst {
     ant.echo "Consider starting via: gradlew --console=plain --no-daemon fregeRepl"
 }

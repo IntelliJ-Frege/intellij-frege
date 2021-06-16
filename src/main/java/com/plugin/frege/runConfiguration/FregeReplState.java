@@ -12,6 +12,8 @@ import com.intellij.execution.ui.ConsoleView;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.plugin.frege.FregeFileType;
+import com.plugin.frege.gradle.GradleFregeException;
+import com.plugin.frege.gradle.GradleFregePropertiesUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
@@ -53,9 +55,19 @@ public class FregeReplState extends CommandLineState {
 
     @Override
     protected @NotNull ProcessHandler startProcess() throws ExecutionException {
+        if (configuration.getSelectedModuleName() == null) throw new ExecutionException("No module selected");
+        Module module = ModuleManager.getInstance(configuration.getProject()).findModuleByName(configuration.getSelectedModuleName());
+        String compilerJar;
+        try {
+            compilerJar = GradleFregePropertiesUtils.getCompilerJar(module);
+        } catch (GradleFregeException e) {
+            throw new ExecutionException(e);
+        }
+
         GeneralCommandLine commandLine = new GeneralCommandLine().
                 withExePath("/usr/bin/java").
-                withWorkDirectory(configuration.getProject().getBasePath());
+                withWorkDirectory(configuration.getProject().getBasePath()).
+                withParameters("-jar", compilerJar);
         if (!configuration.getAdditionalArguments().equals(""))
             commandLine.addParameters(configuration.getAdditionalArguments().split(" "));
         FregeConsoleProcessHandler handler = new FregeConsoleProcessHandler(commandLine.createProcess(), commandLine.getCommandLineString(), StandardCharsets.UTF_8, 1);

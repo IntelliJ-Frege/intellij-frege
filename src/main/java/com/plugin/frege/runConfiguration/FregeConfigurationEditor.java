@@ -10,6 +10,7 @@ import com.intellij.util.ui.AbstractTableCellEditor;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.EditableModel;
 import com.intellij.util.ui.ListTableModel;
+import com.plugin.frege.gradle.GradleFregePropertiesUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +32,7 @@ public class FregeConfigurationEditor extends SettingsEditor<FregeRunConfigurati
 
 
     public FregeConfigurationEditor(Project project) {
+        moduleNameLabel.setToolTipText("Module containing " + GradleFregePropertiesUtils.GRADLE_PROPERTIES_FILENAME + " file in root");
         setModulesToComboBox(project);
 //        loadedModulesTable.setModel(loadedModulesTableModel);
 //        loadedModulesTable.getModel().
