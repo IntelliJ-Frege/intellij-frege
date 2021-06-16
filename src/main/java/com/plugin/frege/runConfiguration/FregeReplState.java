@@ -71,7 +71,6 @@ public class FregeReplState extends CommandLineState {
         if (!configuration.getAdditionalArguments().equals(""))
             commandLine.addParameters(configuration.getAdditionalArguments().split(" "));
         FregeConsoleProcessHandler handler = new FregeConsoleProcessHandler(commandLine.createProcess(), commandLine.getCommandLineString(), StandardCharsets.UTF_8, 1);
-        // TODO If it's a long-running mostly idle daemon process, consider overriding OSProcessHandler#readerOptions with 'BaseOutputReader.Options.forMostlySilentProcess()' to reduce CPU usage.
         ProcessTerminatedListener.attach(handler);
         return handler;
     }
