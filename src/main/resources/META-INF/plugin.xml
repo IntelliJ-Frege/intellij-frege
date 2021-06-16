@@ -41,6 +41,11 @@
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeAnnotator"/>
         <annotator language="Frege" implementationClass="com.plugin.frege.annotator.FregeWarningAnnotator"/>
 
+        <localInspection language="Frege" groupName="Frege"
+                         displayName="Unresolved reference"
+                         enabledByDefault="true" level="ERROR"
+                         implementationClass="com.plugin.frege.inspections.FregeUnresolvedReferenceInspection"/>
+
         <codeInsight.lineMarkerProvider language="Frege"
                                         implementationClass="com.plugin.frege.linemarker.related.FregeRelatedItemLineMarkerProvider"/>
         <runLineMarkerContributor language="Frege" implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerContributor" />
