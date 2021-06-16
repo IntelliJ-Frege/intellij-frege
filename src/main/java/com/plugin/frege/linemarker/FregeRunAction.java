@@ -1,7 +1,9 @@
 package com.plugin.frege.linemarker;
 
+import com.intellij.execution.ProgramRunnerUtil;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -47,8 +49,7 @@ public class FregeRunAction extends AnAction {
         manager.addConfiguration(newSettings);
         manager.setSelectedConfiguration(newSettings);
 
-        AnAction run = ActionManager.getInstance().getAction("Run");
-        ActionManager.getInstance().tryToExecute(run, e.getInputEvent(),null, null, true);
+        ProgramRunnerUtil.executeConfiguration(newSettings, DefaultRunExecutor.getRunExecutorInstance());
     }
 
     @Override
