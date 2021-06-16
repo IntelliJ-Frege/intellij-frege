@@ -3,7 +3,9 @@ package com.plugin.frege.psi
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiParserFacade
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.elementType
 import com.plugin.frege.FregeLanguage
 
 object FregeElementFactory {
@@ -157,5 +159,24 @@ object FregeElementFactory {
     fun createVaridUsageImport(project: Project, name: String): FregeVaridUsageImport {
         val fakeVaridUsage = "${fakeProgram}import hello.Hello ($name)"
         return createElement(project, fakeVaridUsage)
+    }
+
+    @JvmStatic
+    fun createTopDecl(project: Project, topDecl: String): FregeTopDecl {
+        val fakeTopDecl = "${fakeProgram}$topDecl"
+        return createElement(project, fakeTopDecl)
+    }
+
+    @JvmStatic
+    fun createNewLine(project: Project): PsiElement {
+        return PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText("\n")
+    }
+
+    @JvmStatic
+    fun createVirtualEndDecl(project: Project): PsiElement {
+        val fakeVirtualEndDecl = "${fakeProgram}f = 3\ng = 2"
+        val body = createElement<FregeBody>(project, fakeVirtualEndDecl)
+        return generateSequence(body.firstChild) { it.nextSibling }.find { it.elementType === FregeTypes.VIRTUAL_END_DECL }
+            ?: cannotCreateElement()
     }
 }
