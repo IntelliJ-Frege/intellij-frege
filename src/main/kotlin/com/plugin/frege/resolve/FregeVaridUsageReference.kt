@@ -18,8 +18,12 @@ class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element
         return psiElement.replace(createVaridUsage(psiElement.project, name))
     }
 
-    // TODO take into account: qualified names
     override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
+        val namedElementOwner = namedElementOwner
+        if (namedElementOwner != null) {
+            return listOf(namedElementOwner)
+        }
+
         val result = findParameters(incompleteCode).toMutableList()
         if (result.isNotEmpty() && !incompleteCode) {
             return result

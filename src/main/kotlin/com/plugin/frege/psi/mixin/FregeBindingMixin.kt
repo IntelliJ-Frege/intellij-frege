@@ -18,19 +18,9 @@ import com.plugin.frege.stubs.FregeMethodStub
 
 @Suppress("UnstableApiUsage")
 abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, FregeBinding {
-    private val modifierList: LightModifierList
+    constructor(node: ASTNode) : super(node)
 
-    constructor(node: ASTNode) : super(node) {
-        modifierList = LightModifierList(manager, FregeLanguage.INSTANCE,
-            PsiModifier.STATIC, PsiModifier.FINAL, PsiModifier.PUBLIC
-        ) // TODO
-    }
-
-    constructor(stub: FregeMethodStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType) {
-        modifierList = LightModifierList(manager, FregeLanguage.INSTANCE,
-            PsiModifier.STATIC, PsiModifier.FINAL, PsiModifier.PUBLIC
-        ) // TODO
-    }
+    constructor(stub: FregeMethodStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     override fun onlyQualifiedSearch(): Boolean {
         return containingClass is FregeNewtypeDecl
@@ -65,7 +55,9 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
     }
 
     override fun getModifierList(): PsiModifierList {
-        return modifierList
+        return LightModifierList(manager, FregeLanguage.INSTANCE,
+            PsiModifier.STATIC, PsiModifier.FINAL, PsiModifier.PUBLIC
+        )
     }
 
     // TODO

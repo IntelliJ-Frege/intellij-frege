@@ -14,6 +14,7 @@ import com.intellij.psi.util.parentOfType
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.documentation.FregeDocUtil
 import com.plugin.frege.documentation.buildDoc
+import com.plugin.frege.psi.FregeNativeDataDecl
 import com.plugin.frege.psi.FregeNativeFunction
 import com.plugin.frege.psi.FregeProgram
 import com.plugin.frege.psi.impl.FregeNativeFunctionNameImpl
@@ -30,7 +31,7 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
             get() = (nameIdentifier as? FregeNativeFunctionNameImpl)?.getDelegatedMember() as? PsiMethod
 
     override fun onlyQualifiedSearch(): Boolean {
-        return true
+        return containingClass is FregeNativeDataDecl
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {

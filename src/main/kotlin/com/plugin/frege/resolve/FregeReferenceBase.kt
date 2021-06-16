@@ -3,6 +3,8 @@ package com.plugin.frege.resolve
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.ResolveCache
+import com.intellij.psi.util.parentOfType
+import com.plugin.frege.psi.FregeNamedElement
 
 abstract class FregeReferenceBase(@JvmField protected val psiElement: PsiElement, range: TextRange) :
     PsiReferenceBase<PsiElement?>(psiElement, range), PsiPolyVariantReference {
@@ -50,4 +52,10 @@ abstract class FregeReferenceBase(@JvmField protected val psiElement: PsiElement
     override fun hashCode(): Int {
         return psiElement.hashCode()
     }
+
+    protected val namedElementOwner: PsiElement?
+        get() {
+            val namedElement = psiElement.parentOfType<FregeNamedElement>()
+            return if (namedElement?.nameIdentifier === psiElement) namedElement else null
+        }
 }
