@@ -6,6 +6,8 @@ import com.intellij.openapi.externalSystem.model.project.ProjectId;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.roots.ModifiableModelsProvider;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.plugin.frege.FregeIcons;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +16,8 @@ import org.jetbrains.plugins.gradle.frameworkSupport.GradleFrameworkSupportProvi
 
 import javax.swing.*;
 import java.io.IOException;
+
+import static com.intellij.util.ResourceUtil.getResourceAsStream;
 
 public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportProvider {
     private static final String ID = "Frege";
@@ -55,8 +59,8 @@ public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportP
                            @NotNull ModifiableModelsProvider modifiableModelsProvider,
                            @NotNull BuildScriptDataBuilder buildScriptData) {
         try {
-            GradleFregeScriptBuilder gradleFregeScriptBuilder = new GradleFregeScriptBuilder(settingsForm);
-            byte[] contentBytes = gradleFregeScriptBuilder.build();
+            byte[] contentBytes = getResourceAsStream(this.getClass().getClassLoader(),
+                    "templates/gradle/minimal", "build.gradle").readAllBytes();
 
             buildScriptData.getBuildScriptFile().setBinaryContent(contentBytes);
         } catch (IOException e) {
