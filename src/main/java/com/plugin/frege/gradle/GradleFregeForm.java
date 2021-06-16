@@ -1,29 +1,48 @@
 package com.plugin.frege.gradle;
 
+import com.intellij.execution.ExecutionBundle;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+
 import javax.swing.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class GradleFregeForm {
+    boolean autoDownloadCompilerMode = true;
     private JPanel panel;
+
 
     public GradleFregeForm() {
         javaTarget.setText("11");
         fregeRelease.setText("3.25alpha");
         fregeVersion.setText("3.25.84");
+
         autoDownloadTheCompilerCheckBox.addItemListener(e -> {
             int state = e.getStateChange();
             switch (state) {
                 case ItemEvent.SELECTED:
-                    fregeCompilerPathLabel.setVisible(false);
-                    fregeCompilerPath.setVisible(false);
+                    selectAutodownloadCompilerMode(true);
                     break;
                 case ItemEvent.DESELECTED:
-                    fregeCompilerPathLabel.setVisible(true);
-                    fregeCompilerPath.setVisible(true);
+                    selectAutodownloadCompilerMode(false);
                     break;
             }
         });
+
+        fregeCompilerPath.addBrowseFolderListener("Choose Path to Frege Compiler Jar", null, null,
+        new FileChooserDescriptor(false, false, true, true, false, false));
+    }
+
+    private void selectAutodownloadCompilerMode(boolean value) {
+        autoDownloadCompilerMode = value;
+        fregeCompilerPathLabel.setVisible(!value);
+        fregeCompilerPath.setVisible(!value);
     }
 
     public JPanel getPanel() {
@@ -50,8 +69,7 @@ public class GradleFregeForm {
         return fregeCompilerPath.getText();
     }
 
-    public String isMinimalistic() {
-        return minimalisticGradleFileCheckBox.getText();
+    public void createUIComponents() {
     }
 
     private JTextField javaTarget;
@@ -60,7 +78,5 @@ public class GradleFregeForm {
 
     private JCheckBox autoDownloadTheCompilerCheckBox;
     private JLabel fregeCompilerPathLabel;
-    private JTextField fregeCompilerPath;
-    private JCheckBox minimalisticGradleFileCheckBox;
-
+    private TextFieldWithBrowseButton fregeCompilerPath;
 }

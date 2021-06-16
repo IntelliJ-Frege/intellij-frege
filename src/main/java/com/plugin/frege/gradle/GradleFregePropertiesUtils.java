@@ -56,10 +56,9 @@ public class GradleFregePropertiesUtils {
     public static String getGradlePropertiesFileContentBySettings(GradleFregeForm settings) {
         StringJoiner sj = new StringJoiner("\n");
         sj.add("javaTarget = " + settings.getJavaTarget());
-        if (settings.isCompilerAutoDownloaded()) {
-            sj.add("fregeRelease = " + settings.getFregeRelease());
-            sj.add("fregeVersion = " + settings.getFregeVersion());
-        } else {
+        sj.add("fregeRelease = " + settings.getFregeRelease());
+        sj.add("fregeVersion = " + settings.getFregeVersion());
+        if (!settings.isCompilerAutoDownloaded()) {
             sj.add("fregeJar = " + settings.getFregeCompilerPath());
         }
         return sj.toString();
