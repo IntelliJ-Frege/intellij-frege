@@ -62,8 +62,11 @@ public class GradleFregeFrameworkSupportProvider extends GradleFrameworkSupportP
             byte[] contentBytes = getResourceAsStream(this.getClass().getClassLoader(),
                     "templates/gradle/minimal", "build.gradle").readAllBytes();
 
+            VirtualFile gradlePropertiesFile = GradleFregePropertiesUtils.createGradlePropertiesFile(module);
+            GradleFregePropertiesUtils.writeSettingsToGradlePropertiesFile(gradlePropertiesFile, settingsForm);
+
             buildScriptData.getBuildScriptFile().setBinaryContent(contentBytes);
-        } catch (IOException e) {
+        } catch (IOException | GradleFregeException e) {
             throw new RuntimeException(e);
         }
     }
