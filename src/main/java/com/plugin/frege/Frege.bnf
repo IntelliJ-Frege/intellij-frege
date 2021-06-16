@@ -106,7 +106,7 @@ program ::= ((documentation VIRTUAL_END_DECL)* PROTECTED_MODIFIER? (strongPackag
 }
 packagePrefix ::= (packageToken DOT)*
 packageName ::= packagePrefix conidUsage
-private packageVarid ::= qualifier? qualifier? (extendedVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE)
+private packageVarid ::= extendedVarid | DATA | IMPORT | NATIVE | PACKAGE | MODULE | TYPE
 packageToken ::= (packageVarid | CONID) {
     implements="com.plugin.frege.psi.FregeCompositeElement"
     mixin="com.plugin.frege.psi.mixin.imports.FregePackageTokenMixin"
