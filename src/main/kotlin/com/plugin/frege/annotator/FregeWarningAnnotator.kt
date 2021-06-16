@@ -6,7 +6,7 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
 import com.plugin.frege.psi.FregeStrongPackage
-import com.plugin.frege.quickfix.FregePackageToModuleIntentionAction
+import com.plugin.frege.intentions.FregePackageToModuleIntentionAction
 
 class FregeWarningAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
