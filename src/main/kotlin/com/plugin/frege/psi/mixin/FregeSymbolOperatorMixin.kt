@@ -7,10 +7,7 @@ import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiReference
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.parentOfTypes
-import com.plugin.frege.psi.FregeAnnotationItem
-import com.plugin.frege.psi.FregeElementFactory
-import com.plugin.frege.psi.FregeFunctionLhs
-import com.plugin.frege.psi.FregeTypes
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
 import com.plugin.frege.resolve.FregeReferenceBase
 import com.plugin.frege.resolve.FregeResolveUtil.findMethodsFromUsage
@@ -25,6 +22,10 @@ open class FregeSymbolOperatorMixin(node: ASTNode) : FregeCompositeElementImpl(n
                         resolveBindingByNameElement(psiElement, incompleteCode)
                     }
                     else -> {
+                        val namedElementOwner = namedElementOwner
+                        if (namedElementOwner != null) {
+                            return listOf(namedElementOwner)
+                        }
                         findMethodsFromUsage(psiElement, incompleteCode)
                     }
                 }
