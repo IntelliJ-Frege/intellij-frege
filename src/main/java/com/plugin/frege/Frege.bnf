@@ -168,13 +168,13 @@ body ::= (documentation | topDecl) (VIRTUAL_END_DECL (documentation | topDecl))*
 topDecl ::= !<<eof>> (
               fixity
             | importDecl
-            | accessModifier? typeDecl
-            | accessModifier? dataDecl
-            | accessModifier? newtypeDecl
-            | accessModifier? nativeDataDecl
-            | accessModifier? classDecl
-            | accessModifier? instanceDecl
-            | accessModifier? deriveDecl
+            | typeDecl
+            | dataDecl
+            | newtypeDecl
+            | nativeDataDecl
+            | classDecl
+            | instanceDecl
+            | deriveDecl
             | nativeModule
             | decl) SEMICOLON? {
     pin=1
@@ -266,8 +266,8 @@ infixRule ::= INFIX | INFIXL | INFIXR
 
 
 /* Type Declarations */
-typeDecl ::= TYPE conidUsage typedVarid* EQUAL sigma {
-    pin=1
+typeDecl ::= accessModifier? TYPE conidUsage typedVarid* EQUAL sigma {
+    pin=2
     implements=["com.plugin.frege.psi.FregePsiClass"
                 "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeTypeDeclMixin"
@@ -277,8 +277,8 @@ typeDecl ::= TYPE conidUsage typedVarid* EQUAL sigma {
 
 /* Class Declarations */
 // TODO take class name out of constraints. After that fix it in mixin!
-classDecl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW conidUsage typedVarid)?  whereSection? {
-    pin=1
+classDecl ::= accessModifier? (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW conidUsage typedVarid)?  whereSection? {
+    pin=2
     implements=["com.plugin.frege.psi.FregePsiClass"
                 "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeClassDeclMixin"
@@ -287,8 +287,8 @@ classDecl ::= (CLASS | INTERFACE) constraints ( DOUBLE_RIGHT_ARROW conidUsage ty
 
 
 /* Instance Declarations */
-instanceDecl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? qConid typeApplications whereSection? {
-    pin=1
+instanceDecl ::= accessModifier? INSTANCE (constraints DOUBLE_RIGHT_ARROW)? qConid typeApplications whereSection? {
+    pin=2
     implements=["com.plugin.frege.psi.FregePsiClass"
                 "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeInstanceDeclMixin"
@@ -297,16 +297,16 @@ instanceDecl ::= INSTANCE (constraints DOUBLE_RIGHT_ARROW)? qConid typeApplicati
 
 
 /* Derived Instances */
-deriveDecl ::= DERIVE conidUsage (constraints DOUBLE_RIGHT_ARROW)? typeApplications {
-    pin=1
+deriveDecl ::= accessModifier? DERIVE conidUsage (constraints DOUBLE_RIGHT_ARROW)? typeApplications {
+    pin=2
     implements="com.plugin.frege.psi.FregeTypeParametersHolder"
     mixin="com.plugin.frege.psi.mixin.FregeDeriveDeclMixin"
 }
 
 
 /* Data Declarations */
-dataDecl ::= ABSTRACT? DATA conidUsage typedVarid* EQUAL constructs whereSection? deriveDecl? documentation? {
-    pin=6
+dataDecl ::= accessModifier? ABSTRACT? DATA conidUsage typedVarid* EQUAL constructs whereSection? deriveDecl? documentation? {
+    pin=7
     implements=["com.plugin.frege.psi.FregePsiClass"
                 "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeDataDeclMixin"
@@ -334,8 +334,8 @@ labelName ::= extendedVarid {
 }
 
 /* Newtype Declarations */
-newtypeDecl ::= ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL construct whereSection? {
-    pin=2
+newtypeDecl ::= accessModifier? ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL construct whereSection? {
+    pin=3
     implements=["com.plugin.frege.psi.FregePsiClass"
                 "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeNewtypeDeclMixin"
@@ -344,8 +344,8 @@ newtypeDecl ::= ABSTRACT? NEWTYPE conidUsage typedVarid* EQUAL construct whereSe
 
 
 /* Native Data Declarations */
-nativeDataDecl ::= DATA conidUsage typedVarid* EQUAL (strongMutable|strongPure)? NATIVE nativeName nativeTypeApplications? whereSection? deriveDecl? {
-    pin=6
+nativeDataDecl ::= accessModifier? DATA conidUsage typedVarid* EQUAL (strongMutable|strongPure)? NATIVE nativeName nativeTypeApplications? whereSection? deriveDecl? {
+    pin=7
     implements=["com.plugin.frege.psi.FregePsiClass"
                 "com.plugin.frege.psi.FregeTypeParametersHolder"]
     mixin="com.plugin.frege.psi.mixin.FregeNativeDataDeclMixin"
@@ -357,8 +357,8 @@ nativeName ::= ((extendedVarid | CONID) DOT)* (extendedVarid | CONID | stringLit
 }
 
 /* Native module */
-nativeModule ::= NATIVE MODULE (TYPE typeApplications)? (CLASS <<commaSequence constraint>>)? WHERE LEFT_BRACE javaCode RIGHT_BRACE {
-    pin=2
+nativeModule ::= accessModifier? NATIVE MODULE (TYPE typeApplications)? (CLASS <<commaSequence constraint>>)? WHERE LEFT_BRACE javaCode RIGHT_BRACE {
+    pin=3
 }
 external javaCode ::= javaCodeParseExternal
 
