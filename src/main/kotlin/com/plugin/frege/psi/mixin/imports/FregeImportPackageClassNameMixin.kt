@@ -12,6 +12,7 @@ import com.plugin.frege.psi.FregeElementFactory
 import com.plugin.frege.psi.FregeImportPackageName
 import com.plugin.frege.psi.FregeTypes
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
+import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.resolve.FregeReferenceBase
 import com.plugin.frege.stubs.index.FregeClassNameIndex
 
@@ -27,11 +28,23 @@ open class FregeImportPackageClassNameMixin(node: ASTNode) : FregeCompositeEleme
                 val qualifiedNameLength = psiElement.textRange.endOffset - packageName.textOffset
                 val qualifiedName = packageName.text.substring(0, qualifiedNameLength)
                 val project = psiElement.project
-                return FregeClassNameIndex.INSTANCE.findByName(
+                val results = FregeClassNameIndex.INSTANCE.findByName(
                     qualifiedName,
                     project,
                     GlobalSearchScope.everythingScope(project)
-                )
+                ).toMutableList()
+
+                if (results.isEmpty()) {
+                    val libraryPackage = FregePsiUtilImpl.tryConvertToLibraryPackage(qualifiedName)
+                    if (libraryPackage != null) {
+                        results += FregeClassNameIndex.INSTANCE.findByName(
+                            libraryPackage,
+                            project,
+                            GlobalSearchScope.everythingScope(project)
+                        )
+                    }
+                }
+                return results
             }
 
             override fun handleElementRename(name: String): PsiElement {

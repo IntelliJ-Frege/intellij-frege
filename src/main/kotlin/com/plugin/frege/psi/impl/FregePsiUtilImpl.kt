@@ -280,7 +280,26 @@ object FregePsiUtilImpl {
     /**
      * Checks if within children of [element] there is an PSI node of [type].
      */
+    @JvmStatic
     fun isElementTypeWithinChildren(element: PsiElement, type: IElementType): Boolean {
         return generateSequence({ element.firstChild }, { it.nextSibling }).any { it.elementType === type }
+    }
+
+    /**
+     * Required for navigation to modules from the standard library.
+     * According to the language rules, '`frege`' can be omitted in the imported package,
+     * provided if you replace the first letter in the next word with the upper-cased one.
+     *
+     * Example: 'frege.data.HashMap -> Data.HashMap'
+     *
+     * @return converted [packageName] to the package with the '`frege`' prefix
+     * or `null` if it's not possible ([packageName] is empty or the first letter is not upper-cased)
+     */
+    @JvmStatic
+    fun tryConvertToLibraryPackage(packageName: String): String? {
+        if (packageName.isEmpty() || !packageName.first().isUpperCase()) {
+            return null
+        }
+        return "frege.${packageName.first().lowercaseChar()}${packageName.substring(1)}"
     }
 }
