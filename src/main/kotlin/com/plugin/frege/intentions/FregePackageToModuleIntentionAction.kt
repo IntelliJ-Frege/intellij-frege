@@ -1,4 +1,4 @@
-package com.plugin.frege.quickfix
+package com.plugin.frege.intentions
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
 import com.intellij.openapi.editor.Editor
