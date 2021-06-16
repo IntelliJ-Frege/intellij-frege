@@ -23,7 +23,8 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
     constructor(stub: FregeMethodStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     override fun onlyQualifiedSearch(): Boolean {
-        return containingClass is FregeNewtypeDecl
+        val containingClass = containingClass
+        return containingClass is FregeNewtypeDecl || containingClass is FregeInstanceDecl
     }
 
     override fun getSubprogramsFromScope(): List<PsiElement> {

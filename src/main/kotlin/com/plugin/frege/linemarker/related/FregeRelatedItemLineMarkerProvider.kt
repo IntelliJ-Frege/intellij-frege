@@ -8,6 +8,9 @@ class FregeRelatedItemLineMarkerProvider : RelatedItemLineMarkerProvider() {
     private val functionBindingToAnnotation = FregeFunctionBindingToAnnotationLineMarker()
     private val nativeFunctionToDelegatedMember = FregeNativeFunctionToDelegatedMemberLineMarker()
     private val instanceMethodToClass = FregeInstanceMethodToClassLineMarker()
+    private val classAnnotationToInstance = FregeClassAnnotationToInstanceLineMarker()
+    private val classBindingToInstance = FregeClassBindingToInstanceLineMarker()
+
     override fun collectNavigationMarkers(
         element: PsiElement,
         result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
@@ -15,5 +18,7 @@ class FregeRelatedItemLineMarkerProvider : RelatedItemLineMarkerProvider() {
         functionBindingToAnnotation.addMarker(element, result)
         nativeFunctionToDelegatedMember.addMarker(element, result)
         instanceMethodToClass.addMarker(element, result)
+        classAnnotationToInstance.addMarker(element, result)
+        classBindingToInstance.addMarker(element, result)
     }
 }
