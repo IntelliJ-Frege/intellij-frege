@@ -50,7 +50,7 @@ public class GradleFregePropertiesUtils {
         } catch (IOException e) {
             throw new GradleFregeException("Unable to create new " + GRADLE_PROPERTIES_FILENAME + " on path " + pathToGradleProperties, e);
         }
-        return LocalFileSystem.getInstance().findFileByIoFile(pathToGradleProperties.toFile());
+        return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(pathToGradleProperties.toFile());
     }
 
     public static String getGradlePropertiesFileContentBySettings(GradleFregeForm settings) {
