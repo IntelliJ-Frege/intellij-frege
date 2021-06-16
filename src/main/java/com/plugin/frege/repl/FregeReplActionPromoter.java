@@ -1,4 +1,4 @@
-package com.plugin.frege.runConfiguration;
+package com.plugin.frege.repl;
 
 import com.intellij.openapi.actionSystem.ActionPromoter;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -7,8 +7,6 @@ import com.intellij.openapi.editor.actions.EnterAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class FregeReplActionPromoter implements ActionPromoter {

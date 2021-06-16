@@ -1,4 +1,4 @@
-package com.plugin.frege.runConfiguration;
+package com.plugin.frege.repl;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -8,74 +8,31 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.AbstractTableCellEditor;
 import com.intellij.util.ui.ColumnInfo;
-import com.intellij.util.ui.EditableModel;
 import com.intellij.util.ui.ListTableModel;
 import com.plugin.frege.gradle.GradleFregePropertiesUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FregeConfigurationEditor extends SettingsEditor<FregeRunConfiguration> {
+public class FregeReplConfigurationEditor extends SettingsEditor<FregeReplRunConfiguration> {
     private JPanel myPanel;
     private JLabel moduleNameLabel;
-    private JComboBox<String> moduleNameComboBox; // TODO custom listener for names
+    private JComboBox<String> moduleNameComboBox;
     private ListTableModel<JCheckBox> loadedModulesTableModel;
     private JTable loadedModulesTable;
     private JTextField arguments;
 
 
-    public FregeConfigurationEditor(Project project) {
+    public FregeReplConfigurationEditor(Project project) {
         moduleNameLabel.setToolTipText("Module containing " + GradleFregePropertiesUtils.GRADLE_PROPERTIES_FILENAME + " file in root");
         setModulesToComboBox(project);
-//        loadedModulesTable.setModel(loadedModulesTableModel);
-//        loadedModulesTable.getModel().
         setModulesToLoad(project, new ArrayList<>());
-//        ProjectRootManager.getInstance(project).
-    }
-    private static class MyTableModel extends AbstractTableModel implements EditableModel {
-        List<String> moduleNames = new ArrayList<>();
-
-        @Override
-        public void addRow() {
-            moduleNames.add("");
-        }
-
-        @Override
-        public void exchangeRows(int oldIndex, int newIndex) {
-            throw new UnsupportedOperationException("Row exchancing is not supported");
-        }
-
-        @Override
-        public boolean canExchangeRows(int oldIndex, int newIndex) {
-            return false;
-        }
-
-        @Override
-        public void removeRow(int idx) {
-            moduleNames.remove(idx);
-        }
-
-        @Override
-        public int getRowCount() {
-            return moduleNames.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 1;
-        }
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            return moduleNames.get(rowIndex);
-        }
-
     }
 
     private void createUIComponents() {
@@ -139,7 +96,7 @@ public class FregeConfigurationEditor extends SettingsEditor<FregeRunConfigurati
 
     public List<String> getModulesToLoad() {
         List<String> result = new ArrayList<>();
-        for (int i = 0;i < loadedModulesTableModel.getRowCount(); i++) {
+        for (int i = 0; i < loadedModulesTableModel.getRowCount(); i++) {
             JCheckBox checkbox = loadedModulesTableModel.getRowValue(i);
             if (checkbox.isSelected()) {
                 result.add(checkbox.getText());
@@ -156,22 +113,18 @@ public class FregeConfigurationEditor extends SettingsEditor<FregeRunConfigurati
     }
 
     @Override
-    protected void resetEditorFrom(FregeRunConfiguration runConfiguration) {
-        System.err.println("Reset called");
+    protected void resetEditorFrom(FregeReplRunConfiguration runConfiguration) {
         setArguments(runConfiguration.getAdditionalArguments());
         setModulesToComboBox(runConfiguration.getProject());
         setModule(runConfiguration.getSelectedModuleName());
         setModulesToLoad(runConfiguration.getProject(), runConfiguration.getModulesToLoad());
-        // TODO
     }
 
     @Override
-    protected void applyEditorTo(FregeRunConfiguration runConfiguration) throws ConfigurationException {
-        System.err.println("Apply called");
+    protected void applyEditorTo(FregeReplRunConfiguration runConfiguration) throws ConfigurationException {
         runConfiguration.setAdditionalArguments(getArguments());
         runConfiguration.setSelectedModuleName(getSelectedModule());
         runConfiguration.setModulesToLoad(getModulesToLoad());
-        // TODO
     }
 
     @NotNull

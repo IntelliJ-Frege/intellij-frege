@@ -57,8 +57,8 @@
         <internalFileTemplate name="Frege Module" />
         <internalFileTemplate name="Frege Empty File" />
 
-        <configurationType implementation="com.plugin.frege.runConfiguration.FregeRunConfigurationType"/>
-        <actionPromoter implementation="com.plugin.frege.runConfiguration.FregeReplActionPromoter"/>
+        <configurationType implementation="com.plugin.frege.repl.FregeReplRunConfigurationType"/>
+        <actionPromoter implementation="com.plugin.frege.repl.FregeReplActionPromoter"/>
 
         <additionalTextAttributes scheme="Darcula" file="colorScheme/Darcula_Frege.xml" />
         <additionalTextAttributes scheme="Default" file="colorScheme/Default_Frege.xml" />
@@ -74,23 +74,18 @@
                 description="Create new Frege file">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
-<!--        <group id="Frege.Runconfig">-->
-<!--                text="Console Executions"-->
         <action id="Frege.ConsoleExecute"
                 text="Execute Text in Console"
-                class="com.plugin.frege.actions.FregeConsoleExecuteAction">
+                class="com.plugin.frege.actions.FregeReplExecuteAction">
                 <keyboard-shortcut keymap="$default" first-keystroke="ENTER"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="ENTER"/>
                 <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER"/>
         </action>
 
-<!--        <group id="FregeReplMenu" text="Frege REPL" description="Frege REPL" popup="true" keep-content="true">-->
             <action id="Frege.SendToRepl"
                     text="Send Selected Text to REPL"
                     class="com.plugin.frege.actions.FregeReplSendToConsole">
             </action>
-<!--        </group>-->
-        <!--        </group>-->
     </actions>
 </idea-plugin>

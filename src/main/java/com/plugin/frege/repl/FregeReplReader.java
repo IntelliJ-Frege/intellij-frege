@@ -1,4 +1,4 @@
-package com.plugin.frege.runConfiguration;
+package com.plugin.frege.repl;
 
 import com.intellij.util.io.BaseInputStreamReader;
 import org.jetbrains.annotations.NotNull;
@@ -11,10 +11,14 @@ import java.util.Deque;
 
 /**
  * HACK:
- * We want
+ * We want the caret to be right after "frege>" in REPL. But every command additionally prints "frege>", and
+ * we also show "frege>" as an IDEA's prompt, so we have two "frege> one under another.
+ *
+ * To fix this, we use custom reader, that reads from REPL process output and returns everything but
+ * the last line, that contains "frege>, and it returns it only after next command is typed and ENTER is pressed
+ *
+ * The same hack, but implemented in a different way, could be found at Scala plugin. See ScalaLanguageConsole.
  */
-// TODO docs, link to BaseInputStreamReader
-// TODO ScalaLanguageConsole.scala, 224 line, same hack, but much more easy
 public class FregeReplReader extends BaseInputStreamReader {
     private final InputStream in;
     private final int skipNLastLines;
@@ -33,7 +37,6 @@ public class FregeReplReader extends BaseInputStreamReader {
 
     @Override
     public int read(char @NotNull [] cbuf, int off, int len) throws IOException {
-        System.err.println("One read");
         char[] readFromIn = new char[len];
         int bytesReadFromIn = super.read(readFromIn, 0, len);
         new String(readFromIn, 0, bytesReadFromIn).chars().forEach(c -> {
@@ -41,9 +44,7 @@ public class FregeReplReader extends BaseInputStreamReader {
                 breaksCount++;
             }
             buffer.add((char) c);
-            System.err.print((char) c);
         });
-        System.err.println("");
         int bytesRead;
         for (bytesRead = 0; bytesRead < len; bytesRead++) {
             if (buffer.isEmpty()) break;
