@@ -39,6 +39,9 @@ public class FregeReplReader extends BaseInputStreamReader {
     public int read(char @NotNull [] cbuf, int off, int len) throws IOException {
         char[] readFromIn = new char[len];
         int bytesReadFromIn = super.read(readFromIn, 0, len);
+        if (bytesReadFromIn == -1) {
+            return -1;
+        }
         new String(readFromIn, 0, bytesReadFromIn).chars().forEach(c -> {
             if (isLineBreak((char) c)) {
                 breaksCount++;
