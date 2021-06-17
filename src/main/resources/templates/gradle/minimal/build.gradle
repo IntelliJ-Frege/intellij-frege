@@ -59,6 +59,7 @@ repositories {
     flatDir {
         dirs fregeDir
     }
+    mavenCentral()
 }
 
 void doDownloadCompiler() {
