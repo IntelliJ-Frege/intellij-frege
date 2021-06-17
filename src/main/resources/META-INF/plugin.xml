@@ -81,6 +81,11 @@
 
         <additionalTextAttributes scheme="Darcula" file="colorScheme/Darcula_Frege.xml" />
         <additionalTextAttributes scheme="Default" file="colorScheme/Default_Frege.xml" />
+
+        <intentionAction>
+            <category>Frege</category>
+            <className>com.plugin.frege.actions.FregeReplRunInConsoleIntention</className>
+        </intentionAction>
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
