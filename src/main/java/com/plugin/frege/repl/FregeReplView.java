@@ -131,7 +131,14 @@ public class FregeReplView extends LanguageConsoleImpl {
         String trimmedCommand = text.trim();
         historyController.addToHistory(trimmedCommand);
 
-        String commandInputText = trimmedCommand + "\n";
+        String multilineAdaptedCommand;
+        if (trimmedCommand.contains("\n")) {
+            multilineAdaptedCommand = String.format(":{\n%s\n:}", trimmedCommand);
+        } else {
+            multilineAdaptedCommand = trimmedCommand;
+        }
+
+        String commandInputText = multilineAdaptedCommand + "\n";
 
         try {
             outputStreamWriter.write(commandInputText);
