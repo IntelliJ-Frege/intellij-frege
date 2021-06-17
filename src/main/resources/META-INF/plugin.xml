@@ -84,7 +84,7 @@
 
         <intentionAction>
             <category>Frege</category>
-            <className>com.plugin.frege.actions.FregeReplRunInConsoleIntention</className>
+            <className>com.plugin.frege.repl.FregeReplRunInConsoleIntention</className>
         </intentionAction>
     </extensions>
 
@@ -100,16 +100,16 @@
         </action>
         <action id="Frege.ConsoleExecute"
                 text="Execute Text in Console"
-                class="com.plugin.frege.actions.FregeReplExecuteAction">
+                class="com.plugin.frege.repl.FregeReplExecuteAction">
                 <keyboard-shortcut keymap="$default" first-keystroke="ENTER"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="ENTER"/>
                 <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER"/>
         </action>
 
-            <action id="Frege.SendToRepl"
-                    text="Send Selected Text to REPL"
-                    class="com.plugin.frege.actions.FregeReplSendToConsole">
+            <action id="Frege.RunInRepl"
+                    text="Run Selected Text in Frege REPL"
+                    class="com.plugin.frege.repl.FregeReplRunInConsoleAction">
             </action>
     </actions>
 </idea-plugin>

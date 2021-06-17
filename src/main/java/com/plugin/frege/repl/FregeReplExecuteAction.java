@@ -1,4 +1,4 @@
-package com.plugin.frege.actions;
+package com.plugin.frege.repl;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;

@@ -2,6 +2,7 @@ package com.plugin.frege.repl;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,12 +21,12 @@ public class FregeReplViewMap {
 
     public static void addConsole(FregeReplView console) {
         consoleViews.put(console.getConsoleEditor(), console);
-        consoleAdditionListeners.forEach(c -> c.accept(console));
+        consoleAdditionListeners.forEach(c -> c.consume(console));
     }
 
     public static void removeConsole(FregeReplView console) {
         consoleViews.remove(console.getConsoleEditor());
-        consoleRemovalListeners.forEach(c -> c.accept(console));
+        consoleRemovalListeners.forEach(c -> c.consume(console));
     }
 
     @Nullable
@@ -56,6 +56,7 @@ public class FregeReplViewMap {
 
     /**
      * listener is called when a console is added, i.e. {@link FregeReplViewMap#addConsole} is called
+     *
      * @param listener listener to be called
      */
     public static void addConsoleAdditionListener(Consumer<FregeReplView> listener) {
@@ -68,6 +69,7 @@ public class FregeReplViewMap {
 
     /**
      * listener is called when a console is removed, i.e. {@link FregeReplViewMap#removeConsole} is called
+     *
      * @param listener listener to be called
      */
     public static void addConsoleRemovalListener(Consumer<FregeReplView> listener) {

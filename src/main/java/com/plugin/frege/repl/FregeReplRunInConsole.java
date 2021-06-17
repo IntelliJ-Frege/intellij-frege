@@ -1,9 +1,6 @@
-package com.plugin.frege.actions;
+package com.plugin.frege.repl;
 
-import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInsight.navigation.NavigationUtil;
-import com.intellij.codeInspection.util.IntentionFamilyName;
-import com.intellij.codeInspection.util.IntentionName;
 import com.intellij.execution.ProgramRunnerUtil;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
@@ -12,41 +9,25 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.psi.PsiFile;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.util.Consumer;
 import com.intellij.util.IncorrectOperationException;
-import com.plugin.frege.repl.FregeReplRunConfigurationType;
-import com.plugin.frege.repl.FregeReplView;
-import com.plugin.frege.repl.FregeReplViewMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.List;
 
-public class FregeReplRunInConsoleIntention implements IntentionAction {
-    @Override
-    public @IntentionName @NotNull String getText() {
-        return "Run in REPL";
-    }
-
-    @Override
-    public @NotNull @IntentionFamilyName String getFamilyName() {
-        return "Frege REPL";
-    }
-
-    @Override
-    public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return editor.getSelectionModel().hasSelection();
-    }
-
-    @Override
-    public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+public class FregeReplRunInConsole {
+    public static void invokeRunInConsole(@NotNull Project project, @NotNull Editor editor) {
         String textToRun = editor.getSelectionModel().getSelectedText();
         if (textToRun == null) {
             throw new IncorrectOperationException("No text selected");
         }
 
+        invokeRunInConsoleWithTextToRun(project, editor, textToRun);
+    }
+
+    public static void invokeRunInConsoleWithTextToRun(@NotNull Project project, @NotNull Editor editor, @NotNull String textToRun) {
         List<FregeReplView> fregeLaunchedREPLs = FregeReplViewMap.getConsoles(project);
         if (fregeLaunchedREPLs.isEmpty()) {
             showPromptByEnum(REPLPromptEnum.CREATE_NEW_REPL, project, editor, textToRun);
@@ -55,7 +36,7 @@ public class FregeReplRunInConsoleIntention implements IntentionAction {
         }
     }
 
-    private void showPromptChooser(@NotNull Project project, Editor editor, String textToRun) {
+    private static void showPromptChooser(@NotNull Project project, @NotNull Editor editor, @NotNull String textToRun) {
         List<REPLPromptEnum> REPLPromptsList = List.of(REPLPromptEnum.values());
         JBPopup popup = JBPopupFactory.getInstance().createPopupChooserBuilder(REPLPromptsList)
                 .setTitle("Choose REPL Action")
@@ -65,6 +46,61 @@ public class FregeReplRunInConsoleIntention implements IntentionAction {
                 .createPopup();
         showPromptForChoosingLaunchedREPL(project, editor, textToRun);
         popup.showInBestPositionFor(editor);
+    }
+
+    private static void showPromptByEnum(REPLPromptEnum chosen, @NotNull Project project, @NotNull Editor editor, @NotNull String textToRun) {
+        switch (chosen) {
+            case RUN_IN_EXISTING_REPL:
+                showPromptForChoosingLaunchedREPL(project, editor, textToRun);
+                break;
+            case CREATE_NEW_REPL:
+                showPromptForChoosingREPLRunConfiguration(project, editor, textToRun);
+                break;
+        }
+    }
+
+    private static void showPromptForChoosingLaunchedREPL(@NotNull Project project, @NotNull Editor editor, @NotNull String textToRun) {
+        List<FregeReplView> fregeLaunchedREPLs = FregeReplViewMap.getConsoles();
+        JBPopup popup = JBPopupFactory.getInstance().createPopupChooserBuilder(fregeLaunchedREPLs)
+                .setTitle("Choose Which REPL to Run Text in")
+                .setItemChosenCallback(repl -> repl.executeCommand(textToRun))
+                .setNamerForFiltering(FregeReplView::getName)
+                .setRenderer(new FregeREPLRenderer())
+                .createPopup();
+        NavigationUtil.hidePopupIfDumbModeStarts(popup, project);
+        popup.showInBestPositionFor(editor);
+    }
+
+    private static void showPromptForChoosingREPLRunConfiguration(@NotNull Project project, @NotNull Editor editor, @NotNull String textToRun) {
+        RunManager manager = RunManager.getInstance(project);
+        List<RunnerAndConfigurationSettings> fregeReplConfigurations = manager.getConfigurationSettingsList(FregeReplRunConfigurationType.class);
+        JBPopup popup = JBPopupFactory.getInstance().createPopupChooserBuilder(fregeReplConfigurations)
+                .setTitle("Choose REPL Configuration to Start New Console")
+                .setItemChosenCallback(getRunnerAndConfigurationSettingsConsumer(textToRun))
+                .setNamerForFiltering(RunnerAndConfigurationSettings::getName)
+                .setRenderer(new RunConfigurationRenderer())
+                .createPopup();
+        NavigationUtil.hidePopupIfDumbModeStarts(popup, project);
+        popup.showInBestPositionFor(editor);
+    }
+
+    @NotNull
+    private static Consumer<RunnerAndConfigurationSettings> getRunnerAndConfigurationSettingsConsumer(String textToRun) {
+        return config -> {
+            FregeReplViewMap.addConsoleAdditionListener(getSelfRemovingTextRunningListener(textToRun));
+            ProgramRunnerUtil.executeConfiguration(config, DefaultRunExecutor.getRunExecutorInstance());
+        };
+    }
+
+    @NotNull
+    private static Consumer<FregeReplView> getSelfRemovingTextRunningListener(String textToRun) {
+        return new Consumer<>() {
+            @Override
+            public void consume(FregeReplView console) {
+                console.executeCommand(textToRun);
+                FregeReplViewMap.removeConsoleAdditionListener(this);
+            }
+        };
     }
 
     private enum REPLPromptEnum {
@@ -81,61 +117,6 @@ public class FregeReplRunInConsoleIntention implements IntentionAction {
         public String toString() {
             return meaning;
         }
-    }
-
-    public void showPromptByEnum(REPLPromptEnum chosen, @NotNull Project project, Editor editor, String textToRun) {
-        switch (chosen) {
-            case RUN_IN_EXISTING_REPL:
-                showPromptForChoosingLaunchedREPL(project, editor, textToRun);
-                break;
-            case CREATE_NEW_REPL:
-                showPromptForChoosingREPLRunConfiguration(project, editor, textToRun);
-                break;
-        }
-    }
-
-    private void showPromptForChoosingLaunchedREPL(@NotNull Project project, Editor editor, String textToRun) {
-        List<FregeReplView> fregeLaunchedREPLs = FregeReplViewMap.getConsoles();
-        JBPopup popup = JBPopupFactory.getInstance().createPopupChooserBuilder(fregeLaunchedREPLs)
-                .setTitle("Choose Which REPL to Run Text in")
-                .setItemChosenCallback(repl -> repl.executeCommand(textToRun))
-                .setNamerForFiltering(FregeReplView::getName)
-                .setRenderer(new FregeREPLRenderer())
-                .createPopup();
-        NavigationUtil.hidePopupIfDumbModeStarts(popup, project);
-        popup.showInBestPositionFor(editor);
-    }
-
-    private void showPromptForChoosingREPLRunConfiguration(@NotNull Project project, Editor editor, String textToRun) {
-        RunManager manager = RunManager.getInstance(project);
-        List<RunnerAndConfigurationSettings> fregeReplConfigurations = manager.getConfigurationSettingsList(FregeReplRunConfigurationType.class);
-        JBPopup popup = JBPopupFactory.getInstance().createPopupChooserBuilder(fregeReplConfigurations)
-                .setTitle("Choose REPL Configuration to Start New Console")
-                .setItemChosenCallback(getRunnerAndConfigurationSettingsConsumer(textToRun))
-                .setNamerForFiltering(RunnerAndConfigurationSettings::getName)
-                .setRenderer(new RunConfigurationRenderer())
-                .createPopup();
-        NavigationUtil.hidePopupIfDumbModeStarts(popup, project);
-        popup.showInBestPositionFor(editor);
-    }
-
-    @NotNull
-    private Consumer<RunnerAndConfigurationSettings> getRunnerAndConfigurationSettingsConsumer(String textToRun) {
-        return config -> {
-            FregeReplViewMap.addConsoleAdditionListener(getSelfRemovingTextRunningListener(textToRun));
-            ProgramRunnerUtil.executeConfiguration(config, DefaultRunExecutor.getRunExecutorInstance());
-        };
-    }
-
-    @NotNull
-    private java.util.function.Consumer<FregeReplView> getSelfRemovingTextRunningListener(String textToRun) {
-        return new java.util.function.Consumer<>() {
-            @Override
-            public void accept(FregeReplView console) {
-                console.executeCommand(textToRun);
-                FregeReplViewMap.removeConsoleAdditionListener(this);
-            }
-        };
     }
 
     private static class FregeREPLRenderer extends ColoredListCellRenderer<FregeReplView> {
@@ -170,10 +151,5 @@ public class FregeReplRunInConsoleIntention implements IntentionAction {
                                              boolean hasFocus) {
             append(value.toString());
         }
-    }
-
-    @Override
-    public boolean startInWriteAction() {
-        return false;
     }
 }
