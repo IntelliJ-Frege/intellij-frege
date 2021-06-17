@@ -56,10 +56,10 @@ public class FregeReplView extends LanguageConsoleImpl {
             outputStreamWriter = new OutputStreamWriter(processInput);
             historyController = new ConsoleHistoryController(consoleRootType, "frege", this);
             historyController.install();
-            FregeReplViewMap.addConsole(this);
-
             modulesToLoad.stream().map(m -> ModuleManager.getInstance(consoleProject).findModuleByName(m)).
                     forEach(this::loadAllFregeFilesInModule);
+
+            FregeReplViewMap.addConsole(this);
         }
     }
 
@@ -114,7 +114,7 @@ public class FregeReplView extends LanguageConsoleImpl {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        FregeReplViewMap.delConsole(this);
+        FregeReplViewMap.removeConsole(this);
     }
 
     public void execute() {
