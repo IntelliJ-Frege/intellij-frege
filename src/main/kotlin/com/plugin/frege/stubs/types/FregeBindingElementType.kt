@@ -2,6 +2,7 @@ package com.plugin.frege.stubs.types
 
 import com.intellij.lang.ASTNode
 import com.plugin.frege.psi.FregeBinding
+import com.plugin.frege.psi.FregeClassDecl
 import com.plugin.frege.psi.FregeProgram
 import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.psi.impl.FregeBindingImpl
@@ -22,7 +23,8 @@ class FregeBindingElementType(debugName: String) : FregeMethodElementType(debugN
         if (element !is FregeBinding) {
             return false
         }
-        return (element.containingClass !is FregeProgram || isInGlobalScope(element))
-                && element.nameIdentifier?.reference?.resolve() === element
+        val containingClass = element.containingClass
+        return (containingClass !is FregeProgram && containingClass !is FregeClassDecl
+                || isInGlobalScope(element)) && element.nameIdentifier?.reference?.resolve() === element
     }
 }

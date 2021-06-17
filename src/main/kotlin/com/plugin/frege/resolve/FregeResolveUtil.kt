@@ -4,10 +4,7 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.vfs.VirtualFileFilter
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiMember
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.parentOfType
@@ -135,8 +132,9 @@ object FregeResolveUtil {
      */
     @JvmStatic
     fun findClassesInCurrentFile(element: PsiElement): List<FregePsiClass> {
-        val globalScope = element.parentOfType<FregeProgram>(true)?.body ?: return emptyList()
-        return globalScope.topDeclList.mapNotNull { it.firstChild as? FregePsiClass }
+        val module = element.parentOfType<FregeProgram>(true) ?: return emptyList()
+        val body = module.body ?: return emptyList()
+        return body.topDeclList.mapNotNull { it.firstChild as? FregePsiClass } + module
     }
 
     /**
@@ -163,7 +161,7 @@ object FregeResolveUtil {
                 it.methods.asSequence()
             }
         }
-        return result
+        return result.distinct()
     }
 
     private fun findMethodsInClassesInCurrentFile(
@@ -228,7 +226,7 @@ object FregeResolveUtil {
                 results += module
             }
         }
-        return results
+        return results.distinct()
     }
 
     private fun tryFindClassesInCurrentFileFromUsage(
