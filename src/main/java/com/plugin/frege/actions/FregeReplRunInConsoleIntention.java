@@ -109,9 +109,6 @@ public class FregeReplRunInConsoleIntention implements IntentionAction {
     private void showPromptForChoosingREPLRunConfiguration(@NotNull Project project, Editor editor, String textToRun) {
         RunManager manager = RunManager.getInstance(project);
         List<RunnerAndConfigurationSettings> fregeReplConfigurations = manager.getConfigurationSettingsList(FregeReplRunConfigurationType.class);
-        if (fregeReplConfigurations.isEmpty()) {
-            throw new IncorrectOperationException("Please, create at least one Frege REPL configuration");
-        }
         JBPopup popup = JBPopupFactory.getInstance().createPopupChooserBuilder(fregeReplConfigurations)
                 .setTitle("Choose REPL Configuration to Start New Console")
                 .setItemChosenCallback(getRunnerAndConfigurationSettingsConsumer(textToRun))
