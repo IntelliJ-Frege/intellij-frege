@@ -40,7 +40,8 @@
                            implementationClass="com.plugin.frege.editor.FregeBraceMatcher"/>
         <lang.commenter language="Frege"
                         implementationClass="com.plugin.frege.editor.FregeCommenter"/>
-        <spellchecker.support language="Frege" implementationClass="com.plugin.frege.editor.FregeSpellcheckingStrategy"/>
+        <spellchecker.support language="Frege"
+                              implementationClass="com.plugin.frege.editor.FregeSpellcheckingStrategy"/>
         <lang.findUsagesProvider language="Frege"
                                  implementationClass="com.plugin.frege.findusages.FregeFindUsagesProvider"/>
         <lang.refactoringSupport language="Frege"
@@ -62,9 +63,12 @@
 
         <codeInsight.lineMarkerProvider language="Frege"
                                         implementationClass="com.plugin.frege.linemarker.related.FregeRelatedItemLineMarkerProvider"/>
-        <runLineMarkerContributor language="Frege" implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerContributor" />
-        <completion.contributor language="Frege" implementationClass="com.plugin.frege.completion.FregeKeywordCompletionContributor"/>
-        <lang.documentationProvider language="Frege" implementationClass="com.plugin.frege.documentation.FregeDocumentationProvider"/>
+        <runLineMarkerContributor language="Frege"
+                                  implementationClass="com.plugin.frege.linemarker.FregeRunLineMarkerContributor"/>
+        <completion.contributor language="Frege"
+                                implementationClass="com.plugin.frege.completion.FregeKeywordCompletionContributor"/>
+        <lang.documentationProvider language="Frege"
+                                    implementationClass="com.plugin.frege.documentation.FregeDocumentationProvider"/>
 
         <defaultLiveTemplates file="/liveTemplates/Frege.xml"/>
         <liveTemplateContext implementation="com.plugin.frege.completion.FregeAbstractContext$Generic"/>
@@ -73,14 +77,14 @@
         <liveTemplateContext implementation="com.plugin.frege.completion.FregePatternedContext$FregeInstanceDecl"/>
         <liveTemplateContext implementation="com.plugin.frege.completion.FregePatternedContext$FregeDecl"/>
 
-        <internalFileTemplate name="Frege Module" />
-        <internalFileTemplate name="Frege Empty File" />
+        <internalFileTemplate name="Frege Module"/>
+        <internalFileTemplate name="Frege Empty File"/>
 
         <configurationType implementation="com.plugin.frege.repl.FregeReplRunConfigurationType"/>
         <actionPromoter implementation="com.plugin.frege.repl.FregeReplActionPromoter"/>
 
-        <additionalTextAttributes scheme="Darcula" file="colorScheme/Darcula_Frege.xml" />
-        <additionalTextAttributes scheme="Default" file="colorScheme/Default_Frege.xml" />
+        <additionalTextAttributes scheme="Darcula" file="colorScheme/Darcula_Frege.xml"/>
+        <additionalTextAttributes scheme="Default" file="colorScheme/Default_Frege.xml"/>
 
         <intentionAction>
             <category>Frege</category>
@@ -89,7 +93,7 @@
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
-        <frameworkSupport implementation="com.plugin.frege.gradle.GradleFregeFrameworkSupportProvider" />
+        <frameworkSupport implementation="com.plugin.frege.gradle.GradleFregeFrameworkSupportProvider"/>
     </extensions>
     <actions>
         <action id="Frege.NewFregeFile"
@@ -101,15 +105,14 @@
         <action id="Frege.ConsoleExecute"
                 text="Execute Text in Console"
                 class="com.plugin.frege.repl.FregeReplExecuteAction">
-                <keyboard-shortcut keymap="$default" first-keystroke="ENTER"/>
-                <keyboard-shortcut keymap="Mac OS X" first-keystroke="ENTER"/>
-                <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
-                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="ENTER"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER"/>
         </action>
 
-            <action id="Frege.RunInRepl"
-                    text="Run Selected Text in Frege REPL"
-                    class="com.plugin.frege.repl.FregeReplRunInConsoleAction">
-            </action>
+        <action id="Frege.RunInRepl"
+                class="com.plugin.frege.repl.FregeReplRunInConsoleAction">
+        </action>
     </actions>
 </idea-plugin>

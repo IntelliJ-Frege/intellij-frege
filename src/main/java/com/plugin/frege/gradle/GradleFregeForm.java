@@ -1,17 +1,10 @@
 package com.plugin.frege.gradle;
 
-import com.intellij.execution.ExecutionBundle;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 public class GradleFregeForm {
     boolean autoDownloadCompilerMode = true;
@@ -36,7 +29,7 @@ public class GradleFregeForm {
         });
 
         fregeCompilerPath.addBrowseFolderListener("Choose Path to Frege Compiler Jar", null, null,
-        new FileChooserDescriptor(false, false, true, true, false, false));
+                new FileChooserDescriptor(false, false, true, true, false, false));
     }
 
     private void selectAutodownloadCompilerMode(boolean value) {
