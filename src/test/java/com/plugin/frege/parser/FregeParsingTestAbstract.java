@@ -1,7 +1,8 @@
 package com.plugin.frege.parser;
 
 import com.intellij.testFramework.ParsingTestCase;
-import junit.framework.ComparisonFailure;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 
@@ -28,13 +29,25 @@ public abstract class FregeParsingTestAbstract extends ParsingTestCase {
         }
     }
 
-    protected void doAccurateTest() throws IOException {
+    protected void doAccurateTest() {
         doTest(true);
     }
 
     @Override
     protected boolean includeRanges() {
         return true;
+    }
+
+    @Override
+    @BeforeEach
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    @Override
+    @AfterEach
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Override
