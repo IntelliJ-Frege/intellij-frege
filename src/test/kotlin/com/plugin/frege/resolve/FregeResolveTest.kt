@@ -67,10 +67,15 @@ class FregeResolveTest : FregeCodeInsightTest() {
     }
 
     fun `test file parameters Lambda`() = doTest {
-        it is FregeParameter && it.text == "x" && it.parentOfTypes(FregeLambda::class) != null
+        it is FregeParameter && it.name == "x" && it.parentOfTypes(FregeLambda::class) != null
     }
 
     fun `test file parameters NoParameter`() = doNullTest()
+
+    // There was a problem with the last symbol in an indent section.
+    fun `test file parameters LastSymbol`() = doTest {
+        it is FregeParameter && it.name == "x"
+    }
 
     // Testing operators
 
