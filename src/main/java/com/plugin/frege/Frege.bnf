@@ -534,4 +534,5 @@ lexOperator ::= WORD_OPERATOR | symbolOperatorQuoted
 unaryOperator ::= EXLAMATION_MARK | QUESTION_MARK
 
 
-todo ::= NEW_LINE | LINE_COMMENT | BLOCK_COMMENT | DEFAULT | FOREIGN | NEWTYPE | DERIVING
+//noinspection BnfUnusedRule
+unusedInBnf ::= NEW_LINE | LINE_COMMENT | BLOCK_COMMENT

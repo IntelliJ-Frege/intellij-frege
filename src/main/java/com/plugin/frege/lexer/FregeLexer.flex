@@ -135,13 +135,10 @@ backQuote            = \`
         "class"                      { return FregeTypes.CLASS; }
         "interface"                  { return FregeTypes.INTERFACE; }
         "data"                       { return FregeTypes.DATA; }
-        "default"                    { return FregeTypes.DEFAULT; }
         "derive"                     { return FregeTypes.DERIVE; }
-        "deriving"                   { return FregeTypes.DERIVING; }
         "do"                         { return FregeTypes.DO; }
         "else"                       { return FregeTypes.ELSE; }
         "false"                      { return FregeTypes.FALSE; }
-        "foreign"                    { return FregeTypes.FOREIGN; }
         "forall"                     { return FregeTypes.FORALL; }
         "hiding"                     { return FregeTypes.HIDING; }
         "if"                         { return FregeTypes.IF; }

@@ -35,8 +35,8 @@ public class FregeParserDefinition implements ParserDefinition {
             FregeTypes.SYMOP_NO_RESERVED);
 
     public static final TokenSet KEYWORDS = TokenSet.create(FregeTypes.ABSTRACT, FregeTypes.CASE, FregeTypes.CLASS,
-            FregeTypes.INTERFACE, FregeTypes.DATA, FregeTypes.DEFAULT, FregeTypes.DERIVING, FregeTypes.DERIVE, FregeTypes.DO, FregeTypes.ELSE,
-            FregeTypes.FALSE, FregeTypes.FOREIGN, FregeTypes.FORALL, FregeTypes.IF, FregeTypes.IMPORT, FregeTypes.IN, FregeTypes.INFIX,
+            FregeTypes.INTERFACE, FregeTypes.DATA, FregeTypes.DERIVE, FregeTypes.DO, FregeTypes.ELSE,
+            FregeTypes.FALSE, FregeTypes.FORALL, FregeTypes.IF, FregeTypes.IMPORT, FregeTypes.IN, FregeTypes.INFIX,
             FregeTypes.INFIXL, FregeTypes.INFIXR, FregeTypes.INSTANCE, FregeTypes.LET,
             FregeTypes.NATIVE, FregeTypes.NEWTYPE, FregeTypes.OF, FregeTypes.PACKAGE, FregeTypes.MODULE,
             FregeTypes.PRIVATE_MODIFIER, FregeTypes.PROTECTED_MODIFIER, FregeTypes.PUBLIC_MODIFIER, FregeTypes.THEN,
