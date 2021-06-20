@@ -1,0 +1,5 @@
+module LastSymbol where
+
+class MyClass a where
+    func :: a -> a
+    func x = <caret>x
