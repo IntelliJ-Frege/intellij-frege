@@ -35,7 +35,7 @@ public class FregeLayoutLexerToken {
         if (!VIRTUAL_TOKENS.contains(type)) {
             throw new IllegalArgumentException(type + " is not a virtual type");
         }
-        return new FregeLayoutLexerToken(type, precedesToken.start,
+        return new FregeLayoutLexerToken(type, precedesToken.end,
                 precedesToken.end, precedesToken.column, "", precedesToken.line);
     }
 
