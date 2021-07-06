@@ -1,7 +1,4 @@
 import org.jetbrains.grammarkit.tasks.*
-import org.gradle.plugins.ide.idea.model.*
-
-import java.util.stream.Collectors
 
 plugins {
     id 'java'
@@ -15,7 +12,7 @@ apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'org.jetbrains.grammarkit'
 
 group 'com.plugin.frege'
-version '1.0-SNAPSHOT'
+version '1.0'
 
 repositories {
     mavenCentral()
@@ -62,8 +59,23 @@ compileJava {
 
 patchPluginXml {
     changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+      1.0 Release of plugin <br>
+      Features:<br>
+        <ul>
+            <li>Navigation</li>
+            <li>Find usages</li>
+            <li>Code completion</li>
+            <li>Syntax highlighting and color schemes</li>
+            <li>Rename refactoring</li>
+            <li>Index Frege files</li>
+            <li>Gradle-based build system compatible with JVM-languages</li>
+            <li>Frege REPL</li>
+            <li>Frege file templates</li>
+            <li>Documentation viewer</li>
+            <li>'Add import' quickfix for unresolved references</li>
+            <li>Spell checking</li>
+            <li>etc.</li>
+        </ul>"""
 }
 
 sourceSets.main.java.srcDirs 'src/gen'
