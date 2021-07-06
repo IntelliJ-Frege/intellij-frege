@@ -5,9 +5,6 @@
 # IntelliJ IDEA plugin for Frege language
 [![Frege Plugin Build & Test](https://github.com/IntelliJ-Frege/intellij-frege/actions/workflows/tests.yml/badge.svg)](https://github.com/IntelliJ-Frege/intellij-frege/actions/workflows/tests.yml)
 
-## Attention
-The plugin is under development and is unstable. According to our estimates, the first stable version with the declared features will be available not earlier than July (2021).
-
 ## What is Frege
 
 Frege is a Haskell for the JVM. It is functional, has strong static type system and lazy evaluations, 
@@ -17,7 +14,7 @@ Read more at [Frege github](https://github.com/Frege/frege).
 
 ## Installation
 
-Plugin is currently under development and is not yet loaded to JetBrains plugin repository.
+Plugin is available on [JetBrains plugin repository](https://plugins.jetbrains.com/plugin/17187-frege).
 
 ## Current progress
 
