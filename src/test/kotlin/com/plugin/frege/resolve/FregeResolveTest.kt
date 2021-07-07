@@ -77,6 +77,11 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeParameter && it.name == "x"
     }
 
+    // Issue #66
+    fun `test file parameters LambdaInDo`() = doTest {
+        it is FregeParameter && it.name == "it"
+    }
+
     // Testing operators
 
     fun `test file operators FromUsage`() = doTest {
