@@ -373,7 +373,9 @@ topExpression ::= condition
                 | ((EXLAMATION_MARK | QUESTION_MARK)* primary)+
 
 /* Lambda Expressions */
-lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr)
+lambda ::= BACK_SLASH pattern (lambda | RIGHT_ARROW expr) {
+    implements="com.plugin.frege.psi.FregeParametersHolder"
+}
 
 /* Do Expressions */
 doExpression ::= DO <<nestedIndentSection (doDecl | qConid LEFT_BRACE fieldsOrVaridInit RIGHT_BRACE)>>
