@@ -101,15 +101,15 @@ private object ImportAdder {
         val qualifiedName = moduleToAdd.qualifiedName ?: return
         val project = toModule.project
         val newImport = FregeElementFactory.createTopDecl(project, "import $qualifiedName").node
-        val virtualEndDecl = FregeElementFactory.createVirtualEndDecl(project).node
         val lastImport = toModule.imports.lastOrNull()
+        val newLine = FregeElementFactory.createNewLine(project).node
         if (lastImport != null) {
             val position = getInsertPositionAfterImport(lastImport)
-            doInsert(position, virtualEndDecl, newImport)
+            doInsert(position, newLine, newImport)
         } else {
-            val newLine = FregeElementFactory.createNewLine(project).node
             val position = getInsertPositionForFirstImport(toModule)
-            doInsert(position, newLine, virtualEndDecl, newImport)
+            val newLine2 = FregeElementFactory.createNewLine(project).node
+            doInsert(position, newLine, newLine2, newImport)
         }
     }
 
