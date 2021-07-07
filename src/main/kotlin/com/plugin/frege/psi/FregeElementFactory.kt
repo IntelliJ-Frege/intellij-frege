@@ -171,12 +171,4 @@ object FregeElementFactory {
     fun createNewLine(project: Project): PsiElement {
         return PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText("\n")
     }
-
-    @JvmStatic
-    fun createVirtualEndDecl(project: Project): PsiElement {
-        val fakeVirtualEndDecl = "${fakeProgram}f = 3\ng = 2"
-        val body = createElement<FregeBody>(project, fakeVirtualEndDecl)
-        return generateSequence(body.firstChild) { it.nextSibling }.find { it.elementType === FregeTypes.VIRTUAL_END_DECL }
-            ?: cannotCreateElement()
-    }
 }
