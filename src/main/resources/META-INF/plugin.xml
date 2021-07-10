@@ -24,6 +24,34 @@
         </ul>
     ]]></description>
 
+    <change-notes><![CDATA[
+        <ul>
+            <li><b>1.0.1</b> <em>(2021-07-10)</em>
+                <ul>
+                    <li> Fix 'add import' quickfix
+                    <li> Fix navigation to lambda parameters
+                </ul>
+            </li>
+            <li><b>1.0 Release</b> <em>(2021-07-04)</em>
+                <ul>
+                    <li>Navigation</li>
+                    <li>Find usages</li>
+                    <li>Code completion</li>
+                    <li>Syntax highlighting and color schemes</li>
+                    <li>Rename refactoring</li>
+                    <li>Index Frege files</li>
+                    <li>Gradle-based build system compatible with JVM-languages</li>
+                    <li>Frege REPL</li>
+                    <li>Frege file templates</li>
+                    <li>Documentation viewer</li>
+                    <li>'Add import' quickfix for unresolved references</li>
+                    <li>Spell checking</li>
+                    <li>etc.</li>
+                </ul>
+            </li>
+        </ul>
+    ]]></change-notes>
+
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
     <depends>com.intellij.gradle</depends>

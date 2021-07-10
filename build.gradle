@@ -12,7 +12,7 @@ apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'org.jetbrains.grammarkit'
 
 group 'com.plugin.frege'
-version '1.0'
+version '1.0.1'
 
 repositories {
     mavenCentral()
@@ -27,7 +27,7 @@ dependencies {
 }
 
 intellij {
-    version '2021.1'
+    version '211.6085-EAP-CANDIDATE-SNAPSHOT'
     plugins = ['java', 'gradle', 'gradle-java']
     downloadSources true
 }
@@ -55,27 +55,6 @@ compileKotlin {
 compileJava {
     dependsOn generateFregeParser
     dependsOn generateFregeLexer
-}
-
-patchPluginXml {
-    changeNotes """
-      1.0 Release of plugin <br>
-      Features:<br>
-        <ul>
-            <li>Navigation</li>
-            <li>Find usages</li>
-            <li>Code completion</li>
-            <li>Syntax highlighting and color schemes</li>
-            <li>Rename refactoring</li>
-            <li>Index Frege files</li>
-            <li>Gradle-based build system compatible with JVM-languages</li>
-            <li>Frege REPL</li>
-            <li>Frege file templates</li>
-            <li>Documentation viewer</li>
-            <li>'Add import' quickfix for unresolved references</li>
-            <li>Spell checking</li>
-            <li>etc.</li>
-        </ul>"""
 }
 
 sourceSets.main.java.srcDirs 'src/gen'
