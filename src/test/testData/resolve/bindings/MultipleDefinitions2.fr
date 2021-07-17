@@ -1,0 +1,6 @@
+module MultipleDefinitions1 where
+
+sum x y = x - y
+test = su<caret>m x y
+    where sum x y = sum x y
+            where sum x y = x * y

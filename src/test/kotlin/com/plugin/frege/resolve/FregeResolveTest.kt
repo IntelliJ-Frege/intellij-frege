@@ -56,6 +56,14 @@ class FregeResolveTest : FregeCodeInsightTest() {
 
     fun `test file bindings NoBinding`() = doNullTest()
 
+    fun `test file bindings MultipleDefinitions1`() = doTest {
+        it is FregeBinding && it.text == "sum x y = x * y"
+    }
+
+    fun `test file bindings MultipleDefinitions2`() = doTest {
+        it is FregeBinding && it.text.startsWith("sum x y = sum x y")
+    }
+
     // Testing parameters
 
     fun `test file parameters Parameters`() = doTest {
@@ -417,6 +425,10 @@ class FregeResolveTest : FregeCodeInsightTest() {
     }
 
     fun `test dir betweenFiles imports list noBinding Usage`() = doNullTest()
+
+    fun `test dir betweenFiles bindingMultipleDefinitions First`() = doTest {
+        it is FregeBinding && it.containingClass?.qualifiedName == "First"
+    }
 
     // Testing from Java
 
