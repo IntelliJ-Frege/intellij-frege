@@ -12,8 +12,7 @@ public abstract class FregeParsingTestAbstract extends ParsingTestCase {
     }
 
     protected void doSuccessfulParsingTest() throws IOException {
-        String name = getTestName();
-        parseFile(name, loadFile(name + "." + myFileExt));
+        doTest(false, false);
         ensureNoErrorElements();
     }
 
