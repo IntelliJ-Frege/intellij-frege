@@ -13,8 +13,10 @@ class FregeKeywordCompletionProvider(private val keywords: List<String>, private
         context: ProcessingContext,
         result: CompletionResultSet
     ) {
-        result.addAllElements(keywords.map { keyword ->
-            LookupElementBuilder.create(if (addSpaceToEnd) "$keyword " else keyword)
-        })
+        if (FregeCompletionUtil.shouldComplete(parameters.position)) {
+            result.addAllElements(keywords.map { keyword ->
+                LookupElementBuilder.create(if (addSpaceToEnd) "$keyword " else keyword)
+            })
+        }
     }
 }

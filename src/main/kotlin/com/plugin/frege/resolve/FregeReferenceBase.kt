@@ -4,6 +4,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.util.parentOfType
+import com.plugin.frege.completion.FregeCompletionUtil
 import com.plugin.frege.psi.FregeNamedElement
 
 abstract class FregeReferenceBase(@JvmField protected val psiElement: PsiElement, range: TextRange) :
@@ -28,6 +29,9 @@ abstract class FregeReferenceBase(@JvmField protected val psiElement: PsiElement
     }
 
     override fun getVariants(): Array<Any> {
+        if (!FregeCompletionUtil.shouldComplete(psiElement)) {
+            return emptyArray()
+        }
         return resolveInner(true).toTypedArray()
     }
 
