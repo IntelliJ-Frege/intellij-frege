@@ -1,8 +1,6 @@
 package com.plugin.frege;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.util.NlsContexts;
-import com.intellij.openapi.util.NlsSafe;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,12 +22,12 @@ public class FregeFileType extends LanguageFileType {
     }
 
     @Override
-    public @NlsContexts.Label @NotNull String getDescription() {
+    public @NotNull String getDescription() {
         return "Frege language file";
     }
 
     @Override
-    public @NlsSafe @NotNull String getDefaultExtension() {
+    public @NotNull String getDefaultExtension() {
         return "fr";
     }
 

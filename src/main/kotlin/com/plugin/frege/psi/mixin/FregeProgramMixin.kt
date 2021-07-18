@@ -1,7 +1,6 @@
 package com.plugin.frege.psi.mixin
 
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
@@ -30,7 +29,7 @@ abstract class FregeProgramMixin : FregePsiClassImpl<FregeProgramStub>, FregePro
         return packageName?.conidUsage
     }
 
-    override fun getQualifiedName(): @NlsSafe String {
+    override fun getQualifiedName(): String {
         val nameFromStub = greenStub?.name
         if (nameFromStub != null) {
             return nameFromStub
@@ -38,7 +37,7 @@ abstract class FregeProgramMixin : FregePsiClassImpl<FregeProgramStub>, FregePro
         return packageName?.text ?: DEFAULT_MODULE_NAME
     }
 
-    override fun getNameWithoutStub(): @NlsSafe String {
+    override fun getNameWithoutStub(): String {
         return nameIdentifier?.text ?: DEFAULT_MODULE_NAME
     }
 

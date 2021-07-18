@@ -150,10 +150,11 @@ object FregeResolveUtil {
     ): List<PsiElement> {
         val qualifiedName = getQualifiedNameFromUsage(usage)
         val result = findBindings(qualifiedName, usage, incompleteCode).toMutableList()
-        if (!incompleteCode) {
-            result += findMethodsInClassesInCurrentFile(qualifiedName, usage)
-            result += findMethodsFromUsageInImports(usage)
-        } else {
+        if (!incompleteCode && result.isEmpty()) {
+            result += findMethodsInClassesInCurrentFile(qualifiedName, usage).ifEmpty {
+                findMethodsFromUsageInImports(usage)
+            }
+        } else if (incompleteCode) {
             result += findClassesInCurrentFile(usage).flatMap {
                 it.methods.asSequence()
             }
