@@ -27,7 +27,7 @@ dependencies {
 }
 
 intellij {
-    version '2020.3'
+    version '2020.2'
     plugins = ['java', 'gradle', 'gradle-java']
     downloadSources true
 }

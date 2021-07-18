@@ -1,7 +1,6 @@
 package com.plugin.frege.psi.mixin
 
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
@@ -21,7 +20,7 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl<FregeClassStub>, Frege
         return false
     }
 
-    override fun getNameWithoutStub(): @NlsSafe String {
+    override fun getNameWithoutStub(): String {
         return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
     }
 
