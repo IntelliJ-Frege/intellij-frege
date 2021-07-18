@@ -76,7 +76,7 @@ public class FregeSyntaxHighlighter extends SyntaxHighlighterBase {
             return BRACKETS_KEYS;
         } else if (FregeParserDefinition.OPERATORS.contains(tokenType)) {
             return OPERATOR_KEYS;
-        } else if (tokenType.equals(FregeTypes.INTEGER)) {
+        } else if (FregeParserDefinition.NUMBERS.contains(tokenType)) {
             return NUMBER_KEYS;
         } else if (tokenType.equals(FregeTypes.CHAR)) {
             return CHAR_KEYS;

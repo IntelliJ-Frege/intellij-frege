@@ -42,6 +42,8 @@ public class FregeParserDefinition implements ParserDefinition {
             FregeTypes.PRIVATE_MODIFIER, FregeTypes.PROTECTED_MODIFIER, FregeTypes.PUBLIC_MODIFIER, FregeTypes.THEN,
             FregeTypes.THROWS, FregeTypes.TRUE, FregeTypes.TYPE, FregeTypes.WHERE, FregeTypes.SUPER_OR_SUBSCRIPT);
 
+    public static final TokenSet NUMBERS = TokenSet.create(FregeTypes.INTEGER, FregeTypes.FLOAT);
+
     @Override
     public @NotNull Lexer createLexer(Project project) {
         return new FregeLayoutLexerAdapter();
