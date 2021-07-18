@@ -27,7 +27,7 @@ dependencies {
 }
 
 intellij {
-    version '211.6085-EAP-CANDIDATE-SNAPSHOT'
+    version '2020.3'
     plugins = ['java', 'gradle', 'gradle-java']
     downloadSources true
 }
