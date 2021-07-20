@@ -26,10 +26,18 @@
 
     <change-notes><![CDATA[
         <ul>
+            <li><b>1.0.2</b> <em>(2021-07-18)</em>
+                <ul>
+                    <li>Fix navigation to functions with multiple declarations</li>
+                    <li>Fix annoying and unnecessary code completion after numbers</li>
+                    <li>Fix highlighting of floats</li>
+                    <li>Now the plugin is compatible with the 2020.2 IntelliJ IDEA version</li>
+                </ul>
+            </li>
             <li><b>1.0.1</b> <em>(2021-07-10)</em>
                 <ul>
-                    <li> Fix 'add import' quickfix
-                    <li> Fix navigation to lambda parameters
+                    <li>Fix 'add import' quickfix</li>
+                    <li>Fix navigation to lambda parameters</li>
                 </ul>
             </li>
             <li><b>1.0 Release</b> <em>(2021-07-04)</em>
@@ -51,6 +59,8 @@
             </li>
         </ul>
     ]]></change-notes>
+
+    <idea-version since-build="202.6397.46" until-build="211.*"/>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
