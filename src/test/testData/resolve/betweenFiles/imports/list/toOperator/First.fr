@@ -1,0 +1,5 @@
+module First where
+
+import Second (test, +++--)
+
+main = 1 ++<caret>+-- 2

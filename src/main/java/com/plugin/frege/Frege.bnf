@@ -126,14 +126,14 @@ importList ::= strongHiding? LEFT_PAREN (<<commaSequence importSpec>>)? RIGHT_PA
 importSpec ::= PUBLIC_MODIFIER? importItem importAlias?
 importItem ::= qVaridUsageImport
              | conidUsageImport importMembers?
-             | symbolOperatorQuoted
-             | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN
-             | BACK_QUOTE symbolOperatorQuoted BACK_QUOTE
-             | conidUsageImport DOT (varidUsageImport | conidUsageImport | symbolOperatorQuoted)
-importAlias ::= varidUsageImport | CONID | symbolOperatorQuoted
+             | symbolOperatorImport
+             | LEFT_PAREN symbolOperatorImport RIGHT_PAREN
+             | BACK_QUOTE symbolOperatorImport BACK_QUOTE
+             | conidUsageImport DOT (varidUsageImport | conidUsageImport | symbolOperatorImport)
+importAlias ::= varidUsageImport | CONID | symbolOperatorImport
 importMembers ::= LEFT_PAREN (<<commaSequence importMemberSpec>>)? RIGHT_PAREN
 importMemberSpec ::= PUBLIC_MODIFIER? importMember importAlias?
-importMember ::= varidUsageImport | symbolOperatorQuoted | conidUsageImport
+importMember ::= varidUsageImport | symbolOperatorImport | conidUsageImport
 /* Names and aliases for imports */
 importDeclAlias ::= conidUsage {
     implements="com.plugin.frege.psi.FregePsiClass"
@@ -148,6 +148,10 @@ varidUsageImport ::= extendedVarid {
     mixin="com.plugin.frege.psi.mixin.imports.FregeVaridUsageImportMixin"
 }
 qVaridUsageImport ::= (conidUsageImport DOT)? (conidUsageImport DOT)? varidUsageImport
+symbolOperatorImport ::= symbolOperatorQuoted {
+    implements="com.plugin.frege.psi.FregeCompositeElement"
+    mixin="com.plugin.frege.psi.mixin.imports.FregeSymbolOperatorImportMixin"
+}
 
 importPackageName ::= packagePrefix importPackageClassName
 importPackageClassName ::= CONID {

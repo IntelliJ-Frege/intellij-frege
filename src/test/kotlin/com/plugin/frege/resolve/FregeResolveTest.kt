@@ -431,6 +431,12 @@ class FregeResolveTest : FregeCodeInsightTest() {
 
     fun `test dir betweenFiles imports list noBinding Usage`() = doNullTest()
 
+    fun `test dir betweenFiles imports list toOperator First`() = doTest {
+        it is FregeBinding && it.name == "+++--" && it.containingClass?.qualifiedName == "Second"
+    }
+
+    fun `test dir betweenFiles imports list noOperator First`() = doNullTest()
+
     // Issue #85
     fun `test dir betweenFiles imports module withImportList First`() = doTest {
         it is FregeProgram && it.name == "Second"
