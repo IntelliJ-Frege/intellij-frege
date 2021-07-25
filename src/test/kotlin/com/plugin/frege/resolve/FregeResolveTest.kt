@@ -110,6 +110,11 @@ class FregeResolveTest : FregeCodeInsightTest() {
 
     fun `test file operators NoOperator`() = doNullTest()
 
+    // Issue #86
+    fun `test file operators AnnotationInClass`() = doTest {
+        it is FregeAnnotationItem && it.name == "++--++"
+    }
+
     // Testing where
 
     fun `test file where BindingBelow`() = doTest {
