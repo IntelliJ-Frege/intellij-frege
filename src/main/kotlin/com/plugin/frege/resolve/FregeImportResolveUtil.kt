@@ -141,10 +141,11 @@ object FregeImportResolveUtil {
     fun findMethodsFromUsageInImports(usage: PsiElement): List<FregePsiMethod> {
         val module = usage.parentOfType<FregeProgram>() ?: return emptyList()
         val project = usage.project
+        val dotsCount = usage.text.count { it == '.' } // a workaround for operators
         val qualifiedName = getQualifiedNameFromUsage(usage)
         val qualifier = qualifierFromQualifiedName(qualifiedName).ifEmpty { null }
-        val firstQualifier: String?
-        val secondQualifier: String?
+        var firstQualifier: String?
+        var secondQualifier: String?
         if (qualifier != null) {
             firstQualifier = qualifierFromQualifiedName(qualifier).ifEmpty { null }
             secondQualifier = nameFromQualifiedName(qualifier)
@@ -152,7 +153,22 @@ object FregeImportResolveUtil {
             firstQualifier = null
             secondQualifier = null
         }
-        val name = nameFromQualifiedName(qualifiedName)
+        var name = nameFromQualifiedName(qualifiedName)
+        // checking if we suddenly took dots from operator
+        val finalDotsCount = name.count { it == '.' }
+        when (dotsCount) {
+            finalDotsCount + 1 -> {
+                secondQualifier?.let { name = "$secondQualifier.$name" }
+                secondQualifier = firstQualifier
+                firstQualifier = null
+            }
+            finalDotsCount + 2 -> {
+                name = "$firstQualifier.$secondQualifier.$name"
+                firstQualifier = null
+                secondQualifier = null
+            }
+            else -> require(finalDotsCount == dotsCount)
+        }
         val imports = module.imports + getPreludeImport(project)
         return findMethodsByNameInImports(name, firstQualifier, secondQualifier, module, imports)
     }
@@ -178,8 +194,10 @@ object FregeImportResolveUtil {
                 return if (firstQualifier == null && secondQualifier == alias) null else secondQualifier
             }
 
-            private fun getVaridFromImportItem(importItem: FregeImportItem): FregeVaridUsageImport? {
-                return importItem.qVaridUsageImport?.varidUsageImport ?: importItem.varidUsageImport
+            private fun getMethodFromImportItem(importItem: FregeImportItem): PsiElement? {
+                return importItem.qVaridUsageImport?.varidUsageImport
+                    ?: importItem.varidUsageImport
+                    ?: importItem.symbolOperatorImport
             }
 
             override fun processModule(module: FregeProgram, hidden: Set<FregePsiMethod>, alias: String?): Boolean {
@@ -194,7 +212,8 @@ object FregeImportResolveUtil {
                         methodsFromModule.filter { it !in hidden }
                     } else {
                         methodsFromModule.filter {
-                            it.containingClass != module && it.containingClass?.name == secondQualifier
+                            it.containingClass != module
+                                    && it.containingClass?.name == secondQualifier
                                     && it !in hidden
                         }
                     }
@@ -212,7 +231,7 @@ object FregeImportResolveUtil {
                     return // TODO
                 }
                 val actualSecondQualifier = actualSecondQualifier(alias)
-                val varid = getVaridFromImportItem(importSpec.importItem) // TODO support importMembers
+                val varid = getMethodFromImportItem(importSpec.importItem) // TODO support importMembers
                 if (varid?.text != name) {
                     return
                 }
@@ -224,7 +243,7 @@ object FregeImportResolveUtil {
             }
 
             override fun hideElements(importItem: FregeImportItem): List<FregePsiMethod> {
-                val resolved = getVaridFromImportItem(importItem)?.reference?.resolve() as? FregePsiMethod
+                val resolved = getMethodFromImportItem(importItem)?.reference?.resolve() as? FregePsiMethod
                 return if (resolved != null) listOf(resolved) else emptyList()
             }
         })
