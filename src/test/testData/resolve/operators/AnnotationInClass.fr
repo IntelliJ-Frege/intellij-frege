@@ -1,0 +1,5 @@
+module AnnotationInClass where
+
+--- Issue #86
+class Test test where
+    (++-<caret>-++) :: test -> test -> test

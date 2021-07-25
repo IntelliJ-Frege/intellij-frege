@@ -19,16 +19,13 @@ open class FregeSymbolOperatorMixin(node: ASTNode) :
     override fun getReference(): PsiReference {
         return object : FregeReferenceBase(this, TextRange(0, textLength)) {
             override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
+                val namedElementOwner = namedElementOwner?.let { listOf(it) } ?: emptyList()
                 return when {
                     psiElement.parentOfTypes(FregeAnnotationItem::class, FregeFunctionLhs::class) != null -> {
-                        resolveBindingByNameElement(psiElement, incompleteCode)
+                        resolveBindingByNameElement(psiElement, incompleteCode).ifEmpty { namedElementOwner }
                     }
                     else -> {
-                        val namedElementOwner = namedElementOwner
-                        if (namedElementOwner != null) {
-                            return listOf(namedElementOwner)
-                        }
-                        findMethodsFromUsage(psiElement, incompleteCode)
+                        namedElementOwner.ifEmpty { findMethodsFromUsage(psiElement, incompleteCode) }
                     }
                 }
             }
