@@ -1,0 +1,5 @@
+module ToBinding where
+
+a . b = a + 2
+
+main = println (1 <caret>. 2)

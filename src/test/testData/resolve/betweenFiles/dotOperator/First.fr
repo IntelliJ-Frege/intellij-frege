@@ -1,0 +1,5 @@
+module First where
+
+import Second (.)
+
+main = println $ 1 <caret>. 2

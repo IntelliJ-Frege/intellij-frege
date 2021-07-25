@@ -81,8 +81,7 @@ object FregeResolveUtil {
                 if (!usageIsQualified && method.onlyQualifiedSearch()) {
                     return@filter false
                 }
-                val clazz = method.containingClass ?: return@filter false
-                val className = clazz.qualifiedName ?: return@filter false
+                val className = method.containingClass?.qualifiedName ?: return@filter false
                 className == qualifier || (!usageIsQualified && qualifierFromQualifiedName(className) == qualifier)
             }.ifEmpty {
                 findClassesByQualifiedName(project, qualifier).flatMap { clazz ->
