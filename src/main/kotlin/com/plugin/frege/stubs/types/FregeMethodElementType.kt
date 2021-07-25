@@ -10,8 +10,7 @@ import com.plugin.frege.stubs.index.FregeMethodNameIndex
 abstract class FregeMethodElementType(debugName: String) :
     FregeNamedStubElementType<FregeMethodStub, FregePsiMethod>(debugName) {
 
-    override val nameKey
-        get() = FregeMethodNameIndex.INSTANCE.key
+    override val nameKey by lazy { FregeMethodNameIndex.INSTANCE.key }
 
     override fun createStub(psi: FregePsiMethod, parentStub: StubElement<*>?): FregeMethodStub {
         return FregeMethodStub(parentStub, this, psi.name)
