@@ -182,7 +182,8 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun nameFromQualifiedName(qualifiedName: String): String {
-        return qualifiedName.substringAfterLast(".")
+        // TODO class for working with qualified names
+        return if (qualifiedName == "." || qualifiedName.endsWith("..")) "." else qualifiedName.substringAfterLast(".")
     }
 
     /**
@@ -190,7 +191,7 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun isNameQualified(name: String): Boolean {
-        return name.contains('.')
+        return name.contains('.') && name != "."
     }
 
     /**
@@ -209,7 +210,7 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun qualifierFromQualifiedName(qualifiedName: String): String {
-        return qualifiedName.substringBeforeLast(".", "")
+        return if (qualifiedName.endsWith("..")) qualifiedName.dropLast(2) else qualifiedName.substringBeforeLast(".", "")
     }
 
     /**

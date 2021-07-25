@@ -1,0 +1,11 @@
+module ToClassAnnotation where
+
+class Test test where
+    (.) :: a -> a -> a
+
+instance Test Int where
+    (.) a b = a + b
+
+--- This test was created when there is no type inference
+--- Maybe when it fails, it should point to another element due to type system
+main = println $ 1 <caret>. 2

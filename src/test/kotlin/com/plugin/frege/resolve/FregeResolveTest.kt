@@ -115,6 +115,14 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeAnnotationItem && it.name == "++--++"
     }
 
+    fun `test file operators dots ToBinding`() = doTest {
+        it is FregeBinding && it.name == "."
+    }
+
+    fun `test file operators dots ToClassAnnotation`() = doTest {
+        it is FregeAnnotationItem && it.name == "." && it.containingClass?.qualifiedName == "ToClassAnnotation.Test"
+    }
+
     // Testing where
 
     fun `test file where BindingBelow`() = doTest {
@@ -340,6 +348,11 @@ class FregeResolveTest : FregeCodeInsightTest() {
 
     fun `test dir betweenFiles qualifiedBinding First`() = doTest {
         it is FregeBinding && it.name == "check" && it.containingClass?.qualifiedName == "Second"
+    }
+
+    // Issue #68
+    fun `test dir betweenFiles dotOperator First`() = doTest {
+        it is FregeBinding && it.name == "."
     }
 
     fun `test dir betweenFiles class fromInstance ClassUsage`() = doTest {
