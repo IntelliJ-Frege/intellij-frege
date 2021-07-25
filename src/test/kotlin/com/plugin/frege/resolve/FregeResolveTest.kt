@@ -426,6 +426,11 @@ class FregeResolveTest : FregeCodeInsightTest() {
 
     fun `test dir betweenFiles imports list noBinding Usage`() = doNullTest()
 
+    // Issue #85
+    fun `test dir betweenFiles imports module withImportList First`() = doTest {
+        it is FregeProgram && it.name == "Second"
+    }
+
     fun `test dir betweenFiles bindingMultipleDefinitions First`() = doTest {
         it is FregeBinding && it.containingClass?.qualifiedName == "First"
     }

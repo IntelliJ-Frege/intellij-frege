@@ -100,10 +100,13 @@ object FregeImportResolveUtil {
                 if (clazz != null && clazz !in hidden) {
                     results += clazz
                 }
-                if (module in possibleResults.classes && module !in hidden) {
-                    results += module
-                }
                 return true
+            }
+
+            override fun processModuleName(moduleOrAlias: FregePsiClass, hidden: Set<FregePsiClass>) {
+                if (moduleOrAlias in possibleResults.classes && moduleOrAlias !in hidden) {
+                    results += moduleOrAlias
+                }
             }
 
             override fun processImportSpec(importSpec: FregeImportSpec, alias: String?) {
@@ -131,7 +134,7 @@ object FregeImportResolveUtil {
             }
         })
 
-        return results.distinct().filter { it !== module && it.containingClass !== module } // TODO without workaround
+        return results.distinct()
     }
 
     @JvmStatic
@@ -267,14 +270,18 @@ object FregeImportResolveUtil {
             }
         }
 
+        val module = getModuleByImport(import)
         if ((isHiding || importList == null) && (isImportPublic || isStartPoint)) {
-            val module = getModuleByImport(import)
             if (module != null) {
                 val shouldVisit = processor.processModule(module, hidden, currentAlias)
                 if (shouldVisit) {
                     visitImports(module.imports, processor, false, currentAlias)
                 }
             }
+        }
+
+        (import.importDeclAlias ?: module)?.let {
+            processor.processModuleName(it, hidden)
         }
     }
 
@@ -286,6 +293,13 @@ object FregeImportResolveUtil {
          * @return if imports in the [module] should be processed as well.
          */
         open fun processModule(module: FregeProgram, hidden: Set<E>, alias: String?): Boolean = false
+
+        /**
+         * Processes [moduleOrAlias] in import statement, considering that [hidden] cannot be resolved.
+         * If there is no a module alias for this one, it will be [moduleOrAlias].
+         * Otherwise, it's an import alias.
+         */
+        open fun processModuleName(moduleOrAlias: FregePsiClass, hidden: Set<E>) = Unit
 
         /**
          * Processes [importSpec],

@@ -1,0 +1,5 @@
+module First where
+
+import Second (test)
+--- Issue #85
+main = println Secon<caret>d.test
