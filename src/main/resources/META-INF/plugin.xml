@@ -26,6 +26,13 @@
 
     <change-notes><![CDATA[
         <ul>
+            <li><b>1.0.3</b> <em>(2021-07-26)</em>
+                <ul>
+                    <li>Fix resolving of the dot-operator and a few other issues with navigation</li>
+                    <li>Support operators in import lists</li>
+                    <li>Now 'rename' refactoring on a file also renames the corresponding module and vice versa</li>
+                </ul>
+            </li>
             <li><b>1.0.2</b> <em>(2021-07-18)</em>
                 <ul>
                     <li>Fix navigation to functions with multiple declarations</li>
