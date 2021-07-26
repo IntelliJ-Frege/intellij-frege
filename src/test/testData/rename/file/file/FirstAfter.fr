@@ -1,0 +1,3 @@
+module first.Renamed where
+
+first = 10

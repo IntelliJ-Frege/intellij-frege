@@ -1,0 +1,5 @@
+module second.Second where
+
+import first.First
+
+second = First.first
