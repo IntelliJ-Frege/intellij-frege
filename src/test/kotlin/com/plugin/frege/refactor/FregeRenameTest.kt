@@ -1,5 +1,6 @@
 package com.plugin.frege.refactor
 
+import com.intellij.openapi.application.ApplicationManager
 import com.plugin.frege.FregeCodeInsightTest
 import junit.framework.TestCase
 import java.nio.file.Path
@@ -34,6 +35,26 @@ class FregeRenameTest : FregeCodeInsightTest() {
     fun `test imports importAlias Alias`() = doTest("O")
 
     fun `test program Program`() = doTest("Petya")
+
+    fun `test file module First`() {
+        doTest("RenamedModule")
+        assertEquals("RenamedModule.fr", myFixture.file.name)
+    }
+
+    // special case
+    fun `test file file`() {
+        val firstBefore = findFileWithoutExtension(Path.of("file", "file", "First")).toString()
+        val secondBefore = findFileWithoutExtension(Path.of("file", "file", "Second")).toString()
+        val firstAfter = findFileWithoutExtension(Path.of("file", "file", "FirstAfter")).toString()
+        val secondAfter = findFileWithoutExtension(Path.of("file", "file", "SecondAfter")).toString()
+        myFixture.configureByFiles(firstBefore, secondBefore)
+        ApplicationManager.getApplication().runWriteAction {
+            myFixture.file.name = "Renamed.fr"
+        }
+        assertEquals("Renamed.fr", myFixture.file.name)
+        myFixture.checkResultByFile(firstAfter) // only this variant of check because file is renamed
+        myFixture.checkResultByFile(secondBefore, secondAfter, false)
+    }
 
     private fun doTest(newName: String) {
         val name = getTestName(false)

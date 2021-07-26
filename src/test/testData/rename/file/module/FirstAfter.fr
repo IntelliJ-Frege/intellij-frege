@@ -1,0 +1,3 @@
+module first.RenamedModule where
+
+hello = 10

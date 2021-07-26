@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.impl.file.PsiFileImplUtil
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.documentation.DocBuilder
@@ -24,6 +25,17 @@ abstract class FregeProgramMixin : FregePsiClassImpl<FregeProgramStub>, FregePro
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeProgramStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
+
+    override fun setName(name: String): PsiElement {
+        val file = parent as? FregeFile
+        val virtualFile = file?.virtualFile
+        if (virtualFile?.nameWithoutExtension == this.name) {
+            val fileName = "$name.${virtualFile.extension}"
+            PsiFileImplUtil.checkSetName(file, fileName)
+            PsiFileImplUtil.setName(file, fileName)
+        }
+        return super.setName(name)
+    }
 
     override fun getNameIdentifier(): PsiIdentifier? {
         return packageName?.conidUsage

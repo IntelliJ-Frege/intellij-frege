@@ -1,0 +1,5 @@
+module second.Second where
+
+import first.Renamed
+
+second = Renamed.first
