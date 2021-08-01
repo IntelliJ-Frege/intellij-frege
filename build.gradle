@@ -4,7 +4,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.5.0'
     id 'org.jetbrains.intellij' version '0.7.2'
-    id 'org.jetbrains.grammarkit' version '2021.1'
+    id 'org.jetbrains.grammarkit' version '2021.1.3'
     id 'idea'
 }
 
@@ -20,10 +20,10 @@ repositories {
 
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.0'
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.21'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 }
 
 intellij {
