@@ -20,7 +20,15 @@ class FregeKeywordCompletionContributor : CompletionContributor() {
             FregeKeywords.PUBLIC_MODIFIER, FregeKeywords.PROTECTED_MODIFIER, FregeKeywords.PRIVATE_MODIFIER
         )
         registerStandardCompletion(
-            FregePatterns.BooleanLiteralPatterns.booleanLiteralPattern(),
+            FregePatterns.BooleanLiteralPatterns.booleanLiteralTermPattern(),
+            FregeKeywords.FALSE, FregeKeywords.TRUE
+        )
+        registerStandardCompletion(
+            FregePatterns.BooleanLiteralPatterns.booleanLiteralPatternTermPattern(),
+            FregeKeywords.FALSE, FregeKeywords.TRUE
+        )
+        registerStandardCompletion(
+            FregePatterns.BooleanLiteralPatterns.booleanLiteralTopDeclarationPattern(),
             FregeKeywords.FALSE, FregeKeywords.TRUE
         )
         registerStandardCompletion(FregePatterns.CaseExpressionPatterns.casePattern(), FregeKeywords.CASE)
