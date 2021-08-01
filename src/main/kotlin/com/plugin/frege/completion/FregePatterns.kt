@@ -15,11 +15,26 @@ object FregePatterns {
 
     object BooleanLiteralPatterns : PlatformPatterns() {
         @JvmStatic
-        fun booleanLiteralPattern(): PsiElementPattern.Capture<PsiElement> {
-            return psiElement().withSuperParent(2, FregeTerm::class.java)
+        fun booleanLiteralTermPattern(): PsiElementPattern.Capture<PsiElement> {
+            return psiElement().withSuperParent(3, FregeTerm::class.java)
         }
 
-        // TODO support pTerm
+        @JvmStatic
+        fun booleanLiteralPatternTermPattern(): PsiElementPattern.Capture<PsiElement> {
+            return psiElement().withSuperParent(3, FregePatternTerm::class.java)
+        }
+
+        @JvmStatic
+        fun booleanLiteralTopDeclarationPattern(): PsiElementPattern.Capture<PsiElement> {
+            return psiElement().inside(
+                true,
+                psiElement(FregeTopDecl::class.java),
+                psiElement().andOr(
+                    psiElement().afterLeaf(FregeKeywords.FALSE),
+                    psiElement().afterLeaf(FregeKeywords.TRUE)
+                )
+            )
+        }
     }
 
     object CaseExpressionPatterns : PlatformPatterns() {
