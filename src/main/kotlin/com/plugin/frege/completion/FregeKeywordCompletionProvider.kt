@@ -14,9 +14,21 @@ class FregeKeywordCompletionProvider(private val keywords: List<String>, private
         result: CompletionResultSet
     ) {
         if (FregeCompletionUtil.shouldComplete(parameters.position)) {
+            val nextSymbolIsSpace = isNextSymbolIsSpace(parameters)
             result.addAllElements(keywords.map { keyword ->
-                LookupElementBuilder.create(if (addSpaceToEnd) "$keyword " else keyword)
+                LookupElementBuilder.create(if (addSpaceToEnd && !nextSymbolIsSpace) "$keyword " else keyword)
             })
+        }
+    }
+
+    private fun isNextSymbolIsSpace(parameters: CompletionParameters): Boolean {
+        val editor = parameters.editor
+        val offset = editor.caretModel.primaryCaret.offset
+        val document = editor.document
+        return if (offset < document.textLength) {
+            document.text[offset] == ' '
+        } else {
+            false
         }
     }
 }
