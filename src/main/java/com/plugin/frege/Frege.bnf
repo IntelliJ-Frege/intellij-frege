@@ -215,7 +215,10 @@ functionLhs ::= functionLexOperatorLhs
               | (functionName | LEFT_PAREN symbolOperatorQuoted RIGHT_PAREN) patternTerms?
 private functionLexOperatorLhs ::= patternTerms lexOperator patternTerms
                                  | LEFT_PAREN patternTerms lexOperator patternTerms RIGHT_PAREN
-rhs ::= (EQUAL expr | guardedExpressions) whereSection? {
+rhs ::= (rhsExpression | guardedExpressions) whereSection? {
+    pin=1
+}
+private rhsExpression ::= EQUAL expr {
     pin=1
 }
 functionName ::= extendedVarid {
@@ -417,7 +420,9 @@ letInExpression ::= letExpression IN expr {
 
 /* Guarded Expressions */
 guardedExpressions ::= guardedExpression+
-guardedExpression ::= VERTICAL_BAR guardDecls (RIGHT_ARROW | EQUAL) expr
+guardedExpression ::= VERTICAL_BAR guardDecls (RIGHT_ARROW | EQUAL) expr {
+    pin=1
+}
 guardDecls ::= <<commaSequence guardDecl>> COMMA?
 guardDecl ::= expr (LEFT_ARROW expr)?
 
