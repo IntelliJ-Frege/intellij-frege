@@ -26,6 +26,14 @@
 
     <change-notes><![CDATA[
         <ul>
+            <li><b>1.0.4</b> <em>(2021-08-01)</em>
+                <ul>
+                    <li>Support IntelliJ-IDEA 2021.2</li>
+                    <li>Fix code completion for <tt>true</tt> and <tt>false</tt></li>
+                    <li>Improve error recovery for bindings</li>
+                    <li>Minor improvement of keywords completion</li>
+                </ul>
+            </li>
             <li><b>1.0.3</b> <em>(2021-07-26)</em>
                 <ul>
                     <li>Fix resolving of the dot-operator and a few other issues with navigation</li>
