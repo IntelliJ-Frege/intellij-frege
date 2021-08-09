@@ -5,13 +5,11 @@ import com.intellij.lang.jvm.JvmModifier
 import com.intellij.lang.jvm.JvmParameter
 import com.intellij.lang.jvm.types.JvmReferenceType
 import com.intellij.psi.*
-import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.MethodSignature
 import com.intellij.psi.util.parentOfType
-import com.plugin.frege.FregeLanguage
 import com.plugin.frege.documentation.FregeDocUtil
 import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.FregeNativeDataDecl
@@ -75,10 +73,6 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
 
     override fun getIdentifyingElement(): PsiElement? {
         return delegatedMember?.identifyingElement ?: super<FregePsiMethodImpl>.getIdentifyingElement()
-    }
-
-    override fun getModifierList(): PsiModifierList {
-        return LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC)
     }
 
     override fun getThrowsList(): PsiReferenceList {

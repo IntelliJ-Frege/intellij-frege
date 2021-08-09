@@ -19,6 +19,7 @@ object FregeElementTypeFactory {
             "ANNOTATION_ITEM" -> FregeAnnotationItemElementType(name)
             "NATIVE_FUNCTION" -> FregeNativeFunctionElementType(name)
             "LABEL" -> FregeLabelElementType(name)
+            "ACCESS_MODIFIER" -> FregeAccessModifierElementType(name)
             else -> throw IllegalStateException("Unknown element name: $name")
         }
     }

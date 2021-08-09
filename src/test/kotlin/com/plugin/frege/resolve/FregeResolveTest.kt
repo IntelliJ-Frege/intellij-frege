@@ -459,6 +459,36 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeBinding && it.containingClass?.qualifiedName == "First"
     }
 
+    fun `test dir betweenFiles accessModifiers public binding First`() = doTest {
+        it is FregeBinding && it.name == "hello" && it.containingClass?.qualifiedName == "Second"
+    }
+
+    fun `test dir betweenFiles accessModifiers public data First`() = doTest {
+        it is FregeDataDecl && it.qualifiedName == "second.Second.TestData"
+    }
+
+    fun `test dir betweenFiles accessModifiers protected binding First`() = doTest {
+        it is FregeBinding && it.name == "test" && it.containingClass?.qualifiedName == "Second"
+    }
+
+    fun `test dir betweenFiles accessModifiers protected noBinding First`() = doNullTest()
+
+    fun `test dir betweenFiles accessModifiers protected data First`() = doTest {
+        it is FregeDataDecl && it.qualifiedName == "Second.MyData"
+    }
+
+    fun `test dir betweenFiles accessModifiers protected noData First`() = doNullTest()
+
+    fun `test dir betweenFiles accessModifiers protected noConstructor First`() = doNullTest()
+
+    fun `test dir betweenFiles accessModifiers private noBinding First`() = doNullTest()
+
+    fun `test dir betweenFiles accessModifiers private noBinding2 First`() = doNullTest()
+
+    fun `test dir betweenFiles accessModifiers private noData First`() = doNullTest()
+
+    fun `test dir betweenFiles accessModifiers private noData2 First`() = doNullTest()
+
     // Testing from Java
 
     fun `test dir fromJava ToModule JavaClass`() = doTest {

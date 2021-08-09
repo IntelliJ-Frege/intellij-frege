@@ -7,7 +7,10 @@ import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.containers.addIfNotNull
 import com.plugin.frege.psi.*
+import com.plugin.frege.psi.impl.FregePsiClassImpl
+import com.plugin.frege.psi.impl.FregePsiMethodImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.getQualifiedNameFromUsage
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.isElementAccessibleFromModule
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.isElementTypeWithinChildren
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
@@ -135,6 +138,7 @@ object FregeImportResolveUtil {
         })
 
         return results.distinct()
+            .filter { it is FregePsiClassImpl<*> && isElementAccessibleFromModule(it, module) }
     }
 
     @JvmStatic
@@ -251,6 +255,7 @@ object FregeImportResolveUtil {
             .distinct()
             .filter{ (!it.onlyQualifiedSearch() || secondQualifier != null) }
             .filter { it.containingClass != module && it.containingClass?.containingClass != module } // TODO
+            .filter { it is FregePsiMethodImpl && isElementAccessibleFromModule(it, module) }
             .toList()
     }
 

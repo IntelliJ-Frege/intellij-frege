@@ -30,10 +30,6 @@ abstract class FregeConstructMixin: FregePsiMethodImpl, FregeConstruct {
         return conidUsage
     }
 
-    override fun getModifierList(): PsiModifierList {
-        return LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC, PsiModifier.FINAL)
-    }
-
     override fun getBody(): PsiCodeBlock {
         return PsiCodeBlockImpl(text)
     }

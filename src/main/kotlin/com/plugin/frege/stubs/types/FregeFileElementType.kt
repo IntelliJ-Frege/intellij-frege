@@ -13,7 +13,7 @@ class FregeFileElementType(language: FregeLanguage?) : IStubFileElementType<Freg
         @JvmField
         val INSTANCE = FregeFileElementType(FregeLanguage.INSTANCE)
 
-        private const val VERSION = 1 // Change the version if you want to re-index Frege
+        private const val VERSION = 2 // Change the version if you want to re-index Frege
     }
 
     override fun getStubVersion(): Int = VERSION
