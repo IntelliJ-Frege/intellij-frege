@@ -8,6 +8,7 @@ import com.intellij.psi.util.parentOfType
 import com.plugin.frege.psi.FregeElementFactory
 import com.plugin.frege.psi.FregeImportDecl
 import com.plugin.frege.psi.FregeProgram
+import com.plugin.frege.psi.FregeResolvableElement
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
@@ -15,7 +16,7 @@ import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
 import com.plugin.frege.resolve.FregeImportResolveUtil
 import com.plugin.frege.resolve.FregeReferenceBase
 
-open class FregeConidUsageImportMixin(node: ASTNode) : FregeCompositeElementImpl(node) {
+open class FregeConidUsageImportMixin(node: ASTNode) : FregeCompositeElementImpl(node), FregeResolvableElement {
     override fun getReference(): PsiReference {
         return object : FregeReferenceBase(this, TextRange(0, textLength)) {
             override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {

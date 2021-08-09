@@ -140,16 +140,19 @@ importDeclAlias ::= conidUsage {
     mixin="com.plugin.frege.psi.mixin.imports.FregeImportDeclAliasMixin"
 }
 conidUsageImport ::= CONID {
-    implements="com.plugin.frege.psi.FregeCompositeElement"
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.plugin.frege.psi.FregeResolvableElement"]
     mixin="com.plugin.frege.psi.mixin.imports.FregeConidUsageImportMixin"
 }
 varidUsageImport ::= extendedVarid {
-    implements="com.plugin.frege.psi.FregeCompositeElement"
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.plugin.frege.psi.FregeResolvableElement"]
     mixin="com.plugin.frege.psi.mixin.imports.FregeVaridUsageImportMixin"
 }
 qVaridUsageImport ::= (conidUsageImport DOT)? (conidUsageImport DOT)? varidUsageImport
 symbolOperatorImport ::= symbolOperatorQuoted {
-    implements="com.plugin.frege.psi.FregeCompositeElement"
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.plugin.frege.psi.FregeResolvableElement"]
     mixin="com.plugin.frege.psi.mixin.imports.FregeSymbolOperatorImportMixin"
 }
 
