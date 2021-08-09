@@ -2,10 +2,7 @@ package com.plugin.frege.psi.impl
 
 import com.intellij.lang.ASTNode
 import com.intellij.psi.*
-import com.intellij.psi.impl.light.LightParameter
-import com.intellij.psi.impl.light.LightParameterListBuilder
-import com.intellij.psi.impl.light.LightReferenceListBuilder
-import com.intellij.psi.impl.light.LightTypeElement
+import com.intellij.psi.impl.light.*
 import com.intellij.psi.impl.source.HierarchicalMethodSignatureImpl
 import com.intellij.psi.javadoc.PsiDocComment
 import com.intellij.psi.search.GlobalSearchScope
@@ -21,29 +18,13 @@ import org.jetbrains.annotations.NonNls
 
 @Suppress("UnstableApiUsage")
 abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMethodStub>, FregePsiMethod {
-    protected companion object {
-        private var objectType: PsiType? = null
+    private val objectType: PsiType by lazy {
+        PsiMethodReferenceType.getJavaLangObject(manager, GlobalSearchScope.everythingScope(project))
     }
 
-    protected var objectTypeElement: LightTypeElement? = null
-        get() {
-            if (field == null) {
-                if (objectType != null) {
-                    field = LightTypeElement(manager, objectType)
-                }
-            }
-            return field
-        }
-        private set
-
-    protected val objectType: PsiType?
-        get() {
-            if (Companion.objectType == null) {
-                Companion.objectType =
-                    PsiMethodReferenceType.getJavaLangObject(manager, GlobalSearchScope.everythingScope(project))
-            }
-            return Companion.objectType
-        }
+    protected val objectTypeElement: LightTypeElement? by lazy {
+        LightTypeElement(manager, objectType)
+    }
 
     constructor(node: ASTNode) : super(node)
 
@@ -113,7 +94,7 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
         val list = LightParameterListBuilder(manager, FregeLanguage.INSTANCE)
         val paramsNumber = getParamsNumber()
         for (i in 0 until paramsNumber) {
-            list.addParameter(LightParameter("arg$i", objectType as PsiType, this))
+            list.addParameter(LightParameter("arg$i", objectType, this))
         }
         return list // TODO a normal type system
     }
@@ -137,7 +118,7 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
     }
 
     override fun getReturnType(): PsiType {
-        return objectType!! // TODO waiting for type system
+        return objectType // TODO waiting for type system
     }
 
     override fun getReturnTypeElement(): PsiTypeElement? {
