@@ -10,7 +10,7 @@ import com.plugin.frege.psi.impl.FregeCompositeElementImpl
 import com.plugin.frege.resolve.FregeImportResolveUtil
 import com.plugin.frege.resolve.FregeReferenceBase
 
-open class FregeVaridUsageImportMixin(node: ASTNode) : FregeCompositeElementImpl(node) {
+open class FregeVaridUsageImportMixin(node: ASTNode) : FregeCompositeElementImpl(node), FregeResolvableElement {
     override fun getReference(): PsiReference {
         return object : FregeReferenceBase(this, TextRange(0, textLength)) {
             override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
