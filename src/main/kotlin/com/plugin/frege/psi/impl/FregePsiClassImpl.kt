@@ -200,7 +200,9 @@ abstract class FregePsiClassImpl<StubT : FregeClassStub> :
     }
 
     override fun getModifierList(): PsiModifierList {
-        return LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC, PsiModifier.FINAL) // TODO
+        val baseList = LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.FINAL)
+        baseList.addModifier(accessPsiModifier)
+        return baseList
     }
 
     override fun hasModifierProperty(@NonNls name: String): Boolean {

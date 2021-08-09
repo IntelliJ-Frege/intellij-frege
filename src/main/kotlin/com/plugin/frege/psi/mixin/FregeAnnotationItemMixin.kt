@@ -3,13 +3,9 @@ package com.plugin.frege.psi.mixin
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiCodeBlock
 import com.intellij.psi.PsiIdentifier
-import com.intellij.psi.PsiModifier
-import com.intellij.psi.PsiModifierList
-import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.parentOfType
-import com.plugin.frege.FregeLanguage
 import com.plugin.frege.documentation.FregeDocUtil
 import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.*
@@ -25,10 +21,6 @@ abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationIte
     override fun getParamsNumber(): Int {
         val annotation = parent as? FregeAnnotation
         return annotation?.sigma?.children?.count { it is FregeSimpleType } ?: 0 // TODO it's VERY BAD. Waiting for grammar update.
-    }
-
-    override fun getModifierList(): PsiModifierList {
-        return LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC) // TODO
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {

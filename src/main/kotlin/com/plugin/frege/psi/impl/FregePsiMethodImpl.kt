@@ -103,6 +103,12 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
         return MethodSignatureBackedByPsiMethod.create(this, substitutor)
     }
 
+    override fun getModifierList(): LightModifierList {
+        val baseList = LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.FINAL)
+        baseList.addModifier(accessPsiModifier)
+        return baseList
+    }
+
     override fun hasModifierProperty(@NonNls name: String): Boolean {
         return modifierList.hasModifierProperty(name)
     }

@@ -1,0 +1,5 @@
+module First where
+
+import Second (test)
+
+mine = tes<caret>t

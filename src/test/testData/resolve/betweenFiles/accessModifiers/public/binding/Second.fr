@@ -1,0 +1,3 @@
+module Second where
+
+public hello = 10

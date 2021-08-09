@@ -2,13 +2,16 @@ package com.plugin.frege.psi.impl
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
-import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.PsiRecursiveElementVisitor
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.psi.*
+import com.plugin.frege.psi.mixin.FregeAccessModifiers
+import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
 import kotlin.reflect.KClass
 
 object FregePsiUtilImpl {
@@ -283,7 +286,7 @@ object FregePsiUtilImpl {
      */
     @JvmStatic
     fun isElementTypeWithinChildren(element: PsiElement, type: IElementType): Boolean {
-        return generateSequence({ element.firstChild }, { it.nextSibling }).any { it.elementType === type }
+        return generateSequence(element.firstChild) { it.nextSibling }.any { it.elementType === type }
     }
 
     /**
@@ -302,5 +305,57 @@ object FregePsiUtilImpl {
             return null
         }
         return "frege.${packageName.first().lowercaseChar()}${packageName.substring(1)}"
+    }
+
+    /**
+     * Checks if [element] can be accessed as a usage from [module].
+     */
+    @JvmStatic
+    fun isElementAccessibleFromModule(element: FregeNamedStubBasedPsiElementBase<*>, module: FregeProgram): Boolean {
+        val elementModule = element.parentOfType<FregeProgram>(withSelf = true) ?: return false
+        if (elementModule === module) {
+            return true
+        }
+        val elementModifier = element.accessModifiers
+        val modifier = when (element) {
+            is FregePsiClass -> elementModifier
+            is FregePsiMethod -> {
+                val clazz = element.containingClass as? FregePsiClassImpl<*>
+                when {
+                    clazz is FregeProgram -> elementModifier
+                    clazz != null -> maxOf(elementModifier, clazz.accessModifiers)
+                    else -> null
+                }
+            }
+            else -> null
+        }
+        return when (modifier) {
+            null -> false
+            FregeAccessModifiers.Public -> true
+            FregeAccessModifiers.Private -> false
+            FregeAccessModifiers.Protected -> {
+                val elementModuleName = elementModule.qualifiedName
+                val elementName = element.name
+                var accessible = false
+                val visitor = object : PsiRecursiveElementVisitor() {
+                    override fun visitElement(currentElement: PsiElement) {
+                        if (!accessible) {
+                            if (currentElement.text == elementName) {
+                                accessible = true
+                            } else {
+                                super.visitElement(currentElement)
+                            }
+                        }
+                    }
+                }
+                module.imports.asSequence()
+                    .filter { it.importPackageName?.text == elementModuleName }
+                    .onEach { it.accept(visitor) }
+                    .takeWhile { !accessible } // optimization
+                    .toList()
+
+                accessible
+            }
+        }
     }
 }

@@ -5,8 +5,12 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.FregeIcons
+import com.plugin.frege.psi.FregeAccessModifier
 import com.plugin.frege.psi.FregeNamedElement
+import com.plugin.frege.psi.mixin.FregeAccessModifiers
+import com.plugin.frege.stubs.FregeAccessModifierStub
 import javax.swing.Icon
 
 abstract class FregeNamedStubBasedPsiElementBase<T : StubElement<*>> : StubBasedPsiElementBase<T>, FregeNamedElement {
@@ -39,4 +43,20 @@ abstract class FregeNamedStubBasedPsiElementBase<T : StubElement<*>> : StubBased
     override fun getIcon(flags: Int): Icon? {
         return FregeIcons.FILE
     }
+
+    val accessModifiers: FregeAccessModifiers
+        get() {
+            val greenStub = greenStub
+            val result = if (greenStub != null) {
+                greenStub.childrenStubs.filterIsInstance<FregeAccessModifierStub>().firstOrNull()?.modifier
+            } else {
+                PsiTreeUtil.getChildOfType(this, FregeAccessModifier::class.java)?.let {
+                    FregeAccessModifiers.of(it.text)
+                }
+            }
+            return result ?: FregeAccessModifiers.Public
+        }
+
+    val accessPsiModifier: String
+        get() = accessModifiers.psiModifier
 }

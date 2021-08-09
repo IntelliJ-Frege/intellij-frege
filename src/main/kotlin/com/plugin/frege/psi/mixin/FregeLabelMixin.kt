@@ -40,10 +40,6 @@ abstract class FregeLabelMixin : FregePsiMethodImpl, FregeLabel {
         return labelName
     }
 
-    override fun getModifierList(): PsiModifierList {
-        return LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC, PsiModifier.FINAL)
-    }
-
     override fun getBody(): PsiCodeBlock? {
         return PsiCodeBlockImpl(text)
     }

@@ -1,13 +1,15 @@
 package com.plugin.frege.psi.mixin
 
 import com.intellij.lang.ASTNode
-import com.intellij.psi.*
+import com.intellij.psi.PsiCodeBlock
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiIdentifier
+import com.intellij.psi.PsiModifier
 import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
-import com.plugin.frege.FregeLanguage
 import com.plugin.frege.documentation.FregeDocUtil
 import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.*
@@ -55,10 +57,12 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
         return null // TODO lexop
     }
 
-    override fun getModifierList(): PsiModifierList {
-        return LightModifierList(manager, FregeLanguage.INSTANCE,
-            PsiModifier.STATIC, PsiModifier.FINAL, PsiModifier.PUBLIC
-        )
+    override fun getModifierList(): LightModifierList {
+        val baseList = super.getModifierList()
+        if (containingClass is FregeProgram) {
+            baseList.addModifier(PsiModifier.STATIC)
+        }
+        return baseList
     }
 
     // TODO
