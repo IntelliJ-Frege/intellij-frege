@@ -351,8 +351,12 @@ class FregeResolveTest : FregeCodeInsightTest() {
     }
 
     // Issue #68
-    fun `test dir betweenFiles dotOperator First`() = doTest {
+    fun `test dir betweenFiles operators dotOperator First`() = doTest {
         it is FregeBinding && it.name == "."
+    }
+
+    fun `test dir betweenFiles operators operatorWithDots First`() = doTest {
+        it is FregeBinding && it.name == "*..*"
     }
 
     fun `test dir betweenFiles class fromInstance ClassUsage`() = doTest {
