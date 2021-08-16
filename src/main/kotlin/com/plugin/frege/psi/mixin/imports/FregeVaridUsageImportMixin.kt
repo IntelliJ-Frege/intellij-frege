@@ -41,7 +41,7 @@ open class FregeVaridUsageImportMixin(node: ASTNode) : FregeCompositeElementImpl
                     }
                 }
                 return FregeImportResolveUtil.findMethodsByNameInImports(
-                    name, firstQualifier, secondQualifier, module, listOf(fakeImport)
+                    FregeName(firstQualifier, secondQualifier, name), module, listOf(fakeImport)
                 )
             }
 
