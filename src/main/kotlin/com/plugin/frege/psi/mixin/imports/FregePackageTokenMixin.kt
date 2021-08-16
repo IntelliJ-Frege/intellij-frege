@@ -9,7 +9,7 @@ import com.intellij.util.containers.addIfNotNull
 import com.plugin.frege.psi.FregeElementFactory
 import com.plugin.frege.psi.FregePackagePrefix
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
+import com.plugin.frege.psi.util.FregePsiUtil
 import com.plugin.frege.resolve.FregeReferenceBase
 
 open class FregePackageTokenMixin(node: ASTNode) : FregeCompositeElementImpl(node) { // TODO implement psi package
@@ -24,7 +24,7 @@ open class FregePackageTokenMixin(node: ASTNode) : FregeCompositeElementImpl(nod
                 results.addIfNotNull(psiFacade.findPackage(qualifiedName))
 
                 if (results.isEmpty()) {
-                    val libraryPackage = FregePsiUtilImpl.tryConvertToLibraryPackage(qualifiedName)
+                    val libraryPackage = FregePsiUtil.tryConvertToLibraryPackage(qualifiedName)
                     if (libraryPackage != null) {
                         results.addIfNotNull(psiFacade.findPackage(libraryPackage))
                     }

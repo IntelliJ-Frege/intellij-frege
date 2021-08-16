@@ -9,7 +9,7 @@ import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregeTypeDecl
 import com.plugin.frege.psi.FregeTypedVarid
 import com.plugin.frege.psi.impl.FregePsiClassImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.findMainTypeFromSigma
+import com.plugin.frege.psi.util.FregePsiUtil.findMainTypeFromSigma
 import com.plugin.frege.resolve.FregeResolveUtil
 import com.plugin.frege.stubs.FregeClassStub
 

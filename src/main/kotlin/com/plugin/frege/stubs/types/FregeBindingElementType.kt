@@ -6,7 +6,7 @@ import com.plugin.frege.psi.FregeClassDecl
 import com.plugin.frege.psi.FregeProgram
 import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.psi.impl.FregeBindingImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.isInGlobalScope
+import com.plugin.frege.psi.util.FregePsiUtil.isInGlobalScope
 import com.plugin.frege.stubs.FregeMethodStub
 
 class FregeBindingElementType(debugName: String) : FregeMethodElementType(debugName) {

@@ -15,6 +15,7 @@ import com.plugin.frege.documentation.FregeDocUtil
 import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregePsiMethod
+import com.plugin.frege.psi.util.FregePsiUtil
 import com.plugin.frege.resolve.FregeResolveUtil.findContainingFregeClass
 import com.plugin.frege.stubs.FregeClassStub
 import org.jetbrains.annotations.NonNls
@@ -36,7 +37,7 @@ abstract class FregePsiClassImpl<StubT : FregeClassStub> :
     override fun getName(): String {
         val nameFromStub = greenStub?.name
         return if (nameFromStub != null) {
-            FregePsiUtilImpl.nameFromQualifiedName(nameFromStub)
+            FregePsiUtil.nameFromQualifiedName(nameFromStub)
         } else {
             getNameWithoutStub()
         }

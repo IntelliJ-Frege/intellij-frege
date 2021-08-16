@@ -10,7 +10,7 @@ import com.plugin.frege.documentation.FregeDocUtil
 import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
+import com.plugin.frege.psi.util.FregePsiUtil
 import com.plugin.frege.stubs.FregeMethodStub
 
 abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationItem {
@@ -41,7 +41,7 @@ abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationIte
 
     fun getBindings(): List<FregeBinding> {
         val referenceText = name
-        return FregePsiUtilImpl.findElementsWithinScope(parent) { elem ->
+        return FregePsiUtil.findElementsWithinScope(parent) { elem ->
             elem is FregeBinding && elem.name == referenceText
         }.mapNotNull { elem -> elem as? FregeBinding }.toList()
     }

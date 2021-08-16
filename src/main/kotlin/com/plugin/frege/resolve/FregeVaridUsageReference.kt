@@ -6,12 +6,12 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.plugin.frege.psi.FregeDoDecl
 import com.plugin.frege.psi.FregeElementFactory.createVaridUsage
-import com.plugin.frege.psi.FregeName
+import com.plugin.frege.psi.util.FregeName
 import com.plugin.frege.psi.FregeParameter
 import com.plugin.frege.psi.FregeParametersHolder
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinElement
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.getPredicateCheckingTypeAndName
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
+import com.plugin.frege.psi.util.FregePsiUtil.findElementsWithinElement
+import com.plugin.frege.psi.util.FregePsiUtil.getPredicateCheckingTypeAndName
+import com.plugin.frege.psi.util.FregePsiUtil.scopeOfElement
 
 class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
 

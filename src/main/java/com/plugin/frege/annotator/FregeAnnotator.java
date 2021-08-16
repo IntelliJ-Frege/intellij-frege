@@ -7,7 +7,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.psi.PsiElement;
 import com.plugin.frege.highlighter.FregeSyntaxHighlighter;
 import com.plugin.frege.psi.*;
-import com.plugin.frege.psi.impl.FregePsiUtilImpl;
+import com.plugin.frege.psi.util.FregePsiUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class FregeAnnotator implements Annotator {
@@ -25,7 +25,7 @@ public class FregeAnnotator implements Annotator {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.TYPE);
         } else if (element instanceof FregeTypeParameter) {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.TYPE_PARAMETER);
-        } else if (FregePsiUtilImpl.isLeaf(element) && element.getText().equals(undefinedIdentifier)) {
+        } else if (FregePsiUtil.isLeaf(element) && element.getText().equals(undefinedIdentifier)) {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.UNDEFINED);
         }
     }

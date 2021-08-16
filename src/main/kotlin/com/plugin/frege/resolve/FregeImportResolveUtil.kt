@@ -7,12 +7,13 @@ import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.containers.addIfNotNull
 import com.plugin.frege.psi.*
-import com.plugin.frege.psi.FregeName.Companion.isQualified
+import com.plugin.frege.psi.util.FregeName.Companion.isQualified
 import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.isElementAccessibleFromModule
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.isElementTypeWithinChildren
+import com.plugin.frege.psi.util.FregePsiUtil.isElementAccessibleFromModule
+import com.plugin.frege.psi.util.FregePsiUtil.isElementTypeWithinChildren
 import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
+import com.plugin.frege.psi.util.FregeName
 import com.plugin.frege.stubs.index.FregeMethodNameIndex
 import com.plugin.frege.stubs.index.FregeShortClassNameIndex
 

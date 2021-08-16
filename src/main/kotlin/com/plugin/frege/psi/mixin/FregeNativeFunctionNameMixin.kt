@@ -8,7 +8,7 @@ import com.intellij.psi.util.parentOfType
 import com.intellij.util.castSafelyTo
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.isNameQualified
+import com.plugin.frege.psi.util.FregePsiUtil.isNameQualified
 import com.plugin.frege.resolve.FregeReferenceBase
 import com.plugin.frege.resolve.FregeResolveUtil.findMethodsAndFieldsByName
 

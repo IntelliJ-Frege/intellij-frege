@@ -1,4 +1,4 @@
-package com.plugin.frege.psi.impl
+package com.plugin.frege.psi.util
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
@@ -10,11 +10,13 @@ import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.psi.*
+import com.plugin.frege.psi.impl.FregeNamedStubBasedPsiElementBase
+import com.plugin.frege.psi.impl.FregePsiClassImpl
 import com.plugin.frege.psi.mixin.FregeAccessModifiers
 import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
 import kotlin.reflect.KClass
 
-object FregePsiUtilImpl {
+object FregePsiUtil {
     fun isScope(element: PsiElement?): Boolean {
         return element is FregeScopeElement
     }
