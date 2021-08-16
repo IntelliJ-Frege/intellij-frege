@@ -6,8 +6,8 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.plugin.frege.parser.FregeParserDefinition.COMMENTS
 import com.plugin.frege.parser.FregeParserDefinition.WHITE_SPACES
 import com.plugin.frege.psi.FregeDocumentationElement
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.isScope
+import com.plugin.frege.psi.util.FregePsiUtil
+import com.plugin.frege.psi.util.FregePsiUtil.isScope
 import org.apache.commons.lang.StringEscapeUtils
 
 object FregeDocUtil {
@@ -28,12 +28,12 @@ object FregeDocUtil {
     @JvmStatic
     private fun collectPrecedingDocs(element: PsiElement): List<FregeDocumentationElement> {
         val parentInScope = PsiTreeUtil.findFirstParent(element) { isScope(it.parent) } ?: return emptyList()
-        return FregePsiUtilImpl.siblingBackwardSequenceSkipping(
+        return FregePsiUtil.siblingBackwardSequenceSkipping(
             parentInScope,
             true,
             TokenSet.orSet(WHITE_SPACES, COMMENTS)
         )
-            .takeWhile { it is FregeDocumentationElement || FregePsiUtilImpl.isEndDeclElement(it) }
+            .takeWhile { it is FregeDocumentationElement || FregePsiUtil.isEndDeclElement(it) }
             .mapNotNull { it as? FregeDocumentationElement }.toList().asReversed()
     }
 }

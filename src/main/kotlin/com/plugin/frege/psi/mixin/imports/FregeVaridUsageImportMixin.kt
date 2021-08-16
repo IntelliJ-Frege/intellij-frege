@@ -7,6 +7,7 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.util.parentOfType
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
+import com.plugin.frege.psi.util.FregeName
 import com.plugin.frege.resolve.FregeImportResolveUtil
 import com.plugin.frege.resolve.FregeReferenceBase
 

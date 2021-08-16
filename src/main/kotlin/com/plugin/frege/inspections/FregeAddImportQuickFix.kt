@@ -14,6 +14,7 @@ import com.intellij.psi.util.parentOfType
 import com.intellij.ui.ColoredListCellRenderer
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
+import com.plugin.frege.psi.util.FregeName
 import com.plugin.frege.stubs.index.FregeMethodNameIndex
 import com.plugin.frege.stubs.index.FregeShortClassNameIndex
 import javax.swing.JList

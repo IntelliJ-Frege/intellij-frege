@@ -1,7 +1,8 @@
-package com.plugin.frege.psi
+package com.plugin.frege.psi.util
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMember
+import com.plugin.frege.psi.FregeQualifier
 
 /**
  * Stores information about the qualified name of a usage or PSI member.

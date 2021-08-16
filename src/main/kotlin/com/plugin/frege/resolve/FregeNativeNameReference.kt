@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.java.stubs.index.JavaFullClassNameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.plugin.frege.psi.FregeNativeName
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
+import com.plugin.frege.psi.util.FregePsiUtil.nameFromQualifiedName
+import com.plugin.frege.psi.util.FregePsiUtil.qualifierFromQualifiedName
 import com.plugin.frege.resolve.FregeResolveUtil.findMethodsAndFieldsByName
 
 @Suppress("UnstableApiUsage")

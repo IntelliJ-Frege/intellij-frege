@@ -12,7 +12,7 @@ import com.plugin.frege.documentation.FregeDocUtil
 import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregePsiClassImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
+import com.plugin.frege.psi.util.FregePsiUtil
 import com.plugin.frege.resolve.FregeResolveUtil
 import com.plugin.frege.stubs.FregeProgramStub
 
@@ -59,7 +59,7 @@ abstract class FregeProgramMixin : FregePsiClassImpl<FregeProgramStub>, FregePro
 
     override fun getMethods(): Array<PsiMethod> {
         val body = body ?: return PsiMethod.EMPTY_ARRAY
-        return FregePsiUtilImpl.subprogramsFromScopeOfElement(body) { (it as? FregeDecl)?.binding }
+        return FregePsiUtil.subprogramsFromScopeOfElement(body) { (it as? FregeDecl)?.binding }
             .asSequence()
             .sortedBy { it.textOffset }
             .distinctBy { it.name } // pattern-matching

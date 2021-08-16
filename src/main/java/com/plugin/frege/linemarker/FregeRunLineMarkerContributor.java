@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.plugin.frege.psi.FregeFunctionName;
 import com.plugin.frege.psi.impl.FregeBindingImpl;
-import com.plugin.frege.psi.impl.FregePsiUtilImpl;
+import com.plugin.frege.psi.util.FregePsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ public class FregeRunLineMarkerContributor extends RunLineMarkerContributor {
             return null;
         }
 
-        final String moduleName = FregePsiUtilImpl.getModuleName(element);
+        final String moduleName = FregePsiUtil.getModuleName(element);
         if (moduleName == null) {
             return null;
         }

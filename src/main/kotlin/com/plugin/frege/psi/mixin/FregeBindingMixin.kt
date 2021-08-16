@@ -15,7 +15,7 @@ import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeAnnotationItemImpl
 import com.plugin.frege.psi.impl.FregePsiMethodImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
+import com.plugin.frege.psi.util.FregePsiUtil
 import com.plugin.frege.stubs.FregeMethodStub
 
 @Suppress("UnstableApiUsage")
@@ -103,13 +103,13 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
 
     fun getAnnoItem(): FregeAnnotationItem? {
         val referenceText = name
-        return FregePsiUtilImpl.findElementsWithinScope(parent) { elem ->
+        return FregePsiUtil.findElementsWithinScope(parent) { elem ->
             elem is FregeAnnotationItem && elem.name == referenceText
         }.firstOrNull() as? FregeAnnotationItem
     }
 
     fun isMainFunctionBinding(): Boolean {
         val argsCount = getParamsNumber()
-        return (argsCount <= 1 && FregePsiUtilImpl.isInGlobalScope(this) && name == "main")
+        return (argsCount <= 1 && FregePsiUtil.isInGlobalScope(this) && name == "main")
     }
 }
