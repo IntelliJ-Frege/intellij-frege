@@ -29,24 +29,24 @@ class FregeAddImportQuickFix : LocalQuickFix {
             return
         }
         val module = usage.parentOfType<FregeProgram>() ?: return
-        val name = usage.text
+        val name = FregeName(usage)
         val candidates = findCandidates(name, project)
         showPromptToPickCandidate(module, name, candidates, project)
     }
 
-    private fun findCandidates(name: String, project: Project): List<FregeProgram> {
+    private fun findCandidates(name: FregeName, project: Project): List<FregeProgram> {
         val methods = FregeMethodNameIndex.INSTANCE.findByName(
-            name, project, GlobalSearchScope.everythingScope(project)
+            name.shortName, project, GlobalSearchScope.everythingScope(project)
         ).mapNotNull { it.parentOfType<FregeProgram>(true) }
         val classes = FregeShortClassNameIndex.INSTANCE.findByName(
-            name, project, GlobalSearchScope.everythingScope(project)
+            name.shortName, project, GlobalSearchScope.everythingScope(project)
         ).mapNotNull { it.parentOfType<FregeProgram>(true) }
         return (methods + classes).distinct()
     }
 
     private fun showPromptToPickCandidate(
         module: FregeProgram,
-        name: String,
+        name: FregeName,
         candidates: List<FregeProgram>,
         project: Project
     ) {
@@ -66,12 +66,12 @@ class FregeAddImportQuickFix : LocalQuickFix {
 
 private class ImportPickerUI(
     private val dataContext: DataContext,
-    private val name: String,
+    private val name: FregeName,
     private val project: Project
 ) {
     fun pick(candidates: List<FregeProgram>, callback: (FregeProgram) -> Unit) {
         val popup = JBPopupFactory.getInstance().createPopupChooserBuilder(candidates)
-            .setTitle("Import '$name' from module:")
+            .setTitle("Import '${name.shortName}' from module:")
             .setItemChosenCallback { callback(it) }
             .setNamerForFiltering { it.qualifiedName }
             .setRenderer(CandidateRenderer())
@@ -89,10 +89,7 @@ private class CandidateRenderer : ColoredListCellRenderer<FregeProgram>() {
         selected: Boolean,
         hasFocus: Boolean
     ) {
-        val name = value.qualifiedName
-        if (name != null) {
-            append(name)
-        }
+        value.qualifiedName?.let { append(it) }
     }
 }
 

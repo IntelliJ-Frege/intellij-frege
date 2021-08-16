@@ -24,12 +24,12 @@ open class FregeSymbolOperatorImportMixin(node: ASTNode) : FregeCompositeElement
                 val fakeImport = FregeElementFactory.createImportDeclByPackage(
                     psiElement.project, importPackage.text
                 )
-                val name = psiElement.text
                 val importItem = psiElement.parent as? FregeImportItem ?: return emptyList()
                 require(importItem.symbolOperatorImport === psiElement)
                 val secondQualifier = importItem.conidUsageImport
+                val name = FregeName(null, secondQualifier?.text, psiElement.text)
                 return FregeImportResolveUtil.findMethodsByNameInImports(
-                    name, null, secondQualifier?.text, module, listOf(fakeImport)
+                    name, module, listOf(fakeImport)
                 )
             }
         }

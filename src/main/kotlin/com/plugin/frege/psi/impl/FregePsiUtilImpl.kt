@@ -75,12 +75,12 @@ object FregePsiUtilImpl {
      * for which [PsiNamedElement.getName] equals [name] if [incompleteCode] is `false`
      */
     @JvmStatic
-    fun getByTypePredicateCheckingName(
-        clazz: KClass<out PsiNamedElement>, name: String, incompleteCode: Boolean
+    fun getPredicateCheckingTypeAndName(
+        clazz: KClass<out PsiNamedElement>, name: FregeName, incompleteCode: Boolean
     ): (elem: PsiElement?) -> Boolean {
         val instancePredicate = { elem: PsiElement? -> clazz.isInstance(elem) }
         return if (!incompleteCode) { elem ->
-            instancePredicate(elem) && (elem as? PsiNamedElement)?.name == name
+            instancePredicate(elem) && (elem as? PsiNamedElement)?.name == name.shortName
         } else {
             instancePredicate
         }
@@ -178,69 +178,6 @@ object FregePsiUtilImpl {
     @JvmStatic
     fun isLeaf(element: PsiElement): Boolean {
         return element.firstChild == null
-    }
-
-    /**
-     * @return the last word after the last '.' in [qualifiedName].
-     */
-    @JvmStatic
-    fun nameFromQualifiedName(qualifiedName: String): String {
-        // TODO class for working with qualified names
-        return if (qualifiedName == "." || qualifiedName.endsWith("..")) "." else qualifiedName.substringAfterLast(".")
-    }
-
-    /**
-     * @return if [name] does contain a qualifier.
-     */
-    @JvmStatic
-    fun isNameQualified(name: String): Boolean {
-        return name.contains('.') && name != "."
-    }
-
-    /**
-     * Tries to get qualifiers before [usage] and merge them with [usage] text.
-     */
-    @JvmStatic
-    fun getQualifiedNameFromUsage(usage: PsiElement): String {
-        val firstQualifier = (usage.prevSibling as? FregeQualifier) ?: return usage.text
-        val secondQualifier = (firstQualifier.prevSibling as? FregeQualifier)
-            ?: return "${firstQualifier.text}${usage.text}"
-        return "${secondQualifier.text}${firstQualifier.text}${usage.text}"
-    }
-
-    /**
-     * @return the prefix before the last '.' in [qualifiedName].
-     */
-    @JvmStatic
-    fun qualifierFromQualifiedName(qualifiedName: String): String {
-        return if (qualifiedName.endsWith("..")) qualifiedName.dropLast(2) else qualifiedName.substringBeforeLast(".", "")
-    }
-
-    /**
-     * Merges full qualified name of class with name (qualified or not) of method or qualified data name.
-     * Returns `null` if cannot merge.
-     * Example: `frege.prelude.PreludeBase` merges with `PreludeBase.Int` -> `frege.prelude.PreludeBase.Int`.
-     */
-    @JvmStatic
-    fun mergeQualifiedNames(first: String, second: String): String {
-        val secondName = nameFromQualifiedName(second)
-        val secondQualifier = qualifierFromQualifiedName(second)
-        return if (qualifiedNameEndsWithQualifier(first, secondQualifier)) {
-            "$first.$secondName" // TODO
-        } else {
-            "$first.$second"
-        }
-    }
-
-    @JvmStatic
-    private fun qualifiedNameEndsWithQualifier(qualifiedName: String, qualifier: String): Boolean {
-        return if (!qualifiedName.endsWith(qualifier)) {
-            false
-        } else if (qualifiedName == qualifier) {
-            true
-        } else {
-            qualifiedName[qualifiedName.length - qualifier.length - 1] == '.'
-        }
     }
 
     /**
@@ -357,5 +294,32 @@ object FregePsiUtilImpl {
                 accessible
             }
         }
+    }
+
+    /**
+     * Before using this method, look at [FregeName]! This should be used ONLY with Java-names and stubs.
+     * @return the word after the last '.' in [qualifiedName].
+     */
+    @JvmStatic
+    fun nameFromQualifiedName(qualifiedName: String): String {
+        return if (qualifiedName == "." || qualifiedName.endsWith("..")) "." else qualifiedName.substringAfterLast(".")
+    }
+
+    /**
+     * Before using this method, look at [FregeName]! This should be used ONLY with Java-names and stubs.
+     * @return the prefix before the last '.' in [qualifiedName].
+     */
+    @JvmStatic
+    fun qualifierFromQualifiedName(qualifiedName: String): String {
+        return if (qualifiedName.endsWith("..")) qualifiedName.dropLast(2) else qualifiedName.substringBeforeLast(".", "")
+    }
+
+    /**
+     * Before using this method, look at [FregeName]! This should be used ONLY with Java-names and stubs.
+     * @return if [name] does contain a qualifier.
+     */
+    @JvmStatic
+    fun isNameQualified(name: String): Boolean {
+        return name.contains('.') && name != "."
     }
 }

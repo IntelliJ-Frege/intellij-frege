@@ -6,10 +6,11 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.plugin.frege.psi.FregeDoDecl
 import com.plugin.frege.psi.FregeElementFactory.createVaridUsage
+import com.plugin.frege.psi.FregeName
 import com.plugin.frege.psi.FregeParameter
 import com.plugin.frege.psi.FregeParametersHolder
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinElement
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.getPredicateCheckingTypeAndName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 
 class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
@@ -33,8 +34,7 @@ class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element
     }
 
     private fun findParameters(incompleteCode: Boolean): List<PsiElement> {
-        val predicate = getByTypePredicateCheckingName(FregeParameter::class, psiElement.text, incompleteCode)
-
+        val predicate = getPredicateCheckingTypeAndName(FregeParameter::class, FregeName(psiElement), incompleteCode)
         var paramHolder = psiElement.parentOfType<FregeParametersHolder>(false)
         while (paramHolder != null) {
             val params = findElementsWithinElement(paramHolder, predicate)
@@ -48,7 +48,7 @@ class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element
     }
 
     private fun findParametersInDoDecls(incompleteCode: Boolean): List<PsiElement> {
-        val predicate = getByTypePredicateCheckingName(FregeParameter::class, psiElement.text, incompleteCode)
+        val predicate = getPredicateCheckingTypeAndName(FregeParameter::class, FregeName(psiElement), incompleteCode)
         var scope = scopeOfElement(psiElement)
         while (scope != null) {
             val doDecl = PsiTreeUtil.getPrevSiblingOfType(scope, FregeDoDecl::class.java)

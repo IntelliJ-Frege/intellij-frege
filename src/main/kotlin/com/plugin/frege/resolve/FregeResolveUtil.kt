@@ -11,15 +11,15 @@ import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.plugin.frege.FregeFileType
 import com.plugin.frege.psi.*
+import com.plugin.frege.psi.FregeName.Companion.fullName
+import com.plugin.frege.psi.FregeName.Companion.isNotQualified
+import com.plugin.frege.psi.FregeName.Companion.isQualified
+import com.plugin.frege.psi.FregeName.Companion.merge
+import com.plugin.frege.psi.FregeName.Companion.qualifier
 import com.plugin.frege.psi.impl.FregeNamedStubBasedPsiElementBase
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.findElementsWithinScope
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.getByTypePredicateCheckingName
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.getQualifiedNameFromUsage
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.isNameQualified
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.mergeQualifiedNames
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
+import com.plugin.frege.psi.impl.FregePsiUtilImpl.getPredicateCheckingTypeAndName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.notWeakScopeOfElement
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
 import com.plugin.frege.psi.impl.FregePsiUtilImpl.scopeOfElement
 import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
 import com.plugin.frege.resolve.FregeImportResolveUtil.findAvailableModulesInImportsForElement
@@ -63,32 +63,32 @@ object FregeResolveUtil {
 
     /**
      * @return all methods in [project] with [qualifiedName].
+     * @param qualifiedName merged name of class and usage.
+     * @see [findMethodsInClassesInCurrentFile]
      */
-    @JvmStatic
-    fun findMethodsByQualifiedName(
+    private fun findMethodsByQualifiedName(
         project: Project,
-        qualifiedName: String,
-        usageIsQualified: Boolean
+        qualifiedName: FregeName
     ): List<FregePsiMethod> {
-        val name = nameFromQualifiedName(qualifiedName)
-        val qualifier = qualifierFromQualifiedName(qualifiedName)
-        if (qualifier.isEmpty()) {
+        if (qualifiedName.isNotQualified) {
             return emptyList()
         }
-
-        return FregeMethodNameIndex.INSTANCE.findByName(name, project, GlobalSearchScope.everythingScope(project))
+        return FregeMethodNameIndex.INSTANCE.findByName(qualifiedName.shortName, project, GlobalSearchScope.everythingScope(project))
             .filter { method ->
-                if (!usageIsQualified && method.onlyQualifiedSearch()) {
+                if (qualifiedName.isNotQualified && method.onlyQualifiedSearch()) {
                     return@filter false
                 }
-                val className = method.containingClass?.qualifiedName ?: return@filter false
-                className == qualifier || (!usageIsQualified && qualifierFromQualifiedName(className) == qualifier)
+                val className = method.containingClass?.let { FregeName.ofPsiMember(it) } ?: return@filter false
+                className.fullName == qualifiedName.qualifier
             }.ifEmpty {
-                findClassesByQualifiedName(project, qualifier).flatMap { clazz ->
-                    clazz.findMethodsByName(name, true).asSequence()
-                        .filterIsInstance<FregePsiMethod>()
-                        .filter { usageIsQualified || !it.onlyQualifiedSearch() }
-                }
+                qualifiedName.qualifier?.let { qualifier ->
+                    findClassesByQualifiedName(project, qualifier).flatMap { clazz ->
+                        clazz.findMethodsByName(qualifiedName.shortName, true)
+                            .asSequence()
+                            .filterIsInstance<FregePsiMethod>()
+                            .filter { qualifiedName.isQualified || !it.onlyQualifiedSearch() }
+                    }
+                } ?: emptyList()
             }
     }
 
@@ -121,7 +121,7 @@ object FregeResolveUtil {
         val scope = notWeakScopeOfElement(bindingName) ?: return emptyList()
         val binding = findElementsWithinScope(
             scope,
-            getByTypePredicateCheckingName(FregeBinding::class, bindingName.text, incompleteCode)
+            getPredicateCheckingTypeAndName(FregeBinding::class, FregeName(bindingName), incompleteCode)
         ).minByOrNull { it.textOffset }
         return if (binding != null) listOf(binding) else emptyList()
     }
@@ -147,10 +147,9 @@ object FregeResolveUtil {
         usage: PsiElement,
         incompleteCode: Boolean
     ): List<PsiElement> {
-        val qualifiedName = getQualifiedNameFromUsage(usage)
-        val result = findBindings(qualifiedName, usage, incompleteCode).toMutableList()
+        val result = findBindings(usage, incompleteCode).toMutableList()
         if (!incompleteCode && result.isEmpty()) {
-            result += findMethodsInClassesInCurrentFile(qualifiedName, usage).ifEmpty {
+            result += findMethodsInClassesInCurrentFile(usage).ifEmpty {
                 findMethodsFromUsageInImports(usage)
             }
         } else if (incompleteCode) {
@@ -164,18 +163,15 @@ object FregeResolveUtil {
         return result.distinct()
     }
 
-    private fun findMethodsInClassesInCurrentFile(
-        name: String,
-        usage: PsiElement,
-    ): List<PsiMethod> {
+    private fun findMethodsInClassesInCurrentFile(usage: PsiElement): List<PsiMethod> {
+        val usageName = FregeName(usage)
         val project = usage.project
-        val usageQualified = isNameQualified(name)
         val availableClasses = findClassesInCurrentFile(usage)
         for (clazz in availableClasses) {
-            val className = clazz.qualifiedName ?: continue
-            val qualifiedName = mergeQualifiedNames(className, name)
-            val methods = findMethodsByQualifiedName(project, qualifiedName, usageQualified).toMutableList()
-            methods.removeIf { !usageQualified && it.onlyQualifiedSearch() }
+            val className = FregeName.ofPsiMember(clazz) ?: continue
+            val qualifiedName = className.merge(usageName) ?: continue
+            val methods = findMethodsByQualifiedName(project, qualifiedName).toMutableList()
+            methods.removeIf { usageName.isNotQualified && it.onlyQualifiedSearch() }
             if (methods.isNotEmpty()) {
                 return methods // TODO errors if several references in different classes
             }
@@ -185,12 +181,10 @@ object FregeResolveUtil {
     }
 
     private fun findBindings(
-        name: String,
         usage: PsiElement,
         incompleteCode: Boolean
     ): List<PsiElement> {
-        val predicate = getByTypePredicateCheckingName(FregeBinding::class, name, incompleteCode)
-
+        val predicate = getPredicateCheckingTypeAndName(FregeBinding::class, FregeName(usage), incompleteCode)
         var scope: PsiElement? = scopeOfElement(usage)
         while (scope != null) {
             val functionNames = findElementsWithinScope(scope, predicate)
@@ -219,10 +213,10 @@ object FregeResolveUtil {
 
         val module = usage.parentOfType<FregeProgram>()
         if (module != null) {
-            val name = usage.text
+            val name = FregeName(usage)
             val imports = module.imports
             results += tryFindClassesInImportsAliases(name, imports, incompleteCode)
-            if (module.name == name) {
+            if (module.name == name.shortName) {
                 results += module
             }
         }
@@ -233,29 +227,26 @@ object FregeResolveUtil {
         usage: PsiElement,
         incompleteCode: Boolean
     ): List<PsiElement> {
-        val name = usage.text
+        val name = FregeName(usage)
         val classes = findClassesInCurrentFile(usage).toMutableList()
         if (!incompleteCode) {
-            val qualifiedName = getQualifiedNameFromUsage(usage)
-            val qualifier = qualifierFromQualifiedName(qualifiedName)
-            val isQualified = isNameQualified(qualifiedName)
             val moduleName = usage.parentOfType<FregeProgram>()?.name
             classes.removeIf {
-                isQualified && qualifier != moduleName || name != it.name
+                name.isQualified && name.qualifier != moduleName || name.shortName != it.name
             }
         }
         return classes
     }
 
     private fun tryFindClassesInImportsAliases(
-        name: String,
+        name: FregeName,
         imports: List<FregeImportDecl>,
         incompleteCode: Boolean
     ): List<PsiElement> {
         return imports
             .asSequence()
             .mapNotNull { it.importDeclAlias }
-            .filter { incompleteCode || it.name == name }
+            .filter { incompleteCode || it.name == name.shortName }
             .toList()
     }
 

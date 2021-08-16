@@ -5,14 +5,8 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.util.parentOfType
-import com.plugin.frege.psi.FregeElementFactory
-import com.plugin.frege.psi.FregeImportDecl
-import com.plugin.frege.psi.FregeProgram
-import com.plugin.frege.psi.FregeResolvableElement
+import com.plugin.frege.psi.*
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.nameFromQualifiedName
-import com.plugin.frege.psi.impl.FregePsiUtilImpl.qualifierFromQualifiedName
 import com.plugin.frege.resolve.FregeImportResolveUtil
 import com.plugin.frege.resolve.FregeReferenceBase
 
@@ -29,11 +23,8 @@ open class FregeConidUsageImportMixin(node: ASTNode) : FregeCompositeElementImpl
                 val fakeImport = FregeElementFactory.createImportDeclByPackage(
                     psiElement.project, importPackage.text
                 )
-                val qualifiedName = FregePsiUtilImpl.getQualifiedNameFromUsage(psiElement)
-                val name = nameFromQualifiedName(qualifiedName)
-                val qualifier = qualifierFromQualifiedName(qualifiedName).ifEmpty { null }
                 return FregeImportResolveUtil.findClassesByNameInImports(
-                    name, qualifier, module, listOf(fakeImport)
+                    FregeName(psiElement), module, listOf(fakeImport)
                 )
             }
 
