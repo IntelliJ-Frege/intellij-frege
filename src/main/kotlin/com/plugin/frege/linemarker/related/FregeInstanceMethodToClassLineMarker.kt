@@ -9,34 +9,29 @@ import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregeSymbolOperator
 import com.plugin.frege.psi.impl.FregeBindingImpl
 import com.plugin.frege.psi.impl.FregeInstanceDeclImpl
-import javax.swing.Icon
 
 class FregeInstanceMethodToClassLineMarker : FregeRelatedItemLineMarkerAbstract() {
+    override val icon get() = AllIcons.Gutter.ImplementingMethod
+
+    override val tooltipText get() = "Navigate to instanced method"
+
+    override val cellRenderer get() = FregeGotoClassCellRenderer.INSTANCE
+
     override fun getTargets(element: PsiElement): List<PsiElement> {
         val nameElement = getNameElement(element) ?: return emptyList()
-        val instanceClass = nameElement.parentOfType<FregePsiClass>() as? FregeInstanceDeclImpl
-            ?: return emptyList()
+        val instanceClass = nameElement.parentOfType<FregePsiClass>() as? FregeInstanceDeclImpl ?: return emptyList()
         val classDecl = instanceClass.getInstancedClass() ?: return emptyList()
         return classDecl.findMethodsByName(nameElement.text, false).toList()
     }
 
     private fun getNameElement(element: PsiElement): PsiElement? {
-        when (val parent = element.parent) {
+        return when (val parent = element.parent) {
             is FregeFunctionName, is FregeSymbolOperator -> {
                 val binding = parent.parentOfType<FregeBindingImpl>() ?: return null
-                return if (binding.getAnnoItem() == null) parent else null
+                if (binding.getAnnoItem() == null) parent else null
             }
-            is FregeAnnotationName -> {
-                return parent
-            }
-            else -> {
-                return null
-            }
+            is FregeAnnotationName -> parent
+            else -> null
         }
     }
-
-    override val icon: Icon
-        get() = AllIcons.Gutter.ImplementingMethod
-    override val tooltipText: String
-        get() = "Navigate to instanced method"
 }

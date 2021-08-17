@@ -9,11 +9,15 @@ import com.plugin.frege.psi.FregeFunctionName
 import com.plugin.frege.psi.FregeInstanceDecl
 import com.plugin.frege.psi.FregeSymbolOperator
 import com.plugin.frege.psi.impl.FregeBindingImpl
-import com.plugin.frege.resolve.FregeResolveUtil
 import com.plugin.frege.stubs.index.FregeMethodNameIndex
-import javax.swing.Icon
 
 class FregeClassBindingToInstanceLineMarker : FregeRelatedItemLineMarkerAbstract() {
+    override val icon get() = AllIcons.Gutter.OverridenMethod
+
+    override val tooltipText get() = "Navigate to overrides"
+
+    override val cellRenderer get() = FregeGotoClassCellRenderer.INSTANCE
+
     override fun getTargets(element: PsiElement): List<PsiElement> {
         val parent = element.parent
         if (parent !is FregeFunctionName && parent !is FregeSymbolOperator) {
@@ -23,17 +27,10 @@ class FregeClassBindingToInstanceLineMarker : FregeRelatedItemLineMarkerAbstract
         if (binding.containingClass !is FregeClassDecl) {
             return emptyList()
         }
-        return FregeMethodNameIndex.INSTANCE
-            .findByName(
-                binding.name,
-                element.project,
-                GlobalSearchScope.everythingScope(element.project)
-            )
-            .filter { it.containingClass is FregeInstanceDecl }
+        return FregeMethodNameIndex.INSTANCE.findByName(
+            binding.name,
+            element.project,
+            GlobalSearchScope.everythingScope(element.project)
+        ).filter { it.containingClass is FregeInstanceDecl }
     }
-
-    override val icon: Icon
-        get() = AllIcons.Gutter.OverridenMethod
-    override val tooltipText: String
-        get() = "Navigate to overrides"
 }
