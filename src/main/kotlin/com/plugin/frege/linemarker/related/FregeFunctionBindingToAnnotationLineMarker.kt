@@ -15,11 +15,13 @@ class FregeFunctionBindingToAnnotationLineMarker : FregeRelatedItemLineMarkerAbs
     override fun getTargets(element: PsiElement): List<PsiElement> {
         val parent = tryGetFunctionLhs(element) ?: return emptyList()
         val binding = PsiTreeUtil.getParentOfType(parent, FregeBindingImpl::class.java) ?: return emptyList()
-        return if (binding.nameIdentifier === element) listOfNotNull(binding.getAnnoItem()) else emptyList()
+        return if (binding.nameIdentifier === element.parent) listOfNotNull(binding.getAnnoItem()) else emptyList()
     }
 
     private fun tryGetFunctionLhs(element: PsiElement): FregeFunctionLhs? {
-        return generateSequence(element.parent) { it.parent }.take(3)
-            .filterIsInstance<FregeFunctionLhs>().firstOrNull()
+        return generateSequence(element.parent) { it.parent }
+            .take(4)
+            .filterIsInstance<FregeFunctionLhs>()
+            .firstOrNull()
     }
 }
