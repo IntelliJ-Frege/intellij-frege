@@ -1,0 +1,9 @@
+module WordOperator where
+
+testOperator :: Int -> Int -> Int
+1 `testOperator` b = 1 + b
+testOperator a 2 = a - 2
+a `testOperator` b = a - b
+
+test = testOperator 1 2
+test2 = 1 `testOperator` 2

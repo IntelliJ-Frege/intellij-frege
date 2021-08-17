@@ -1,0 +1,4 @@
+module FromRegularBindingInDeclaration where
+
+1 `myTest` 2 = 3
+myTe<caret>st a b = a - b

@@ -1,0 +1,4 @@
+module FromAnnotation where
+
+myT<caret>est :: Int -> Int -> Int
+a `myTest` b = a - b

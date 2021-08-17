@@ -123,6 +123,26 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeAnnotationItem && it.name == "." && it.containingClass?.qualifiedName == "ToClassAnnotation.Test"
     }
 
+    fun `test file operators word FromUsage`() = doTest {
+        it is FregeBinding && it.name == "myOperator"
+    }
+
+    fun `test file operators word FromUsageToRegularBinding`() = doTest {
+        it is FregeBinding && it.name == "operator"
+    }
+
+    fun `test file operators word FromAnnotation`() = doTest {
+        it is FregeBinding && it.name == "myTest"
+    }
+
+    fun `test file operators word FromRegularBindingInDeclaration`() = doTest {
+        it is FregeBinding && it.text == "1 `myTest` 2 = 3"
+    }
+
+    fun `test file operators word FromRegularBinding`() = doTest {
+        it is FregeBinding && it.name == "kek"
+    }
+
     // Testing where
 
     fun `test file where BindingBelow`() = doTest {
@@ -352,11 +372,15 @@ class FregeResolveTest : FregeCodeInsightTest() {
 
     // Issue #68
     fun `test dir betweenFiles operators dotOperator First`() = doTest {
-        it is FregeBinding && it.name == "."
+        it is FregeBinding && it.name == "." && it.containingClass?.qualifiedName == "Second"
     }
 
     fun `test dir betweenFiles operators operatorWithDots First`() = doTest {
-        it is FregeBinding && it.name == "*..*"
+        it is FregeBinding && it.name == "*..*" && it.containingClass?.qualifiedName == "Second"
+    }
+
+    fun `test dir betweenFiles operators wordOperator First`() = doTest {
+        it is FregeBinding && it.name == "myKek" && it.containingClass?.qualifiedName == "Second"
     }
 
     fun `test dir betweenFiles class fromInstance ClassUsage`() = doTest {

@@ -19,6 +19,8 @@ class FregeAnnotator : Annotator {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.TYPE)
         } else if (element is FregeTypeParameter) {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.TYPE_PARAMETER)
+        } else if (element is FregeWordOperator) {
+            annotateWithInfo(element, holder, FregeSyntaxHighlighter.OPERATOR)
         } else if (FregePsiUtil.isLeaf(element) && element.text == undefinedIdentifier) {
             annotateWithInfo(element, holder, FregeSyntaxHighlighter.UNDEFINED)
         }

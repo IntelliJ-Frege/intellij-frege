@@ -1,0 +1,5 @@
+module First where
+
+import Second
+
+test a b _ = a `myKe<caret>k` b

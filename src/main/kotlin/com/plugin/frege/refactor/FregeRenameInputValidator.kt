@@ -6,10 +6,7 @@ import com.intellij.patterns.InitialPatternCondition
 import com.intellij.psi.PsiElement
 import com.intellij.refactoring.rename.RenameInputValidator
 import com.intellij.util.ProcessingContext
-import com.plugin.frege.psi.FregeConidUsage
-import com.plugin.frege.psi.FregeElementFactory
-import com.plugin.frege.psi.FregeNamedElement
-import com.plugin.frege.psi.FregeSymbolOperator
+import com.plugin.frege.psi.*
 
 class FregeRenameInputValidator : RenameInputValidator {
     private val pattern = object : ElementPattern<PsiElement> {
@@ -39,11 +36,11 @@ class FregeRenameInputValidator : RenameInputValidator {
         if (newName.contains(' ')) {
             return false
         }
-
         val project = element.project
         val nameIdentifier = (element as? FregeNamedElement)?.nameIdentifier ?: return false
         return when (nameIdentifier) {
             is FregeSymbolOperator -> FregeElementFactory.canCreateSymbolOperator(project, newName)
+            is FregeWordOperator -> FregeElementFactory.canCreateWordOperator(project, newName)
             is FregeConidUsage -> FregeElementFactory.canCreateConidUsage(project, newName)
             else -> FregeElementFactory.canCreateVaridUsage(project, newName)
         }

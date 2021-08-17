@@ -547,7 +547,14 @@ symbolOperator ::= SYMOP_NO_RESERVED | reservedAloneOperators {
     mixin="com.plugin.frege.psi.mixin.FregeSymbolOperatorMixin"
 }
 symbolOperatorQuoted ::= symbolOperator | BACK_QUOTE symbolOperator BACK_QUOTE
-lexOperator ::= WORD_OPERATOR | symbolOperatorQuoted
+private wordOperatorQuoted ::= BACK_QUOTE wordOperator BACK_QUOTE
+wordOperator ::= extendedVarid | CONID {
+    implements=["com.plugin.frege.psi.FregeCompositeElement"
+                "com.plugin.frege.psi.FregeResolvableElement"
+                "com.intellij.psi.PsiIdentifier"]
+    mixin="com.plugin.frege.psi.mixin.FregeWordOperatorMixin"
+}
+lexOperator ::= wordOperatorQuoted | symbolOperatorQuoted
 unaryOperator ::= EXLAMATION_MARK | QUESTION_MARK
 
 

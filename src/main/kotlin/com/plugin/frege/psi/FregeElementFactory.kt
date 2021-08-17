@@ -5,7 +5,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiParserFacade
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.elementType
 import com.plugin.frege.FregeLanguage
 
 object FregeElementFactory {
@@ -117,6 +116,21 @@ object FregeElementFactory {
     @JvmStatic
     fun canCreateSymbolOperator(project: Project, name: String): Boolean {
         return createSymbolOperatorOrNull(project, name) != null
+    }
+
+    private fun createWordOperatorOrNull(project: Project, name: String): FregeWordOperator? {
+        val fakeWordOperator = "${fakeProgram}a `$name` b = undefined"
+        return createElementOrNull(project, fakeWordOperator)
+    }
+
+    @JvmStatic
+    fun createWordOperator(project: Project, name: String): FregeWordOperator {
+        return createWordOperatorOrNull(project, name) ?: cannotCreateElement()
+    }
+
+    @JvmStatic
+    fun canCreateWordOperator(project: Project, name: String): Boolean {
+        return createWordOperatorOrNull(project, name) != null
     }
 
     @JvmStatic
