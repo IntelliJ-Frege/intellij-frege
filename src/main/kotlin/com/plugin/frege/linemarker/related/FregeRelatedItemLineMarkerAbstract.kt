@@ -3,6 +3,7 @@ package com.plugin.frege.linemarker.related
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.psi.PsiElement
+import com.plugin.frege.psi.util.FregePsiUtil
 import javax.swing.Icon
 
 abstract class FregeRelatedItemLineMarkerAbstract {
@@ -10,12 +11,12 @@ abstract class FregeRelatedItemLineMarkerAbstract {
         element: PsiElement,
         result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
     ) {
-        val targets = getTargets(element)
-        if (targets.isEmpty()) {
+        if (!FregePsiUtil.isLeaf(element)) {
             return
         }
+        val targets = getTargets(element).ifEmpty { return }
         val markerInfo = NavigationGutterIconBuilder.create(icon)
-            .setTargets(getTargets(element))
+            .setTargets(targets)
             .setTooltipText(tooltipText).createLineMarkerInfo(element)
         result.add(markerInfo)
     }
