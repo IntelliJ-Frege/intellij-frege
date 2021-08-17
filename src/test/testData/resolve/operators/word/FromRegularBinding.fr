@@ -1,0 +1,4 @@
+module FromRegularBinding where
+
+a `kek` b = a - b
+test = k<caret>ek 1 2

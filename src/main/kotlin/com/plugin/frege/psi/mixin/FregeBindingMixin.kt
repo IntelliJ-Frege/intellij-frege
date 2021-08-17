@@ -1,10 +1,7 @@
 package com.plugin.frege.psi.mixin
 
 import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiCodeBlock
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiIdentifier
-import com.intellij.psi.PsiModifier
+import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightModifierList
 import com.intellij.psi.impl.source.tree.java.PsiCodeBlockImpl
 import com.intellij.psi.stubs.IStubElementType
@@ -42,19 +39,13 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
     }
 
     override fun getNameIdentifier(): PsiIdentifier? {
-        val functionName = lhs.functionLhs?.functionName
-        if (functionName != null) {
-            return functionName
-        }
-        val symop = lhs.functionLhs?.symbolOperatorQuoted?.symbolOperator
-        if (symop != null) {
-            return symop
-        }
-        val symopFromLexop = lhs.functionLhs?.lexOperator?.symbolOperatorQuoted?.symbolOperator
-        if (symopFromLexop != null) {
-            return symopFromLexop
-        }
-        return null // TODO lexop
+        val functionLhs = lhs.functionLhs
+        functionLhs?.functionName?.let { return it }
+        functionLhs?.symbolOperatorQuoted?.symbolOperator?.let { return it }
+        val lexOperator = functionLhs?.lexOperator
+        lexOperator?.symbolOperatorQuoted?.symbolOperator?.let { return it }
+        lexOperator?.wordOperator?.let { return it }
+        return null
     }
 
     override fun getModifierList(): LightModifierList {

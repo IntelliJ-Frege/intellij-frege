@@ -1,0 +1,4 @@
+module FromUsage where
+
+a `myOperator` b = a + b
+main = println $ 1 `myOpe<caret>rator` 2

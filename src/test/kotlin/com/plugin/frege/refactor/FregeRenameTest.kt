@@ -16,6 +16,8 @@ class FregeRenameTest : FregeCodeInsightTest() {
 
     fun `test binding operator Operator`() = doTest("**+--+**")
 
+    fun `test binding wordOperator WordOperator`() = doTest("testOperator")
+
     fun `test binding quotes Quotes`() = doTest("test''")
 
     fun `test binding fromQuotes Quotes`() = doTest("test'")

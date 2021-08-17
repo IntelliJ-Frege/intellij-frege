@@ -27,7 +27,7 @@ public class FregeParserDefinition implements ParserDefinition {
     public static final TokenSet IDENTIFIERS = TokenSet.create(FregeTypes.CONID, FregeTypes.VARID, FregeTypes.AS,
             FregeTypes.HIDING, FregeTypes.INLINE, FregeTypes.MUTABLE, FregeTypes.PURE);
 
-    public static final TokenSet OPERATORS = TokenSet.create(FregeTypes.WORD_OPERATOR, FregeTypes.DOUBLE_COLON,
+    public static final TokenSet OPERATORS = TokenSet.create(FregeTypes.BACK_QUOTE, FregeTypes.DOUBLE_COLON,
             FregeTypes.COLON, FregeTypes.RIGHT_ARROW, FregeTypes.LEFT_ARROW, FregeTypes.DOUBLE_RIGHT_ARROW,
             FregeTypes.VERTICAL_BAR, FregeTypes.EQUAL, FregeTypes.EXLAMATION_MARK,
             FregeTypes.QUESTION_MARK, FregeTypes.COMMA, FregeTypes.SEMICOLON, FregeTypes.DOT,

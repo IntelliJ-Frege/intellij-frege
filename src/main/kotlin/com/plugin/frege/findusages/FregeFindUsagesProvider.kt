@@ -37,7 +37,8 @@ class FregeFindUsagesProvider : FindUsagesProvider {
             is FregeAnnotationItem -> "annotation"
             is FregeBinding -> {
                 when (element.nameIdentifier) {
-                    is FregeSymbolOperator -> "operator binding"
+                    is FregeSymbolOperator -> "operator"
+                    is FregeWordOperator -> "word operator"
                     else -> "function binding"
                 }
             }

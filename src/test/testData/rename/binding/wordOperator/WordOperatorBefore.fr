@@ -1,0 +1,9 @@
+module WordOperator where
+
+superOperator :: Int -> Int -> Int
+1 `superOperator` b = 1 + b
+superOper<caret>ator a 2 = a - 2
+a `superOperator` b = a - b
+
+test = superOperator 1 2
+test2 = 1 `superOperator` 2

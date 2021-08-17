@@ -86,8 +86,6 @@ aloneOps             = [\P{L}~~[\s\p{N}\"\'\`\u00B4\u0027\.,=|{}\[\]()_]]
 notAloneOps          = {equal} | {verticalBar} | {doubleColon}
 symop_not_first_dot  = {aloneOps} ({aloneOps} | {notAloneOps} | {dot})* | {notAloneOps} ({aloneOps} | {notAloneOps} | {dot})+
 
-wordop               = {backQuote}\w+{backQuote}
-
 colon                = :
 doubleColon          = :: | \u2237
 rightArrow           = -> | \u2192
@@ -223,7 +221,6 @@ backQuote            = \`
         {dot} /
           {dot}{symop_not_first_dot} { yybegin(FIRST_DOT_OPERATOR); return FregeTypes.DOT; }
         {symop_not_first_dot}        { return FregeTypes.SYMOP_NO_RESERVED; }
-        {wordop}                     { return FregeTypes.WORD_OPERATOR; }
     /* identifiers */
         {conid}                      { return FregeTypes.CONID; }
         {varid}                      { return FregeTypes.VARID; }
