@@ -26,6 +26,12 @@
 
     <change-notes><![CDATA[
         <ul>
+            <li><b>1.1.0</b> <em>(2021-08-18)</em>
+                <ul>
+                    <li>Support for resolving word operators (in ``)</li>
+                    <li>Update and improve line markers</li>
+                </ul>
+            </li>
             <li><b>1.0.5</b> <em>(2021-08-10)</em>
                 <ul>
                     <li>Take into account access modifiers while navigating</li>
