@@ -89,11 +89,11 @@ Below you can see examples of our plugin:
   ![Find usages](assets/images/FindUsages.png)
   <br></br>
 
-- Autocompletion
+- Code completion
   <br></br>
-  ![Autocompletion](assets/images/Autocompletion1.png)
+  ![Code completion](assets/images/CodeCompletion1.png)
   <br></br>
-  ![Autocompletion](assets/images/Autocompletion2.png)
+  ![Code completion](assets/images/CodeCompletion2.png)
   <br></br>
   
 - Rename refactoring
