@@ -16,36 +16,25 @@ import com.plugin.frege.resolve.FregeResolveUtil
  *
  * If [delegate] returns `null`, then a fake delegate will be created.
  */
-abstract class LightFregePsiClassBase(node: ASTNode) :
-    FregeNamedElementImpl(node), FregePsiClass {
-
-    private companion object {
-        private const val DEFAULT_NAME = ""
-    }
-
+abstract class LightFregePsiClassBase(node: ASTNode) : FregeNamedElementImpl(node), FregePsiClass {
     /**
      * @return a class that should be used to replace calls of most methods.
      */
     protected abstract val delegate: PsiClass?
 
-    private val delegateOrFake: PsiClass
-        get() = delegate ?: fakeDelegate
+    private val delegateOrFake get(): PsiClass = delegate ?: fakeDelegate
 
-    private val fakeDelegate: PsiClass
-        get() = LightPsiClassBuilder(containingClass ?: this, name ?: DEFAULT_NAME)
+    private val fakeDelegate get(): PsiClass = LightPsiClassBuilder(containingClass ?: this, name ?: DEFAULT_NAME)
 
-    override fun setName(name: String): PsiElement {
+    override fun setName(name: String): PsiElement = apply {
         nameIdentifier?.reference?.handleElementRename(name)
-        return this
     }
 
     override fun getModifierList(): PsiModifierList = LightModifierList(manager, FregeLanguage.INSTANCE)
 
     override fun hasModifierProperty(name: String): Boolean = false
 
-    override fun getContainingClass(): PsiClass? {
-        return FregeResolveUtil.findContainingFregeClass(this)
-    }
+    override fun getContainingClass(): PsiClass? = FregeResolveUtil.findContainingFregeClass(this)
 
     override fun getDocComment(): PsiDocComment? = delegateOrFake.docComment
 
@@ -57,9 +46,8 @@ abstract class LightFregePsiClassBase(node: ASTNode) :
 
     override fun getTypeParameterList(): PsiTypeParameterList? = delegateOrFake.typeParameterList
 
-    override fun getQualifiedName(): String? {
-        return (containingClass?.qualifiedName ?: DEFAULT_NAME) + (name ?: DEFAULT_NAME)
-    }
+    override fun getQualifiedName(): String? =
+        (containingClass?.qualifiedName ?: DEFAULT_NAME) + (name ?: DEFAULT_NAME)
 
     override fun getMethods(): Array<PsiMethod> = delegateOrFake.methods
 
@@ -114,8 +102,7 @@ abstract class LightFregePsiClassBase(node: ASTNode) :
     override fun findMethodsAndTheirSubstitutorsByName(
         name: String?,
         checkBases: Boolean
-    ): List<Pair<PsiMethod, PsiSubstitutor>> =
-        delegateOrFake.findMethodsAndTheirSubstitutorsByName(name, checkBases)
+    ): List<Pair<PsiMethod, PsiSubstitutor>> = delegateOrFake.findMethodsAndTheirSubstitutorsByName(name, checkBases)
 
     override fun getAllMethodsAndTheirSubstitutors(): MutableList<Pair<PsiMethod, PsiSubstitutor>> =
         delegateOrFake.allMethodsAndTheirSubstitutors
@@ -140,4 +127,8 @@ abstract class LightFregePsiClassBase(node: ASTNode) :
 
     override fun generateDoc(): String =
         (delegateOrFake as? FregeDocumentableElement)?.generateDoc() ?: ""
+
+    private companion object {
+        private const val DEFAULT_NAME = ""
+    }
 }

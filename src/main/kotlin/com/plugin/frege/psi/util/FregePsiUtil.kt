@@ -17,22 +17,16 @@ import com.plugin.frege.psi.mixin.FregeProgramUtil.imports
 import kotlin.reflect.KClass
 
 object FregePsiUtil {
-    fun isScope(element: PsiElement?): Boolean {
-        return element is FregeScopeElement
-    }
+    fun isScope(element: PsiElement?): Boolean = element is FregeScopeElement
 
-    private fun isWeakScope(element: PsiElement?): Boolean {
-        return element is FregeWeakScopeElement
-    }
+    private fun isWeakScope(element: PsiElement?): Boolean = element is FregeWeakScopeElement
 
     /**
      * Finds the first parent of [element] that presents a scope.
      * @return the [element], if it is a scope or `null` if there is no a scope for [element].
      */
     @JvmStatic
-    fun scopeOfElement(element: PsiElement): FregeScopeElement? {
-        return element.parentOfType(true)
-    }
+    fun scopeOfElement(element: PsiElement): FregeScopeElement? = element.parentOfType(true)
 
     /**
      * The same as [scopeOfElement] but skips scopes which are [FregeWeakScopeElement].
@@ -68,9 +62,8 @@ object FregePsiUtil {
      * @return a scope of [element] and gets a list of subprograms.
      */
     @JvmStatic
-    fun subprogramsFromScopeOfElement(element: PsiElement): List<PsiElement> {
-        return subprogramsFromScopeOfElement(element) { it }
-    }
+    fun subprogramsFromScopeOfElement(element: PsiElement): List<PsiElement> =
+        subprogramsFromScopeOfElement(element) { it }
 
     /**
      * @return a predicate, accepting only instance of [clazz]
@@ -103,9 +96,7 @@ object FregePsiUtil {
      * It means that it is one of [FregeTopDecl].
      */
     @JvmStatic
-    fun isInGlobalScope(element: PsiElement): Boolean {
-        return isScopeGlobal(notWeakScopeOfElement(element))
-    }
+    fun isInGlobalScope(element: PsiElement): Boolean = isScopeGlobal(notWeakScopeOfElement(element))
 
     /**
      * @return a global scope for [element] or `null` if there is no scope.
@@ -136,19 +127,11 @@ object FregePsiUtil {
         predicate: (elem: PsiElement) -> Boolean
     ): Sequence<PsiElement> {
         return when {
-            element == null -> {
-                emptySequence()
-            }
-            predicate(element) -> {
-                sequenceOf(element)
-            }
-            isScope(element) && !isWeakScope(element) -> {
-                emptySequence()
-            }
-            else -> {
-                element.children.asSequence().flatMap {
-                    findElementsWithinElementSequence(it, predicate)
-                }
+            element == null -> emptySequence()
+            predicate(element) -> sequenceOf(element)
+            isScope(element) && !isWeakScope(element) -> emptySequence()
+            else -> element.children.asSequence().flatMap {
+                findElementsWithinElementSequence(it, predicate)
             }
         }
     }
@@ -160,9 +143,7 @@ object FregePsiUtil {
     fun findElementsWithinElement(
         element: PsiElement?,
         predicate: (elem: PsiElement) -> Boolean
-    ): List<PsiElement> {
-        return findElementsWithinElementSequence(element, predicate).toList()
-    }
+    ): List<PsiElement> = findElementsWithinElementSequence(element, predicate).toList()
 
     /**
      * @return the module name of [psi], if presented, or `null` otherwise
@@ -178,9 +159,7 @@ object FregePsiUtil {
      * Checks if [element] is a leaf in the PSI tree.
      */
     @JvmStatic
-    fun isLeaf(element: PsiElement): Boolean {
-        return element.firstChild == null
-    }
+    fun isLeaf(element: PsiElement): Boolean = element.firstChild == null
 
     /**
      * It is a workaround while we don't have a type system.
@@ -197,10 +176,11 @@ object FregePsiUtil {
     }
 
     /**
-     * @return the previous siblings of the PSI element.
+     * @return the previous siblings of [element] without [skip].
+     * If [strict] = `true` then [element] will be returned as well.
      */
     @JvmStatic
-    fun siblingBackwardSequenceSkipping(
+    fun siblingsBackwardSequenceSkipping(
         element: PsiElement,
         strict: Boolean,
         skip: TokenSet
@@ -224,9 +204,8 @@ object FregePsiUtil {
      * Checks if within children of [element] there is an PSI node of [type].
      */
     @JvmStatic
-    fun isElementTypeWithinChildren(element: PsiElement, type: IElementType): Boolean {
-        return generateSequence(element.firstChild) { it.nextSibling }.any { it.elementType === type }
-    }
+    fun isElementTypeWithinChildren(element: PsiElement, type: IElementType): Boolean =
+        generateSequence(element.firstChild) { it.nextSibling }.any { it.elementType === type }
 
     /**
      * Required for navigation to modules from the standard library.
@@ -303,25 +282,21 @@ object FregePsiUtil {
      * @return the word after the last '.' in [qualifiedName].
      */
     @JvmStatic
-    fun nameFromQualifiedName(qualifiedName: String): String {
-        return if (qualifiedName == "." || qualifiedName.endsWith("..")) "." else qualifiedName.substringAfterLast(".")
-    }
+    fun nameFromQualifiedName(qualifiedName: String): String =
+        if (qualifiedName == "." || qualifiedName.endsWith("..")) "." else qualifiedName.substringAfterLast(".")
 
     /**
      * Before using this method, look at [FregeName]! This should be used ONLY with Java-names and stubs.
      * @return the prefix before the last '.' in [qualifiedName].
      */
     @JvmStatic
-    fun qualifierFromQualifiedName(qualifiedName: String): String {
-        return if (qualifiedName.endsWith("..")) qualifiedName.dropLast(2) else qualifiedName.substringBeforeLast(".", "")
-    }
+    fun qualifierFromQualifiedName(qualifiedName: String): String =
+        if (qualifiedName.endsWith("..")) qualifiedName.dropLast(2) else qualifiedName.substringBeforeLast(".", "")
 
     /**
      * Before using this method, look at [FregeName]! This should be used ONLY with Java-names and stubs.
      * @return if [name] does contain a qualifier.
      */
     @JvmStatic
-    fun isNameQualified(name: String): Boolean {
-        return name.contains('.') && name != "."
-    }
+    fun isNameQualified(name: String): Boolean = name.contains('.') && name != "."
 }

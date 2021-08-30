@@ -5,7 +5,7 @@ import com.plugin.frege.FregeIcons
 import com.plugin.frege.psi.impl.FregeNativeFunctionNameImpl
 
 class FregeNativeFunctionToDelegatedMemberLineMarker : FregeRelatedItemLineMarkerAbstract() {
-    override val icon get() = FregeIcons.JavaMarker!!
+    override val icon get() = FregeIcons.JavaMarker
 
     override val tooltipText get() = "Navigate to Java method or field"
 

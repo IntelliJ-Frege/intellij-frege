@@ -15,13 +15,9 @@ abstract class FregeNewtypeDeclMixin : FregePsiClassImpl<FregeClassStub>, FregeN
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun getNameWithoutStub(): String {
-        return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
-    }
+    override fun getNameWithoutStub(): String = nameIdentifier?.text ?: DEFAULT_CLASS_NAME
 
-    override fun getNameIdentifier(): PsiIdentifier? {
-        return conidUsage
-    }
+    override fun getNameIdentifier(): PsiIdentifier? = conidUsage
 
     override fun getMethods(): Array<PsiMethod> {
         val methods: MutableList<FregePsiMethod> = whereSection?.linearIndentSection?.subprogramsFromScope
@@ -31,18 +27,11 @@ abstract class FregeNewtypeDeclMixin : FregePsiClassImpl<FregeClassStub>, FregeN
         return methods.toTypedArray()
     }
 
-    override fun generateDoc(): String {
-        return generateDoc("Newtype", "Constructor")
-    }
+    override fun generateDoc(): String = generateDoc("Newtype", "Constructor")
 
-    override fun isInterface(): Boolean {
-        return false
-    }
+    override fun isInterface(): Boolean = false
 
-    override fun getScope(): PsiElement {
-        return this
-    }
+    override fun getScope(): PsiElement = this
 
-    override val typedVaridDeclarations: List<FregeTypedVarid>
-        get() = typedVaridList
+    override val typedVaridDeclarations get(): List<FregeTypedVarid> = typedVaridList
 }

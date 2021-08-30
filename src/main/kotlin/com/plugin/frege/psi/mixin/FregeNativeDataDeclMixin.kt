@@ -17,13 +17,9 @@ abstract class FregeNativeDataDeclMixin : FregePsiClassImpl<FregeClassStub>, Fre
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun getNameWithoutStub(): String {
-        return conidUsage.text
-    }
+    override fun getNameWithoutStub(): String = conidUsage.text
 
-    override fun isInterface(): Boolean {
-        return false
-    }
+    override fun isInterface(): Boolean = false
 
     override fun getMethods(): Array<PsiMethod> {
         return whereSection?.linearIndentSection?.subprogramsFromScope
@@ -31,18 +27,11 @@ abstract class FregeNativeDataDeclMixin : FregePsiClassImpl<FregeClassStub>, Fre
             ?.toTypedArray() ?: PsiMethod.EMPTY_ARRAY
     }
 
-    override fun getNameIdentifier(): PsiIdentifier {
-        return conidUsage
-    }
+    override fun getNameIdentifier(): PsiIdentifier = conidUsage
 
-    override fun getScope(): PsiElement {
-        return this
-    }
+    override fun getScope(): PsiElement = this
 
-    override val typedVaridDeclarations: List<FregeTypedVarid>
-        get() = typedVaridList
+    override val typedVaridDeclarations get(): List<FregeTypedVarid> = typedVaridList
 
-    override fun generateDoc(): String {
-        return generateDoc("Native data", "Functions")
-    }
+    override fun generateDoc(): String = generateDoc("Native data", "Functions")
 }

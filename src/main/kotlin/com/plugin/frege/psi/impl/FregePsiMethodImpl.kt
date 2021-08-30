@@ -12,12 +12,16 @@ import com.intellij.psi.util.MethodSignatureBackedByPsiMethod
 import com.plugin.frege.FregeLanguage
 import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregePsiMethod
-import com.plugin.frege.resolve.FregeResolveUtil.findContainingFregeClass
+import com.plugin.frege.resolve.FregeResolveUtil
 import com.plugin.frege.stubs.FregeMethodStub
 import org.jetbrains.annotations.NonNls
 
 @Suppress("UnstableApiUsage")
 abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMethodStub>, FregePsiMethod {
+    constructor(node: ASTNode) : super(node)
+
+    constructor(stub: FregeMethodStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
+
     private val objectType: PsiType by lazy {
         PsiMethodReferenceType.getJavaLangObject(manager, GlobalSearchScope.everythingScope(project))
     }
@@ -26,69 +30,41 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
         LightTypeElement(manager, objectType)
     }
 
-    constructor(node: ASTNode) : super(node)
+    override fun onlyQualifiedSearch(): Boolean = false
 
-    constructor(stub: FregeMethodStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
+    override fun getThrowsList(): PsiReferenceList =
+        LightReferenceListBuilder(manager, FregeLanguage.INSTANCE, PsiReferenceList.Role.THROWS_LIST)
 
-    override fun onlyQualifiedSearch(): Boolean {
-        return false
-    }
+    override fun isVarArgs(): Boolean = false
 
-    override fun getThrowsList(): PsiReferenceList {
-        return LightReferenceListBuilder(manager, FregeLanguage.INSTANCE, PsiReferenceList.Role.THROWS_LIST)
-    }
+    override fun findSuperMethods(): Array<PsiMethod> = PsiMethod.EMPTY_ARRAY // TODO
 
-    override fun isVarArgs(): Boolean {
-        return false
-    }
+    override fun findSuperMethods(checkAccess: Boolean): Array<PsiMethod> = PsiMethod.EMPTY_ARRAY // TODO
 
-    override fun findSuperMethods(): Array<PsiMethod> {
-        return PsiMethod.EMPTY_ARRAY // TODO
-    }
+    override fun findSuperMethods(parentClass: PsiClass): Array<PsiMethod> = PsiMethod.EMPTY_ARRAY // TODO
 
-    override fun findSuperMethods(checkAccess: Boolean): Array<PsiMethod> {
-        return PsiMethod.EMPTY_ARRAY // TODO
-    }
+    override fun findSuperMethodSignaturesIncludingStatic(
+        checkAccess: Boolean
+    ): List<MethodSignatureBackedByPsiMethod> = emptyList() // TODO
 
-    override fun findSuperMethods(parentClass: PsiClass): Array<PsiMethod> {
-        return PsiMethod.EMPTY_ARRAY // TODO
-    }
+    override fun findDeepestSuperMethod(): PsiMethod? = null // TODO
 
-    override fun findSuperMethodSignaturesIncludingStatic(checkAccess: Boolean): List<MethodSignatureBackedByPsiMethod> {
-        return emptyList() // TODO
-    }
+    override fun findDeepestSuperMethods(): Array<PsiMethod> = PsiMethod.EMPTY_ARRAY // TODO
 
-    override fun findDeepestSuperMethod(): PsiMethod? {
-        return null // TODO
-    }
+    override fun isDeprecated(): Boolean = false // TODO
 
-    override fun findDeepestSuperMethods(): Array<PsiMethod> {
-        return PsiMethod.EMPTY_ARRAY // TODO
-    }
+    override fun getDocComment(): PsiDocComment? = null // TODO
 
-    override fun isDeprecated(): Boolean {
-        return false // TODO
-    }
+    override fun getContainingClass(): FregePsiClass? = FregeResolveUtil.findContainingFregeClass(this)
 
-    override fun getDocComment(): PsiDocComment? {
-        return null // TODO
-    }
+    override fun hasTypeParameters(): Boolean = false // Unless we want to support generics
 
-    override fun getContainingClass(): FregePsiClass? {
-        return findContainingFregeClass(this)
-    }
+    override fun getTypeParameterList(): PsiTypeParameterList? = null // Unless we want to support generics
 
-    override fun hasTypeParameters(): Boolean {
-        return false // Unless we want to support generics
-    }
+    override fun getTypeParameters(): Array<PsiTypeParameter> =
+        PsiTypeParameter.EMPTY_ARRAY // Unless we want to support generics
 
-    override fun getTypeParameterList(): PsiTypeParameterList? {
-        return null // Unless we want to support generics
-    }
-
-    override fun getTypeParameters(): Array<PsiTypeParameter> {
-        return PsiTypeParameter.EMPTY_ARRAY // Unless we want to support generics
-    }
+    protected abstract fun getParamsNumber(): Int
 
     override fun getParameterList(): PsiParameterList {
         val list = LightParameterListBuilder(manager, FregeLanguage.INSTANCE)
@@ -96,12 +72,11 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
         for (i in 0 until paramsNumber) {
             list.addParameter(LightParameter("arg$i", objectType, this))
         }
-        return list // TODO a normal type system
+        return list // TODO type inference
     }
 
-    override fun getSignature(substitutor: PsiSubstitutor): MethodSignature {
-        return MethodSignatureBackedByPsiMethod.create(this, substitutor)
-    }
+    override fun getSignature(substitutor: PsiSubstitutor): MethodSignature =
+        MethodSignatureBackedByPsiMethod.create(this, substitutor)
 
     override fun getModifierList(): LightModifierList {
         val baseList = LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.FINAL)
@@ -109,13 +84,9 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
         return baseList
     }
 
-    override fun hasModifierProperty(@NonNls name: String): Boolean {
-        return modifierList.hasModifierProperty(name)
-    }
+    override fun hasModifierProperty(@NonNls name: String): Boolean = modifierList.hasModifierProperty(name)
 
-    override fun getName(): String {
-        return greenStub?.name ?: nameIdentifier?.text ?: text
-    }
+    override fun getName(): String = greenStub?.name ?: nameIdentifier?.text ?: text
 
     override fun getHierarchicalMethodSignature(): HierarchicalMethodSignature {
         return HierarchicalMethodSignatureImpl(
@@ -123,13 +94,7 @@ abstract class FregePsiMethodImpl : FregeNamedStubBasedPsiElementBase<FregeMetho
         )
     }
 
-    override fun getReturnType(): PsiType {
-        return objectType // TODO waiting for type system
-    }
+    override fun getReturnType(): PsiType = objectType // TODO waiting for type system
 
-    override fun getReturnTypeElement(): PsiTypeElement? {
-        return objectTypeElement // TODO waiting for type system
-    }
-
-    protected abstract fun getParamsNumber(): Int
+    override fun getReturnTypeElement(): PsiTypeElement? = objectTypeElement // TODO waiting for type system
 }

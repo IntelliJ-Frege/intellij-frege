@@ -7,7 +7,5 @@ import com.plugin.frege.psi.FregeScopeElement
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
 
 abstract class FregeBodyMixin(node: ASTNode) : FregeCompositeElementImpl(node), FregeScopeElement, FregeBody {
-    override fun getSubprogramsFromScope(): List<PsiElement> {
-        return topDeclList.mapNotNull { it.decl }
-    }
+    override fun getSubprogramsFromScope(): List<PsiElement> = topDeclList.mapNotNull { it.decl }
 }

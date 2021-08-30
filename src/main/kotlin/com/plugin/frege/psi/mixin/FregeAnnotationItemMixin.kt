@@ -23,27 +23,19 @@ abstract class FregeAnnotationItemMixin : FregePsiMethodImpl, FregeAnnotationIte
         return annotation?.sigma?.children?.count { it is FregeSimpleType } ?: 0 // TODO it's VERY BAD. Waiting for grammar update.
     }
 
-    override fun getNameIdentifier(): PsiIdentifier? {
-        return annotationName ?: symbolOperatorQuoted?.symbolOperator
-    }
+    override fun getNameIdentifier(): PsiIdentifier? = annotationName ?: symbolOperatorQuoted?.symbolOperator
 
-    override fun getBody(): PsiCodeBlock? {
-        return PsiCodeBlockImpl(text)
-    }
+    override fun getBody(): PsiCodeBlock? = PsiCodeBlockImpl(text)
 
-    override fun isConstructor(): Boolean {
-        return false
-    }
+    override fun isConstructor(): Boolean = false
 
-    fun getAnnotation(): FregeAnnotation {
-        return parentOfType()!!
-    }
+    fun getAnnotation(): FregeAnnotation = parentOfType()!!
 
     fun getBindings(): List<FregeBinding> {
         val referenceText = name
         return FregePsiUtil.findElementsWithinScope(parent) { elem ->
             elem is FregeBinding && elem.name == referenceText
-        }.mapNotNull { elem -> elem as? FregeBinding }.toList()
+        }.filterIsInstance<FregeBinding>().toList()
     }
 
     override fun generateDoc(): String {

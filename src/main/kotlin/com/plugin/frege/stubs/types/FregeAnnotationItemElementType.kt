@@ -7,13 +7,9 @@ import com.plugin.frege.psi.impl.FregeAnnotationItemImpl
 import com.plugin.frege.stubs.FregeMethodStub
 
 class FregeAnnotationItemElementType(debugName: String) : FregeMethodElementType(debugName) {
-    override fun createPsi(stub: FregeMethodStub): FregePsiMethod {
-        return FregeAnnotationItemImpl(stub, this)
-    }
+    override fun createPsi(stub: FregeMethodStub): FregePsiMethod = FregeAnnotationItemImpl(stub, this)
 
-    override fun getExternalId(): String {
-        return super.getExternalId() + ".ANNOTATION_ITEM"
-    }
+    override fun getExternalId(): String = super.getExternalId() + ".ANNOTATION_ITEM"
 
     override fun shouldCreateStub(node: ASTNode): Boolean {
         val element = node.psi as? FregeAnnotationItemImpl ?: return true

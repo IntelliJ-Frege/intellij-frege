@@ -14,7 +14,6 @@ import com.plugin.frege.psi.util.FregePsiUtil.getPredicateCheckingTypeAndName
 import com.plugin.frege.psi.util.FregePsiUtil.scopeOfElement
 
 class FregeVaridUsageReference(element: PsiElement) : FregeReferenceBase(element, TextRange(0, element.textLength)) {
-
     override fun handleElementRename(name: String): PsiElement {
         return psiElement.replace(createVaridUsage(psiElement.project, name))
     }

@@ -40,7 +40,7 @@ abstract class FregeReferenceBase(@JvmField protected val psiElement: PsiElement
             val newName = element.name
             val oldName = psiElement.text
             if (newName != null && oldName != newName) {
-                return handleElementRename(newName)
+                handleElementRename(newName)
             } else {
                 psiElement
             }

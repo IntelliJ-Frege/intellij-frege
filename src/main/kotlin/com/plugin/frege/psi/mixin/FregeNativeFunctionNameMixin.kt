@@ -13,10 +13,6 @@ import com.plugin.frege.resolve.FregeReferenceBase
 import com.plugin.frege.resolve.FregeResolveUtil.findMethodsAndFieldsByName
 
 open class FregeNativeFunctionNameMixin(node: ASTNode) : FregeCompositeElementImpl(node), PsiIdentifier {
-    private companion object {
-        private const val CONSTRUCTOR_NAME = "new"
-    }
-
     override fun getReference(): PsiReference? {
         return object : FregeReferenceBase(this, TextRange(0, textLength)) {
             override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
@@ -30,23 +26,19 @@ open class FregeNativeFunctionNameMixin(node: ASTNode) : FregeCompositeElementIm
         }
     }
 
-    override fun getTokenType(): IElementType {
-        return FregeTypes.NATIVE_FUNCTION_NAME
-    }
+    override fun getTokenType(): IElementType = FregeTypes.NATIVE_FUNCTION_NAME
 
     fun getDelegatedMember(): PsiMember? {
         val name = text
         if (name == CONSTRUCTOR_NAME) {
             return tryResolveConstructor()
         }
-
-        val nativeFunction = parentOfType<FregeNativeFunction>() ?: return null
-        val javaItem = nativeFunction.javaItem
-        if (javaItem != null) {
-            return tryResolveMemberFromJavaItem(javaItem)
+        return parentOfType<FregeNativeFunction>()?.let { nativeFunction ->
+            nativeFunction.javaItem?.let { return tryResolveMemberFromJavaItem(it) }
+            (nativeFunction.containingClass as? FregeNativeDataDecl)?.let { containingClass ->
+                tryResolveFromClass(containingClass, name)
+            }
         }
-        val containingClass = nativeFunction.containingClass as? FregeNativeDataDecl ?: return null
-        return tryResolveFromClass(containingClass, name)
     }
 
     private fun tryResolveConstructor(): PsiMethod? {
@@ -64,8 +56,7 @@ open class FregeNativeFunctionNameMixin(node: ASTNode) : FregeCompositeElementIm
                 return resolvedFromJavaItem
             }
         } else {
-            val containingClass = javaItem.parentOfType<FregeNativeDataDecl>()
-            if (containingClass != null) {
+            javaItem.parentOfType<FregeNativeDataDecl>()?.let { containingClass ->
                 return tryResolveFromClass(containingClass, text)
             }
         }
@@ -73,12 +64,17 @@ open class FregeNativeFunctionNameMixin(node: ASTNode) : FregeCompositeElementIm
     }
 
     private fun tryResolveFromClass(clazz: FregeNativeDataDecl, memberName: String): PsiMember? {
-        val javaClass = resolveReferenceFromNativeName(clazz.nativeName) as? PsiClass ?: return null
-        return findMethodsAndFieldsByName(javaClass, memberName).firstOrNull()
+        return (resolveReferenceFromNativeName(clazz.nativeName) as? PsiClass)?.let { javaClass ->
+            findMethodsAndFieldsByName(javaClass, memberName).firstOrNull()
+        }
     }
 
     private fun resolveReferenceFromNativeName(nativeName: FregeNativeName?): PsiMember? {
         return nativeName?.reference?.castSafelyTo<PsiPolyVariantReference>()
             ?.multiResolve(false)?.mapNotNull { it.element }?.firstOrNull() as? PsiMember
+    }
+
+    private companion object {
+        private const val CONSTRUCTOR_NAME = "new"
     }
 }

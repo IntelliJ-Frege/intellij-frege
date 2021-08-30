@@ -17,9 +17,7 @@ import com.plugin.frege.resolve.FregeReferenceBase
 import com.plugin.frege.stubs.index.FregeClassNameIndex
 
 open class FregeImportPackageClassNameMixin(node: ASTNode) : FregeCompositeElementImpl(node), PsiIdentifier {
-    override fun getTokenType(): IElementType {
-        return FregeTypes.IMPORT_PACKAGE_CLASS_NAME
-    }
+    override fun getTokenType(): IElementType = FregeTypes.IMPORT_PACKAGE_CLASS_NAME
 
     override fun getReference(): PsiReference {
         return object : FregeReferenceBase(this, TextRange(0, textLength)) {
@@ -28,23 +26,22 @@ open class FregeImportPackageClassNameMixin(node: ASTNode) : FregeCompositeEleme
                 val qualifiedNameLength = psiElement.textRange.endOffset - packageName.textOffset
                 val qualifiedName = packageName.text.substring(0, qualifiedNameLength)
                 val project = psiElement.project
-                val results = FregeClassNameIndex.INSTANCE.findByName(
+                return FregeClassNameIndex.findByName(
                     qualifiedName,
                     project,
                     GlobalSearchScope.everythingScope(project)
-                ).toMutableList()
-
-                if (results.isEmpty()) {
+                ).ifEmpty {
                     val libraryPackage = FregePsiUtil.tryConvertToLibraryPackage(qualifiedName)
                     if (libraryPackage != null) {
-                        results += FregeClassNameIndex.INSTANCE.findByName(
+                        FregeClassNameIndex.findByName(
                             libraryPackage,
                             project,
                             GlobalSearchScope.everythingScope(project)
                         )
+                    } else {
+                        emptyList()
                     }
                 }
-                return results
             }
 
             override fun handleElementRename(name: String): PsiElement {

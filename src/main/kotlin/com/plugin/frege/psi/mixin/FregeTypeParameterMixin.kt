@@ -25,7 +25,7 @@ open class FregeTypeParameterMixin(node: ASTNode) : FregeCompositeElementImpl(no
                     currentHolder = currentHolder.parentOfType()
                 }
 
-                return if (result != null) listOf(result) else emptyList()
+                return listOfNotNull(result)
             }
 
             override fun handleElementRename(name: String): PsiElement {

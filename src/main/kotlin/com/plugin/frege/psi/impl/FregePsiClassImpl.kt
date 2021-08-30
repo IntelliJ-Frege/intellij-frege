@@ -16,18 +16,12 @@ import com.plugin.frege.documentation.buildDoc
 import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregePsiMethod
 import com.plugin.frege.psi.util.FregePsiUtil
-import com.plugin.frege.resolve.FregeResolveUtil.findContainingFregeClass
+import com.plugin.frege.resolve.FregeResolveUtil
 import com.plugin.frege.stubs.FregeClassStub
 import org.jetbrains.annotations.NonNls
 
 @Suppress("UnstableApiUsage")
-abstract class FregePsiClassImpl<StubT : FregeClassStub> :
-    FregeNamedStubBasedPsiElementBase<StubT>, FregePsiClass {
-
-    protected companion object {
-        const val DEFAULT_CLASS_NAME: String = ""
-    }
-
+abstract class FregePsiClassImpl<StubT : FregeClassStub> : FregeNamedStubBasedPsiElementBase<StubT>, FregePsiClass {
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: StubT, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
@@ -44,87 +38,49 @@ abstract class FregePsiClassImpl<StubT : FregeClassStub> :
     }
 
     override fun getQualifiedName(): String? {
-        val stub = greenStub
-        if (stub != null) {
-            return stub.name
+        greenStub?.let { return it.name }
+        return containingClass?.let { containingClass ->
+            containingClass.qualifiedName?.let { parentQualifiedName ->
+                "$parentQualifiedName.$name"
+            }
         }
-
-        val containingClass = containingClass ?: return null
-        val parentQualifiedName = containingClass.qualifiedName ?: return null
-        return "$parentQualifiedName.$name"
     }
 
-    override fun isAnnotationType(): Boolean {
-        return false
-    }
+    override fun isAnnotationType(): Boolean = false
 
-    override fun isEnum(): Boolean {
-        return false
-    }
+    override fun isEnum(): Boolean = false
 
-    override fun getExtendsList(): PsiReferenceList? {
-        return null // TODO
-    }
+    override fun getExtendsList(): PsiReferenceList? = null // TODO
 
-    override fun getImplementsList(): PsiReferenceList? {
-        return null // TODO
-    }
+    override fun getImplementsList(): PsiReferenceList? = null // TODO
 
-    override fun getExtendsListTypes(): Array<PsiClassType> {
-        return PsiClassType.EMPTY_ARRAY // TODO
-    }
+    override fun getExtendsListTypes(): Array<PsiClassType> = PsiClassType.EMPTY_ARRAY // TODO
 
-    override fun getImplementsListTypes(): Array<PsiClassType> {
-        return PsiClassType.EMPTY_ARRAY // TODO
-    }
+    override fun getImplementsListTypes(): Array<PsiClassType> = PsiClassType.EMPTY_ARRAY // TODO
 
-    override fun getSuperClass(): PsiClass? {
-        return null // TODO (or always null?)
-    }
+    override fun getSuperClass(): PsiClass? = null // TODO (or always null?)
 
-    override fun getInterfaces(): Array<PsiClass> {
-        return PsiClass.EMPTY_ARRAY // TODO
-    }
+    override fun getInterfaces(): Array<PsiClass> = PsiClass.EMPTY_ARRAY // TODO
 
-    override fun getSupers(): Array<PsiClass> {
-        return PsiClass.EMPTY_ARRAY // TODO
-    }
+    override fun getSupers(): Array<PsiClass> = PsiClass.EMPTY_ARRAY // TODO
 
-    override fun getSuperTypes(): Array<PsiClassType> {
-        return PsiClassType.EMPTY_ARRAY // TODO
-    }
+    override fun getSuperTypes(): Array<PsiClassType> = PsiClassType.EMPTY_ARRAY // TODO
 
-    override fun getFields(): Array<PsiField> {
-        return PsiField.EMPTY_ARRAY // TODO (figure out when functions become fields)
-    }
+    override fun getFields(): Array<PsiField> = PsiField.EMPTY_ARRAY // TODO (figure out when functions become fields)
 
-    override fun getConstructors(): Array<PsiMethod> {
-        return PsiMethod.EMPTY_ARRAY // TODO
-    }
+    override fun getConstructors(): Array<PsiMethod> = PsiMethod.EMPTY_ARRAY // TODO
 
-    override fun getInnerClasses(): Array<PsiClass> {
-        return PsiClass.EMPTY_ARRAY // TODO (or always null?)
-    }
+    override fun getInnerClasses(): Array<PsiClass> = PsiClass.EMPTY_ARRAY // TODO (or always null?)
 
-    override fun getInitializers(): Array<PsiClassInitializer> {
-        return PsiClassInitializer.EMPTY_ARRAY // TODO (or always null)
-    }
+    override fun getInitializers(): Array<PsiClassInitializer> = PsiClassInitializer.EMPTY_ARRAY // TODO (or always null)
 
-    override fun getAllFields(): Array<PsiField> {
-        return PsiField.EMPTY_ARRAY // TODO
-    }
+    override fun getAllFields(): Array<PsiField> = PsiField.EMPTY_ARRAY // TODO
 
-    override fun getAllMethods(): Array<PsiMethod> {
-        return methods // TODO
-    }
+    override fun getAllMethods(): Array<PsiMethod> = methods // TODO
 
-    override fun getAllInnerClasses(): Array<PsiClass> {
-        return PsiClass.EMPTY_ARRAY // TODO
-    }
+    override fun getAllInnerClasses(): Array<PsiClass> = PsiClass.EMPTY_ARRAY // TODO
 
-    override fun findFieldByName(@NonNls name: String, checkBases: Boolean): PsiField? {
-        return null // TODO
-    }
+    override fun findFieldByName(@NonNls name: String, checkBases: Boolean): PsiField? = null // TODO
 
     override fun findMethodBySignature(patternMethod: PsiMethod, checkBases: Boolean): PsiMethod? {
         val methods = findMethodsBySignature(patternMethod, checkBases)
@@ -132,8 +88,7 @@ abstract class FregePsiClassImpl<StubT : FregeClassStub> :
     }
 
     override fun findMethodsBySignature(patternMethod: PsiMethod, checkBases: Boolean): Array<PsiMethod> {
-        val methodsByName = findMethodsByName(patternMethod.name, checkBases)
-        return methodsByName.filter { method ->
+        return findMethodsByName(patternMethod.name, checkBases).filter { method ->
             patternMethod.getSignature(EmptySubstitutor.getInstance()).parameterTypes.contentEquals(
                 method.getSignature(EmptySubstitutor.getInstance()).parameterTypes
             )
@@ -152,53 +107,32 @@ abstract class FregePsiClassImpl<StubT : FregeClassStub> :
         return findMethodsByName(name, checkBases).map { Pair(it, EmptySubstitutor.EMPTY) }
     }
 
-    override fun getAllMethodsAndTheirSubstitutors(): List<Pair<PsiMethod, PsiSubstitutor>> {
-        return allMethods.map { Pair(it, EmptySubstitutor.EMPTY) }
-    }
+    override fun getAllMethodsAndTheirSubstitutors(): List<Pair<PsiMethod, PsiSubstitutor>> =
+        allMethods.map { Pair(it, EmptySubstitutor.EMPTY) }
 
-    override fun findInnerClassByName(@NonNls name: String, checkBases: Boolean): PsiClass? {
-        return null // TODO
-    }
+    override fun findInnerClassByName(@NonNls name: String, checkBases: Boolean): PsiClass? = null // TODO
 
-    override fun isInheritor(baseClass: PsiClass, checkDeep: Boolean): Boolean {
-        return false // TODO
-    }
+    override fun isInheritor(baseClass: PsiClass, checkDeep: Boolean): Boolean = false // TODO
 
-    override fun isInheritorDeep(baseClass: PsiClass, classToByPass: PsiClass?): Boolean {
-        return false // TODO
-    }
+    override fun isInheritorDeep(baseClass: PsiClass, classToByPass: PsiClass?): Boolean = false // TODO
 
-    override fun getVisibleSignatures(): Collection<HierarchicalMethodSignature> {
-        return allMethods.map { it.hierarchicalMethodSignature }
-    }
+    override fun getVisibleSignatures(): Collection<HierarchicalMethodSignature> =
+        allMethods.map { it.hierarchicalMethodSignature }
 
-    override fun isDeprecated(): Boolean {
-        return false // TODO
-    }
+    override fun isDeprecated(): Boolean = false // TODO
 
-    override fun hasTypeParameters(): Boolean {
-        return false // Unless we want to support generics
-    }
+    override fun hasTypeParameters(): Boolean = false // Unless we want to support generics
 
-    override fun getTypeParameterList(): PsiTypeParameterList? {
-        return null // Unless we want to support generics
-    }
+    override fun getTypeParameterList(): PsiTypeParameterList? = null // Unless we want to support generics
 
-    override fun getTypeParameters(): Array<PsiTypeParameter> {
-        return PsiTypeParameter.EMPTY_ARRAY // Unless we want to support generics
-    }
+    override fun getTypeParameters(): Array<PsiTypeParameter> =
+        PsiTypeParameter.EMPTY_ARRAY // Unless we want to support generics
 
-    override fun getLBrace(): PsiElement? {
-        return scope
-    }
+    override fun getLBrace(): PsiElement? = scope
 
-    override fun getRBrace(): PsiElement? {
-        return scope.lastChild
-    }
+    override fun getRBrace(): PsiElement? = scope.lastChild
 
-    override fun getDocComment(): PsiDocComment? {
-        return null // TODO
-    }
+    override fun getDocComment(): PsiDocComment? = null // TODO
 
     override fun getModifierList(): PsiModifierList {
         val baseList = LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.FINAL)
@@ -206,13 +140,9 @@ abstract class FregePsiClassImpl<StubT : FregeClassStub> :
         return baseList
     }
 
-    override fun hasModifierProperty(@NonNls name: String): Boolean {
-        return modifierList.hasModifierProperty(name) // TODO
-    }
+    override fun hasModifierProperty(@NonNls name: String): Boolean = modifierList.hasModifierProperty(name) // TODO
 
-    override fun getContainingClass(): PsiClass? {
-        return findContainingFregeClass(this)
-    }
+    override fun getContainingClass(): PsiClass? = FregeResolveUtil.findContainingFregeClass(this)
 
     override fun processDeclarations(
         processor: PsiScopeProcessor,
@@ -268,5 +198,9 @@ abstract class FregePsiClassImpl<StubT : FregeClassStub> :
                 }
             }
         }
+    }
+
+    protected companion object {
+        const val DEFAULT_CLASS_NAME: String = ""
     }
 }

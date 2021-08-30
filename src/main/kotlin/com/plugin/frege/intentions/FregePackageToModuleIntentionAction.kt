@@ -12,13 +12,10 @@ class FregePackageToModuleIntentionAction(private val myPackage: PsiElement) : B
         text = "Replace with 'module'"
     }
 
-    override fun getFamilyName(): String {
-        return "Package to module conversion"
-    }
+    override fun getFamilyName(): String = "Package to module conversion"
 
-    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
-        return myPackage.isValid && myPackage.isWritable
-    }
+    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean =
+        myPackage.isValid && myPackage.isWritable
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         myPackage.replace(FregeElementFactory.createModuleKeyword(project))

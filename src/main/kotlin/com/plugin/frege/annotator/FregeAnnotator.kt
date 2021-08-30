@@ -33,7 +33,8 @@ class FregeAnnotator : Annotator {
     ) {
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(element.textRange)
-            .textAttributes(attributesKey).create()
+            .textAttributes(attributesKey)
+            .create()
     }
 
     companion object {

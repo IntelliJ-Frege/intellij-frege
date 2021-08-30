@@ -10,11 +10,7 @@ import org.jetbrains.annotations.NonNls
 abstract class FregeStubElementType<StubT : StubElement<*>, PsiT : FregeCompositeElement?>(@NonNls debugName: String) :
     IStubElementType<StubT, PsiT>(debugName, FregeLanguage.INSTANCE) {
 
-    override fun getLanguage(): Language {
-        return FregeLanguage.INSTANCE
-    }
+    override fun getLanguage(): Language = FregeLanguage.INSTANCE
 
-    override fun getExternalId(): String {
-        return "frege." + super.toString()
-    }
+    override fun getExternalId(): String = "frege." + super.toString()
 }

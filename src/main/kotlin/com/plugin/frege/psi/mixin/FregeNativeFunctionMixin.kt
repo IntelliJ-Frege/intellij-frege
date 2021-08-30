@@ -28,20 +28,12 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
     private val delegatedMember: PsiMethod? // TODO fields
             get() = (nameIdentifier as? FregeNativeFunctionNameImpl)?.getDelegatedMember() as? PsiMethod
 
-    override fun onlyQualifiedSearch(): Boolean {
-        return containingClass is FregeNativeDataDecl
-    }
+    override fun onlyQualifiedSearch(): Boolean = containingClass is FregeNativeDataDecl
 
     override fun getNameIdentifier(): PsiIdentifier? {
         val annotationItem = nativeAnnotationItem
-        val nativeFunctionName = annotationItem.nativeFunctionName
-        if (nativeFunctionName != null) {
-            return nativeFunctionName
-        }
-        val symbolOperator = annotationItem.symbolOperatorQuoted?.symbolOperator
-        if (symbolOperator != null) {
-            return symbolOperator
-        }
+        annotationItem.nativeFunctionName?.let { return it }
+        annotationItem.symbolOperatorQuoted?.symbolOperator?.let { return it }
         return null // TODO make unary operator identifier
     }
 
@@ -71,103 +63,68 @@ abstract class FregeNativeFunctionMixin : FregePsiMethodImpl, FregeNativeFunctio
 
     // Following overrides are just delegates
 
-    override fun getIdentifyingElement(): PsiElement? {
-        return delegatedMember?.identifyingElement ?: super<FregePsiMethodImpl>.getIdentifyingElement()
-    }
+    override fun getIdentifyingElement(): PsiElement? =
+        delegatedMember?.identifyingElement ?: super<FregePsiMethodImpl>.getIdentifyingElement()
 
-    override fun getThrowsList(): PsiReferenceList {
-        return delegatedMember?.throwsList ?: super.getThrowsList()
-    }
+    override fun getThrowsList(): PsiReferenceList = delegatedMember?.throwsList ?: super.getThrowsList()
 
-    override fun isVarArgs(): Boolean {
-        return delegatedMember?.isVarArgs ?: super.isVarArgs()
-    }
+    override fun isVarArgs(): Boolean = delegatedMember?.isVarArgs ?: super.isVarArgs()
 
-    override fun getThrowsTypes(): Array<JvmReferenceType> {
-        return delegatedMember?.throwsTypes ?: super<FregePsiMethodImpl>.getThrowsTypes()
-    }
+    override fun getThrowsTypes(): Array<JvmReferenceType> =
+        delegatedMember?.throwsTypes ?: super<FregePsiMethodImpl>.getThrowsTypes()
 
-    override fun isDeprecated(): Boolean {
-        return delegatedMember?.isDeprecated ?: super.isDeprecated()
-    }
+    override fun isDeprecated(): Boolean = delegatedMember?.isDeprecated ?: super.isDeprecated()
 
-    override fun getDocComment(): PsiDocComment? {
-        return delegatedMember?.docComment ?: super.getDocComment()
-    }
+    override fun getDocComment(): PsiDocComment? = delegatedMember?.docComment ?: super.getDocComment()
 
-    override fun hasTypeParameters(): Boolean {
-        return delegatedMember?.hasTypeParameters() ?: super.hasTypeParameters()
-    }
+    override fun hasTypeParameters(): Boolean = delegatedMember?.hasTypeParameters() ?: super.hasTypeParameters()
 
-    override fun getTypeParameterList(): PsiTypeParameterList? {
-        return delegatedMember?.typeParameterList ?: super.getTypeParameterList()
-    }
+    override fun getTypeParameterList(): PsiTypeParameterList? =
+        delegatedMember?.typeParameterList ?: super.getTypeParameterList()
 
-    override fun getTypeParameters(): Array<PsiTypeParameter> {
-        return delegatedMember?.typeParameters ?: super.getTypeParameters()
-    }
+    override fun getTypeParameters(): Array<PsiTypeParameter> =
+        delegatedMember?.typeParameters ?: super.getTypeParameters()
 
-    override fun getParamsNumber(): Int {
-        return delegatedMember?.parameterList?.parametersCount ?: 0
-    }
+    override fun getParamsNumber(): Int = delegatedMember?.parameterList?.parametersCount ?: 0
 
-    override fun getBody(): PsiCodeBlock? {
-        return delegatedMember?.body ?: PsiCodeBlockImpl(text)
-    }
+    override fun getBody(): PsiCodeBlock? = delegatedMember?.body ?: PsiCodeBlockImpl(text)
 
-    override fun isConstructor(): Boolean {
-        return delegatedMember?.isConstructor ?: false
-    }
+    override fun isConstructor(): Boolean = delegatedMember?.isConstructor ?: false
 
-    override fun getReturnType(): PsiType {
-        return delegatedMember?.returnType ?: super.getReturnType()
-    }
+    override fun getReturnType(): PsiType = delegatedMember?.returnType ?: super.getReturnType()
 
-    override fun hasParameters(): Boolean {
-        return delegatedMember?.hasParameters() ?: super<FregePsiMethodImpl>.hasParameters()
-    }
+    override fun hasParameters(): Boolean =
+        delegatedMember?.hasParameters() ?: super<FregePsiMethodImpl>.hasParameters()
 
-    override fun getReturnTypeElement(): PsiTypeElement? {
-        return delegatedMember?.returnTypeElement ?: super.getReturnTypeElement()
-    }
+    override fun getReturnTypeElement(): PsiTypeElement? =
+        delegatedMember?.returnTypeElement ?: super.getReturnTypeElement()
 
-    override fun getParameterList(): PsiParameterList {
-        return delegatedMember?.parameterList ?: super.getParameterList()
-    }
+    override fun getParameterList(): PsiParameterList = delegatedMember?.parameterList ?: super.getParameterList()
 
-    override fun getSignature(substitutor: PsiSubstitutor): MethodSignature {
-        return delegatedMember?.getSignature(substitutor) ?: super.getSignature(substitutor)
-    }
+    override fun getSignature(substitutor: PsiSubstitutor): MethodSignature =
+        delegatedMember?.getSignature(substitutor) ?: super.getSignature(substitutor)
 
-    override fun hasModifierProperty(name: String): Boolean {
-        return delegatedMember?.hasModifierProperty(name) ?: super.hasModifierProperty(name)
-    }
+    override fun hasModifierProperty(name: String): Boolean =
+        delegatedMember?.hasModifierProperty(name) ?: super.hasModifierProperty(name)
 
-    override fun getAnnotations(): Array<PsiAnnotation> {
-        return delegatedMember?.annotations ?: super<FregePsiMethodImpl>.getAnnotations()
-    }
+    override fun getAnnotations(): Array<PsiAnnotation> =
+        delegatedMember?.annotations ?: super<FregePsiMethodImpl>.getAnnotations()
 
-    override fun getAnnotation(fqn: String): PsiAnnotation? {
-        return delegatedMember?.getAnnotation(fqn) ?: super<FregePsiMethodImpl>.getAnnotation(fqn)
-    }
+    override fun getAnnotation(fqn: String): PsiAnnotation? =
+        delegatedMember?.getAnnotation(fqn) ?: super<FregePsiMethodImpl>.getAnnotation(fqn)
 
-    override fun hasAnnotation(fqn: String): Boolean {
-        return delegatedMember?.hasAnnotation(fqn) ?: super<FregePsiMethodImpl>.hasAnnotation(fqn)
-    }
+    override fun hasAnnotation(fqn: String): Boolean =
+        delegatedMember?.hasAnnotation(fqn) ?: super<FregePsiMethodImpl>.hasAnnotation(fqn)
 
-    override fun hasModifier(modifier: JvmModifier): Boolean {
-        return delegatedMember?.hasModifier(modifier) ?: super<FregePsiMethodImpl>.hasModifier(modifier)
-    }
+    override fun hasModifier(modifier: JvmModifier): Boolean =
+        delegatedMember?.hasModifier(modifier) ?: super<FregePsiMethodImpl>.hasModifier(modifier)
 
-    override fun getSourceElement(): PsiElement? {
-        return delegatedMember?.sourceElement ?: super<FregePsiMethodImpl>.getSourceElement()
-    }
+    override fun getSourceElement(): PsiElement? =
+        delegatedMember?.sourceElement ?: super<FregePsiMethodImpl>.getSourceElement()
 
-    override fun getHierarchicalMethodSignature(): HierarchicalMethodSignature {
-        return delegatedMember?.hierarchicalMethodSignature ?: super.getHierarchicalMethodSignature()
-    }
+    override fun getHierarchicalMethodSignature(): HierarchicalMethodSignature =
+        delegatedMember?.hierarchicalMethodSignature ?: super.getHierarchicalMethodSignature()
 
-    override fun getParameters(): Array<JvmParameter> {
-        return delegatedMember?.parameters ?: super<FregePsiMethodImpl>.getParameters()
-    }
+    override fun getParameters(): Array<JvmParameter> =
+        delegatedMember?.parameters ?: super<FregePsiMethodImpl>.getParameters()
 }

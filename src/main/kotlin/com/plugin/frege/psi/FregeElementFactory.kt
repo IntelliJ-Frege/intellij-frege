@@ -21,20 +21,16 @@ object FregeElementFactory {
         project: Project,
         text: String,
     ): E? {
-        val file = createFile(project, text)
-        return PsiTreeUtil.findChildrenOfType(file, E::class.java).lastOrNull()
+        return PsiTreeUtil.findChildrenOfType(createFile(project, text), E::class.java).lastOrNull()
     }
 
     private inline fun <reified E : PsiElement> createElement(
         project: Project,
         text: String,
-    ): E {
-        return createElementOrNull(project, text) ?: cannotCreateElement()
-    }
+    ): E = createElementOrNull(project, text) ?: cannotCreateElement()
 
-    private inline fun <reified E> cannotCreateElement(): E {
+    private inline fun <reified E> cannotCreateElement(): E =
         throw IllegalStateException("Cannot create an element ${E::class}")
-    }
 
     @JvmStatic
     fun createModuleKeyword(project: Project): FregeStrongModule {

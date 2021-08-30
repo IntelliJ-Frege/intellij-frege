@@ -27,7 +27,7 @@ class FregeClassBindingToInstanceLineMarker : FregeRelatedItemLineMarkerAbstract
         if (binding.containingClass !is FregeClassDecl) {
             return emptyList()
         }
-        return FregeMethodNameIndex.INSTANCE.findByName(
+        return FregeMethodNameIndex.findByName(
             binding.name,
             element.project,
             GlobalSearchScope.everythingScope(element.project)

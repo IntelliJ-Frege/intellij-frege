@@ -18,14 +18,10 @@ abstract class FregeClassDeclMixin : FregePsiClassImpl<FregeClassStub>, FregeCla
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun getNameWithoutStub(): String {
-        return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
-    }
+    override fun getNameWithoutStub(): String = nameIdentifier?.text ?: DEFAULT_CLASS_NAME
 
-    override fun getNameIdentifier(): PsiIdentifier? {
-        // TODO fix it after fix grammar of this rule
-        return conidUsage ?: constraints?.constraintList?.firstOrNull()?.qConid?.conidUsage
-    }
+    override fun getNameIdentifier(): PsiIdentifier? = // TODO fix it after fix grammar of this rule
+        conidUsage ?: constraints?.constraintList?.firstOrNull()?.qConid?.conidUsage
 
     override fun getMethods(): Array<PsiMethod> {
         val subprograms = whereSection?.linearIndentSection?.subprogramsFromScope ?: return PsiMethod.EMPTY_ARRAY
@@ -35,17 +31,12 @@ abstract class FregeClassDeclMixin : FregePsiClassImpl<FregeClassStub>, FregeCla
             .toTypedArray()
     }
 
-    override fun isInterface(): Boolean {
-        return true
-    }
+    override fun isInterface(): Boolean = true
 
-    override fun getScope(): PsiElement {
-        return this
-    }
+    override fun getScope(): PsiElement = this
 
-    override fun getModifierList(): PsiModifierList {
-        return LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC, PsiModifier.ABSTRACT) // TODO
-    }
+    override fun getModifierList(): PsiModifierList =
+        LightModifierList(manager, FregeLanguage.INSTANCE, PsiModifier.PUBLIC, PsiModifier.ABSTRACT) // TODO
 
     override val typedVaridDeclarations: List<FregeTypedVarid>
         get() {

@@ -14,11 +14,12 @@ class FregeBraceMatcher : PairedBraceMatcher {
         BracePair(FregeTypes.LEFT_BRACKET, FregeTypes.RIGHT_BRACKET, true)
     )
 
-    override fun getPairs(): Array<BracePair> {
-        return bracePairs
-    }
+    override fun getPairs(): Array<BracePair> = bracePairs
 
-    override fun isPairedBracesAllowedBeforeType(lbraceType: IElementType, contextType: IElementType?): Boolean {
+    override fun isPairedBracesAllowedBeforeType(
+        lbraceType: IElementType,
+        contextType: IElementType?
+    ): Boolean {
         return !FregeParserDefinition.IDENTIFIERS.contains(contextType) &&
                 !FregeParserDefinition.STRING_LITERALS.contains(contextType) &&
                 contextType != FregeTypes.LEFT_PAREN &&
@@ -26,7 +27,8 @@ class FregeBraceMatcher : PairedBraceMatcher {
                 contextType != FregeTypes.LEFT_BRACKET
     }
 
-    override fun getCodeConstructStart(file: PsiFile, openingBraceOffset: Int): Int {
-        return openingBraceOffset
-    }
+    override fun getCodeConstructStart(
+        file: PsiFile,
+        openingBraceOffset: Int
+    ): Int = openingBraceOffset
 }

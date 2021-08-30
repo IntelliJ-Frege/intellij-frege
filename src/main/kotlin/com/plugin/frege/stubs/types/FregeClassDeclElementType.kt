@@ -5,11 +5,7 @@ import com.plugin.frege.psi.impl.FregeClassDeclImpl
 import com.plugin.frege.stubs.FregeClassStub
 
 class FregeClassDeclElementType(debugName: String) : FregeClassElementType(debugName) {
-    override fun createPsi(stub: FregeClassStub): FregePsiClass {
-        return FregeClassDeclImpl(stub, this)
-    }
+    override fun createPsi(stub: FregeClassStub): FregePsiClass = FregeClassDeclImpl(stub, this)
 
-    override fun getExternalId(): String {
-        return super.getExternalId() + ".CLASS_DECL"
-    }
+    override fun getExternalId(): String = super.getExternalId() + ".CLASS_DECL"
 }

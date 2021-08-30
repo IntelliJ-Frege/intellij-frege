@@ -14,9 +14,7 @@ import com.plugin.frege.psi.impl.FregeCompositeElementImpl
 import com.plugin.frege.resolve.FregeReferenceBase
 
 open class FregeLabelNameMixin(node: ASTNode) : FregeCompositeElementImpl(node), PsiIdentifier {
-    override fun getTokenType(): IElementType {
-        return FregeTypes.LABEL_NAME
-    }
+    override fun getTokenType(): IElementType = FregeTypes.LABEL_NAME
 
     override fun getReference(): PsiReference {
         return object : FregeReferenceBase(this, TextRange(0, textLength)) {

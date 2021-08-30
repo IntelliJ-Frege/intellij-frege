@@ -57,14 +57,12 @@ object FregeImportResolveUtil {
         }
     }
 
-    private fun getPreludeImport(project: Project): FregeImportDecl {
-        return FregeElementFactory.createImportDeclByPackage(project, "frege.Prelude")
-    }
+    private fun getPreludeImport(project: Project): FregeImportDecl =
+        FregeElementFactory.createImportDeclByPackage(project, "frege.Prelude")
 
     @JvmStatic
-    fun getModuleByImport(import: FregeImportDecl): FregeProgram? {
-        return import.importPackageName?.importPackageClassName?.reference?.resolve() as? FregeProgram
-    }
+    fun getModuleByImport(import: FregeImportDecl): FregeProgram? =
+        import.importPackageName?.importPackageClassName?.reference?.resolve() as? FregeProgram
 
     @JvmStatic
     fun findClassesFromUsageInImports(usage: PsiElement): List<FregePsiClass> {
@@ -138,7 +136,8 @@ object FregeImportResolveUtil {
             }
         })
 
-        return results.distinct()
+        return results
+            .distinct()
             .filter { it is FregePsiClassImpl<*> && isElementAccessibleFromModule(it, module) }
     }
 
@@ -191,7 +190,6 @@ object FregeImportResolveUtil {
                         }
                     }
                 }
-
                 return true
             }
 
@@ -312,7 +310,7 @@ object FregeImportResolveUtil {
     ) {
         companion object {
             fun getPossibleResultsForName(name: FregeName, project: Project): PossibleClassResults {
-                val possibleClassesList = FregeShortClassNameIndex.INSTANCE.findByName(
+                val possibleClassesList = FregeShortClassNameIndex.findByName(
                     name.shortName, project, GlobalSearchScope.everythingScope(project)
                 ).filter { it.canBeReferenced() }
 
@@ -332,7 +330,7 @@ object FregeImportResolveUtil {
     ) {
         companion object {
             fun getPossibleResultsForMethodName(name: FregeName, project: Project): PossibleMethodResults {
-                val methods = FregeMethodNameIndex.INSTANCE.findByName(
+                val methods = FregeMethodNameIndex.findByName(
                     name.shortName, project, GlobalSearchScope.everythingScope(project)
                 )
                 val moduleToMethods = methods.mapNotNull {

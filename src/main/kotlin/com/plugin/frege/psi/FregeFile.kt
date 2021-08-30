@@ -9,9 +9,7 @@ import com.plugin.frege.FregeFileType
 import com.plugin.frege.FregeLanguage
 
 class FregeFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, FregeLanguage.INSTANCE) {
-    override fun getFileType(): FileType {
-        return FregeFileType.INSTANCE
-    }
+    override fun getFileType(): FileType = FregeFileType.INSTANCE
 
     override fun setName(name: String): PsiElement {
         val module = firstChild as? FregeProgram
@@ -28,9 +26,7 @@ class FregeFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, Freg
         return super.setName(name)
     }
 
-    override fun toString(): String {
-        return "Frege File"
-    }
+    override fun toString(): String = "Frege File"
 
     private fun nameFromFile(name: String): String = name.substringBeforeLast(".")
 }

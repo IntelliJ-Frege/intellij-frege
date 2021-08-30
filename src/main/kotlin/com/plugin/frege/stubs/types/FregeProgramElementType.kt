@@ -12,9 +12,7 @@ import com.plugin.frege.stubs.FregeProgramStub
 class FregeProgramElementType(debugName: String) :
     FregeClassElementTypeAbstract<FregeProgramStub, FregeProgram>(debugName) {
 
-    override fun createPsi(stub: FregeProgramStub): FregeProgram {
-        return FregeProgramImpl(stub, this)
-    }
+    override fun createPsi(stub: FregeProgramStub): FregeProgram = FregeProgramImpl(stub, this)
 
     override fun serialize(stub: FregeProgramStub, dataStream: StubOutputStream) {
         dataStream.writeName(stub.name)
@@ -39,7 +37,5 @@ class FregeProgramElementType(debugName: String) :
         return FregeProgramStub(parentStub, this, psi.qualifiedName, importStrings)
     }
 
-    override fun getExternalId(): String {
-        return super.getExternalId() + ".PROGRAM"
-    }
+    override fun getExternalId(): String = super.getExternalId() + ".PROGRAM"
 }

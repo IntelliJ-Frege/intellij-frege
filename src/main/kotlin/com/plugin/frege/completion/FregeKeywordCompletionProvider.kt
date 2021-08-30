@@ -8,6 +8,7 @@ import com.intellij.util.ProcessingContext
 
 class FregeKeywordCompletionProvider(private val keywords: List<String>, private val addSpaceToEnd: Boolean) :
     CompletionProvider<CompletionParameters>() {
+
     override fun addCompletions(
         parameters: CompletionParameters,
         context: ProcessingContext,
@@ -16,7 +17,8 @@ class FregeKeywordCompletionProvider(private val keywords: List<String>, private
         if (FregeCompletionUtil.shouldComplete(parameters.position)) {
             val nextSymbolIsSpace = isNextSymbolIsSpace(parameters)
             result.addAllElements(keywords.map { keyword ->
-                LookupElementBuilder.create(if (addSpaceToEnd && !nextSymbolIsSpace) "$keyword " else keyword)
+                val lookupString = if (addSpaceToEnd && !nextSymbolIsSpace) "$keyword " else keyword
+                LookupElementBuilder.create(lookupString)
             })
         }
     }
@@ -25,10 +27,6 @@ class FregeKeywordCompletionProvider(private val keywords: List<String>, private
         val editor = parameters.editor
         val offset = editor.caretModel.primaryCaret.offset
         val document = editor.document
-        return if (offset < document.textLength) {
-            document.text[offset] == ' '
-        } else {
-            false
-        }
+        return if (offset < document.textLength) document.text[offset] == ' ' else false
     }
 }

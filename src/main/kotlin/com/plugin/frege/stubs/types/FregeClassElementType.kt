@@ -9,9 +9,8 @@ import com.plugin.frege.stubs.FregeClassStub
 abstract class FregeClassElementType(debugName: String) :
     FregeClassElementTypeAbstract<FregeClassStub, FregePsiClass>(debugName) {
 
-    override fun createStub(psi: FregePsiClass, parentStub: StubElement<*>?): FregeClassStub {
-        return FregeClassStub(parentStub, this, psi.qualifiedName)
-    }
+    override fun createStub(psi: FregePsiClass, parentStub: StubElement<*>?): FregeClassStub =
+        FregeClassStub(parentStub, this, psi.qualifiedName)
 
     override fun serialize(stub: FregeClassStub, dataStream: StubOutputStream) {
         dataStream.writeName(stub.name)

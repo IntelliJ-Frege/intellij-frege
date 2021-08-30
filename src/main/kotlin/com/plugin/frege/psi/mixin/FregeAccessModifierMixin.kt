@@ -29,6 +29,7 @@ enum class FregeAccessModifiers {
     };
 
     abstract val psiModifier: String
+
     override fun toString(): String = super.toString().lowercase()
 
     companion object {

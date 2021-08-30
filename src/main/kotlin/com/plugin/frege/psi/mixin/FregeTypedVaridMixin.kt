@@ -6,12 +6,9 @@ import com.plugin.frege.psi.FregeTypedVarid
 import com.plugin.frege.psi.impl.FregeNamedElementImpl
 
 abstract class FregeTypedVaridMixin(node: ASTNode) : FregeNamedElementImpl(node), FregeTypedVarid {
-    override fun setName(name: String): PsiElement {
+    override fun setName(name: String): PsiElement = apply {
         nameIdentifier?.reference?.handleElementRename(name)
-        return this
     }
 
-    override fun getNameIdentifier(): PsiElement? {
-        return typeParameter
-    }
+    override fun getNameIdentifier(): PsiElement? = typeParameter
 }

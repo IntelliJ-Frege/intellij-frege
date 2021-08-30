@@ -9,23 +9,20 @@ import com.plugin.frege.stubs.FregeFileStub
 import org.jetbrains.annotations.NonNls
 
 class FregeFileElementType(language: FregeLanguage?) : IStubFileElementType<FregeFileStub>(language) {
+    override fun getStubVersion(): Int = VERSION
+
+    override fun serialize(stub: FregeFileStub, dataStream: StubOutputStream) = Unit
+
+    override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): FregeFileStub =
+        FregeFileStub(null)
+
+    @NonNls
+    override fun getExternalId(): String = super.getExternalId() + ".FILE"
+
     companion object {
         @JvmField
         val INSTANCE = FregeFileElementType(FregeLanguage.INSTANCE)
 
         private const val VERSION = 3 // Change the version if you want to re-index Frege
-    }
-
-    override fun getStubVersion(): Int = VERSION
-
-    override fun serialize(stub: FregeFileStub, dataStream: StubOutputStream) = Unit
-
-    override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): FregeFileStub {
-        return FregeFileStub(null)
-    }
-
-    @NonNls
-    override fun getExternalId(): String {
-        return super.getExternalId() + ".FILE"
     }
 }

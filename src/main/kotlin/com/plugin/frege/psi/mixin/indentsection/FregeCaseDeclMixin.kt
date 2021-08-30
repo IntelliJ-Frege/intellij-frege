@@ -7,7 +7,6 @@ import com.plugin.frege.psi.FregeWeakScopeElement
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
 
 abstract class FregeCaseDeclMixin(node: ASTNode) : FregeCompositeElementImpl(node), FregeWeakScopeElement, FregeCaseDecl {
-    override fun getSubprogramsFromScope(): List<PsiElement> {
-        return whereSection?.linearIndentSection?.subprogramsFromScope ?: emptyList()
-    }
+    override fun getSubprogramsFromScope(): List<PsiElement> =
+        whereSection?.linearIndentSection?.subprogramsFromScope ?: emptyList()
 }

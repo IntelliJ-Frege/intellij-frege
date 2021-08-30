@@ -11,13 +11,10 @@ import com.plugin.frege.resolve.FregeImportResolveUtil
 
 @Suppress("UnstableApiUsage")
 abstract class FregeImportDeclAliasMixin(node: ASTNode) : LightFregePsiClassBase(node), FregeImportDeclAlias {
-    override val delegate: PsiClass?
-        get() {
-            val import = parentOfType<FregeImportDecl>() ?: return null
-            return FregeImportResolveUtil.getModuleByImport(import)
+    override val delegate
+        get(): PsiClass? = parentOfType<FregeImportDecl>()?.let { import ->
+            FregeImportResolveUtil.getModuleByImport(import)
         }
 
-    override fun getNameIdentifier(): PsiIdentifier? {
-        return conidUsage
-    }
+    override fun getNameIdentifier(): PsiIdentifier? = conidUsage
 }

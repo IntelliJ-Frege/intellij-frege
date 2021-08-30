@@ -7,14 +7,15 @@ import com.intellij.psi.PsiElementVisitor
 import com.plugin.frege.psi.FregeCompositeElement
 
 abstract class FregeLocalInspection : LocalInspectionTool() {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return object : PsiElementVisitor() {
-            override fun visitElement(element: PsiElement) {
-                super.visitElement(element)
-                if (element is FregeCompositeElement) {
-                    visitElement(element, holder, isOnTheFly)
-                }
+    override fun buildVisitor(
+        holder: ProblemsHolder,
+        isOnTheFly: Boolean
+    ): PsiElementVisitor = object : PsiElementVisitor() {
+        override fun visitElement(element: PsiElement) {
+            if (element is FregeCompositeElement) {
+                visitElement(element, holder, isOnTheFly)
             }
+            super.visitElement(element)
         }
     }
 

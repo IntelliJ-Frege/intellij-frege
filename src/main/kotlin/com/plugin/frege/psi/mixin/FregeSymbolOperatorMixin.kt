@@ -21,7 +21,5 @@ open class FregeSymbolOperatorMixin(node: ASTNode) :
         }
     }
 
-    override fun getTokenType(): IElementType {
-        return FregeTypes.SYMBOL_OPERATOR
-    }
+    override fun getTokenType(): IElementType = FregeTypes.SYMBOL_OPERATOR
 }
