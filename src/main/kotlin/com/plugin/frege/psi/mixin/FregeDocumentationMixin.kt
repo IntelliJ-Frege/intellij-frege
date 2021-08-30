@@ -5,17 +5,18 @@ import com.plugin.frege.psi.FregeDocumentation
 import com.plugin.frege.psi.FregeDocumentationElement
 import com.plugin.frege.psi.impl.FregeCompositeElementImpl
 
-abstract class FregeDocumentationMixin(node: ASTNode) : FregeCompositeElementImpl(node),
-    FregeDocumentationElement, FregeDocumentation {
+abstract class FregeDocumentationMixin(node: ASTNode) :
+    FregeCompositeElementImpl(node), FregeDocumentationElement, FregeDocumentation {
+
     private val lineCommentPrefixLen = 3
     private val blockCommentPrefixLen = 3
     private val blockCommentSuffixLen = 2
+
     override fun getDocumentationText(): String {
-        if (lineDocumentation != null) {
-            return lineDocumentation
-                ?.text
-                ?.drop(lineCommentPrefixLen) ?: ""
+        lineDocumentation?.let {
+            return it.text.drop(lineCommentPrefixLen)
         }
+        
         return blockDocumentation
             ?.text
             ?.drop(blockCommentPrefixLen)

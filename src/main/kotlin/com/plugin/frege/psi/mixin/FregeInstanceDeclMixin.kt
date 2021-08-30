@@ -16,13 +16,9 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl<FregeClassStub>, Frege
 
     constructor(stub: FregeClassStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun canBeReferenced(): Boolean {
-        return false
-    }
+    override fun canBeReferenced(): Boolean = false
 
-    override fun getNameWithoutStub(): String {
-        return nameIdentifier?.text ?: DEFAULT_CLASS_NAME
-    }
+    override fun getNameWithoutStub(): String = nameIdentifier?.text ?: DEFAULT_CLASS_NAME
 
     override fun getNameIdentifier(): PsiIdentifier? {
         val typeApplications = typeApplications?.typeApplicationList ?: return null
@@ -40,22 +36,14 @@ abstract class FregeInstanceDeclMixin : FregePsiClassImpl<FregeClassStub>, Frege
             ?.toTypedArray() ?: PsiMethod.EMPTY_ARRAY
     }
 
-    override fun isInterface(): Boolean {
-        return false
-    }
+    override fun isInterface(): Boolean = false
 
-    override fun getScope(): PsiElement {
-        return this
-    }
+    override fun getScope(): PsiElement = this
 
     override val typedVaridDeclarations: List<FregeTypedVarid>
         get() = PsiTreeUtil.findChildrenOfType(typeApplications, FregeTypedVarid::class.java).toList()
 
-    fun getInstancedClass(): FregeClassDecl? {
-        return qConid?.conidUsage?.reference?.resolve() as? FregeClassDecl
-    }
+    fun getInstancedClass(): FregeClassDecl? = qConid?.conidUsage?.reference?.resolve() as? FregeClassDecl
 
-    override fun generateDoc(): String {
-        return "" // TODO
-    }
+    override fun generateDoc(): String = "" // TODO
 }

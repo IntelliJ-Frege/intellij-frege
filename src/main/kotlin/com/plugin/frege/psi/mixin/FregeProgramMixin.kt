@@ -18,10 +18,6 @@ import com.plugin.frege.stubs.FregeProgramStub
 
 @Suppress("UnstableApiUsage")
 abstract class FregeProgramMixin : FregePsiClassImpl<FregeProgramStub>, FregeProgram {
-    private companion object {
-        private const val DEFAULT_MODULE_NAME: String = "Main"
-    }
-
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: FregeProgramStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
@@ -37,25 +33,16 @@ abstract class FregeProgramMixin : FregePsiClassImpl<FregeProgramStub>, FregePro
         return super.setName(name)
     }
 
-    override fun getNameIdentifier(): PsiIdentifier? {
-        return packageName?.conidUsage
-    }
+    override fun getNameIdentifier(): PsiIdentifier? = packageName?.conidUsage
 
     override fun getQualifiedName(): String {
-        val nameFromStub = greenStub?.name
-        if (nameFromStub != null) {
-            return nameFromStub
-        }
+        greenStub?.name?.let { return it }
         return packageName?.text ?: DEFAULT_MODULE_NAME
     }
 
-    override fun getNameWithoutStub(): String {
-        return nameIdentifier?.text ?: DEFAULT_MODULE_NAME
-    }
+    override fun getNameWithoutStub(): String = nameIdentifier?.text ?: DEFAULT_MODULE_NAME
 
-    override fun isInterface(): Boolean {
-        return false
-    }
+    override fun isInterface(): Boolean = false
 
     override fun getMethods(): Array<PsiMethod> {
         val body = body ?: return PsiMethod.EMPTY_ARRAY
@@ -66,9 +53,7 @@ abstract class FregeProgramMixin : FregePsiClassImpl<FregeProgramStub>, FregePro
             .toList().toTypedArray()
     }
 
-    override fun getScope(): PsiElement {
-        return this
-    }
+    override fun getScope(): PsiElement = this
 
     override fun generateDoc(): String {
         return buildDoc {
@@ -124,6 +109,10 @@ abstract class FregeProgramMixin : FregePsiClassImpl<FregeProgramStub>, FregePro
                 paragraph { appendPsiClassLink(psiClass) }
             }
         }
+    }
+
+    private companion object {
+        private const val DEFAULT_MODULE_NAME: String = "Main"
     }
 }
 

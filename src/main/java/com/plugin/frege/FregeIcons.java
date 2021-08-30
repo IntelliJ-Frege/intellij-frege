@@ -1,11 +1,12 @@
 package com.plugin.frege;
 
 import com.intellij.openapi.util.IconLoader;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
 public class FregeIcons {
-    public static final Icon FILE = IconLoader.findIcon("icons/FregeLogo.png");
-    public static final Icon JavaMarker = IconLoader.findIcon("icons/FregeJavaMarker.svg");
-    public static final Icon AnnotationMarker = IconLoader.findIcon("icons/FregeAnnotationMarker.svg");
+    public static final @NotNull Icon FILE = IconLoader.getIcon("icons/FregeLogo.png");
+    public static final @NotNull Icon JavaMarker = IconLoader.getIcon("icons/FregeJavaMarker.svg");
+    public static final @NotNull Icon AnnotationMarker = IconLoader.getIcon("icons/FregeAnnotationMarker.svg");
 }

@@ -12,7 +12,8 @@ class FregeWarningAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (element is FregeStrongPackage) {
             annotateWithWeakWarning(
-                element, holder,
+                element,
+                holder,
                 "It's not recommended to use the 'package' keyword",
                 FregePackageToModuleIntentionAction(element)
             )

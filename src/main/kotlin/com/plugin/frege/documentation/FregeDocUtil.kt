@@ -11,7 +11,6 @@ import com.plugin.frege.psi.util.FregePsiUtil.isScope
 import org.apache.commons.lang.StringEscapeUtils
 
 object FregeDocUtil {
-
     @JvmStatic
     fun escapeDocText(text: String): String {
         return StringEscapeUtils.escapeHtml(text).replace("\r\n|\n\r|\r|\n".toRegex(), "<br/>")
@@ -28,12 +27,15 @@ object FregeDocUtil {
     @JvmStatic
     private fun collectPrecedingDocs(element: PsiElement): List<FregeDocumentationElement> {
         val parentInScope = PsiTreeUtil.findFirstParent(element) { isScope(it.parent) } ?: return emptyList()
-        return FregePsiUtil.siblingBackwardSequenceSkipping(
+        val siblingsBackwardSequenceSkipping = FregePsiUtil.siblingsBackwardSequenceSkipping(
             parentInScope,
             true,
             TokenSet.orSet(WHITE_SPACES, COMMENTS)
         )
+        return siblingsBackwardSequenceSkipping
             .takeWhile { it is FregeDocumentationElement || FregePsiUtil.isEndDeclElement(it) }
-            .mapNotNull { it as? FregeDocumentationElement }.toList().asReversed()
+            .filterIsInstance<FregeDocumentationElement>()
+            .toList()
+            .asReversed()
     }
 }

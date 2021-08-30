@@ -12,63 +12,54 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 
 class FregeFindUsagesProvider : FindUsagesProvider {
-    override fun getWordsScanner(): WordsScanner {
-        return DefaultWordsScanner(
-            FregeLayoutLexerAdapter(),
-            FregeParserDefinition.IDENTIFIERS,
-            FregeParserDefinition.COMMENTS,
-            FregeParserDefinition.STRING_LITERALS,
-            TokenSet.EMPTY,
-            FregeParserDefinition.OPERATORS
-        )
-    }
+    override fun getWordsScanner(): WordsScanner = DefaultWordsScanner(
+        FregeLayoutLexerAdapter(),
+        FregeParserDefinition.IDENTIFIERS,
+        FregeParserDefinition.COMMENTS,
+        FregeParserDefinition.STRING_LITERALS,
+        TokenSet.EMPTY,
+        FregeParserDefinition.OPERATORS
+    )
 
-    override fun canFindUsagesFor(element: PsiElement): Boolean {
-        return element is FregeNamedElement
-    }
+    override fun canFindUsagesFor(element: PsiElement): Boolean = element is FregeNamedElement
 
     @NonNls
-    override fun getHelpId(element: PsiElement): String? {
-        return null
-    }
+    override fun getHelpId(element: PsiElement): String? = null
 
-    override fun getType(element: PsiElement): @Nls String {
-        return when (element) {
-            is FregeAnnotationItem -> "annotation"
-            is FregeBinding -> {
-                when (element.nameIdentifier) {
-                    is FregeSymbolOperator -> "operator"
-                    is FregeWordOperator -> "word operator"
-                    else -> "function binding"
-                }
+    override fun getType(element: PsiElement): @Nls String = when (element) {
+        is FregeAnnotationItem -> "annotation"
+        is FregeBinding -> {
+            when (element.nameIdentifier) {
+                is FregeSymbolOperator -> "operator"
+                is FregeWordOperator -> "word operator"
+                else -> "function binding"
             }
-            is FregeTypedVarid -> "type parameter"
-            is FregeDataDecl -> "data"
-            is FregeConstruct -> "data constructor"
-            is FregeNewtypeDecl -> "newtype"
-            is FregeTypeDecl -> "type alias"
-            is FregeNativeDataDecl -> "native data"
-            is FregeNativeFunction -> "native function"
-            is FregeClassDecl -> "class"
-            is FregeProgram -> "module"
-            is FregeParameter -> "parameter"
-            is FregeLabel -> "label"
-            else -> "" // TODO
         }
+        is FregeTypedVarid -> "type parameter"
+        is FregeDataDecl -> "data"
+        is FregeConstruct -> "data constructor"
+        is FregeNewtypeDecl -> "newtype"
+        is FregeTypeDecl -> "type alias"
+        is FregeNativeDataDecl -> "native data"
+        is FregeNativeFunction -> "native function"
+        is FregeClassDecl -> "class"
+        is FregeProgram -> "module"
+        is FregeParameter -> "parameter"
+        is FregeLabel -> "label"
+        else -> "UNKNOWN"
     }
 
-    override fun getDescriptiveName(element: PsiElement): @Nls String {
-        return when (element) {
-            is FregeNamedElement -> element.name ?: element.text
-            is FregeFile -> element.name
-            else -> ""
-        }
+    override fun getDescriptiveName(element: PsiElement): @Nls String = when (element) {
+        is FregeNamedElement -> element.name ?: element.text
+        is FregeFile -> element.name
+        else -> ""
     }
 
-    override fun getNodeText(element: PsiElement, useFullName: Boolean): @Nls String {
-        return when (element) {
-            is FregeNamedElement -> element.name ?: element.text
-            else -> element.text
-        }
+    override fun getNodeText(
+        element: PsiElement,
+        useFullName: Boolean
+    ): @Nls String = when (element) {
+        is FregeNamedElement -> element.name ?: element.text
+        else -> element.text
     }
 }

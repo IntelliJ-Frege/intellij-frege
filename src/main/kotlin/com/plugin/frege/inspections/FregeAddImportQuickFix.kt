@@ -20,28 +20,30 @@ import com.plugin.frege.stubs.index.FregeShortClassNameIndex
 import javax.swing.JList
 
 class FregeAddImportQuickFix : LocalQuickFix {
-    override fun getFamilyName(): String {
-        return "Import module"
-    }
+    override fun getFamilyName(): String = "Import module"
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        val usage = descriptor.psiElement ?: return
-        if (usage !is FregeCompositeElement || usage is FregeNamedElement) {
-            return
+        descriptor.psiElement?.let { usage ->
+            if (usage !is FregeCompositeElement || usage is FregeNamedElement) {
+                return
+            }
+            usage.parentOfType<FregeProgram>()?.let { module ->
+                val name = FregeName(usage)
+                val candidates = findCandidates(name, project)
+                showPromptToPickCandidate(module, name, candidates, project)
+            }
         }
-        val module = usage.parentOfType<FregeProgram>() ?: return
-        val name = FregeName(usage)
-        val candidates = findCandidates(name, project)
-        showPromptToPickCandidate(module, name, candidates, project)
     }
 
     private fun findCandidates(name: FregeName, project: Project): List<FregeProgram> {
-        val methods = FregeMethodNameIndex.INSTANCE.findByName(
+        val methods = FregeMethodNameIndex.findByName(
             name.shortName, project, GlobalSearchScope.everythingScope(project)
         ).mapNotNull { it.parentOfType<FregeProgram>(true) }
-        val classes = FregeShortClassNameIndex.INSTANCE.findByName(
+
+        val classes = FregeShortClassNameIndex.findByName(
             name.shortName, project, GlobalSearchScope.everythingScope(project)
         ).mapNotNull { it.parentOfType<FregeProgram>(true) }
+
         return (methods + classes).distinct()
     }
 

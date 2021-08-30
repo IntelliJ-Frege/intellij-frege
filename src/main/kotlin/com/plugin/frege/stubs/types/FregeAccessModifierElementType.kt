@@ -23,14 +23,10 @@ class FregeAccessModifierElementType(debugName: String) :
 
     override fun indexStub(stub: FregeAccessModifierStub, sink: IndexSink) = Unit
 
-    override fun createPsi(stub: FregeAccessModifierStub): FregeAccessModifier {
-        return FregeAccessModifierImpl(stub, this)
-    }
+    override fun createPsi(stub: FregeAccessModifierStub): FregeAccessModifier = FregeAccessModifierImpl(stub, this)
 
     override fun createStub(
         psi: FregeAccessModifier,
         parentStub: StubElement<out PsiElement>?
-    ): FregeAccessModifierStub {
-        return FregeAccessModifierStub(parentStub, this, psi.text)
-    }
+    ): FregeAccessModifierStub = FregeAccessModifierStub(parentStub, this, psi.text)
 }

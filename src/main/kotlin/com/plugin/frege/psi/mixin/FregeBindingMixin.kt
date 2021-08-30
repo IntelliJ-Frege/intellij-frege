@@ -26,17 +26,12 @@ abstract class FregeBindingMixin : FregePsiMethodImpl, FregeWeakScopeElement, Fr
         return containingClass is FregeNewtypeDecl || containingClass is FregeInstanceDecl
     }
 
-    override fun getSubprogramsFromScope(): List<PsiElement> {
-        return rhs.whereSection?.linearIndentSection?.subprogramsFromScope ?: emptyList()
-    }
+    override fun getSubprogramsFromScope(): List<PsiElement> =
+        rhs.whereSection?.linearIndentSection?.subprogramsFromScope ?: emptyList()
 
-    override fun getBody(): PsiCodeBlock {
-        return PsiCodeBlockImpl(text)
-    }
+    override fun getBody(): PsiCodeBlock = PsiCodeBlockImpl(text)
 
-    override fun isConstructor(): Boolean {
-        return false
-    }
+    override fun isConstructor(): Boolean = false
 
     override fun getNameIdentifier(): PsiIdentifier? {
         val functionLhs = lhs.functionLhs

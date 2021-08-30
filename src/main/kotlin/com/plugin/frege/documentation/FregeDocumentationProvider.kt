@@ -9,16 +9,12 @@ import com.plugin.frege.psi.FregeDocumentableElement
 import com.plugin.frege.psi.impl.FregeBindingImpl
 
 class FregeDocumentationProvider : AbstractDocumentationProvider() {
-
     override fun generateDoc(element: PsiElement, originalElement: PsiElement?): String? {
         if (DumbService.isDumb(element.project)) {
             return null
         }
         if (element is FregeBindingImpl) {
-            val annoItem = element.getAnnoItem()
-            if (annoItem != null) {
-                return annoItem.generateDoc()
-            }
+            element.getAnnoItem()?.let { return it.generateDoc() }
         }
         return (element as? FregeDocumentableElement)?.generateDoc()
     }

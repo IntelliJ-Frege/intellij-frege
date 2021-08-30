@@ -18,14 +18,11 @@ abstract class FregeNamedStubBasedPsiElementBase<T : StubElement<*>> : StubBased
 
     constructor(node: ASTNode) : super(node)
 
-    override fun setName(name: String): PsiElement {
+    override fun setName(name: String): PsiElement = apply {
         nameIdentifier?.reference?.handleElementRename(name)
-        return this
     }
 
-    override fun getNavigationElement(): PsiElement {
-        return nameIdentifier ?: this
-    }
+    override fun getNavigationElement(): PsiElement = nameIdentifier ?: this
 
     override fun getTextOffset(): Int {
         val nameIdentifier = nameIdentifier
@@ -36,13 +33,9 @@ abstract class FregeNamedStubBasedPsiElementBase<T : StubElement<*>> : StubBased
         }
     }
 
-    override fun toString(): String {
-        return node.elementType.toString()
-    }
+    override fun toString(): String = node.elementType.toString()
 
-    override fun getIcon(flags: Int): Icon? {
-        return FregeIcons.FILE
-    }
+    override fun getIcon(flags: Int): Icon? = FregeIcons.FILE
 
     val accessModifiers: FregeAccessModifiers
         get() {

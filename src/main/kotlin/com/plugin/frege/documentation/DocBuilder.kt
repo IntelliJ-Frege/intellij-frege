@@ -8,7 +8,6 @@ import com.plugin.frege.psi.FregePsiClass
 import com.plugin.frege.psi.FregePsiMethod
 
 class DocBuilder {
-
     private val builder = StringBuilder()
 
     private fun appendPsiElementLink(fqn: String?, label: String?): DocBuilder {

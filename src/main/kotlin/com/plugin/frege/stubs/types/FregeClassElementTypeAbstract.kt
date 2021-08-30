@@ -10,9 +10,9 @@ import com.plugin.frege.stubs.index.FregeShortClassNameIndex
 abstract class FregeClassElementTypeAbstract<StubT : FregeClassStub, PsiT : FregePsiClass>(debugName: String) :
     FregeNamedStubElementType<StubT, PsiT>(debugName) {
 
-    override val nameKey by lazy { FregeClassNameIndex.INSTANCE.key }
+    override val nameKey by lazy { FregeClassNameIndex.key }
 
-    protected val shortNameKey by lazy { FregeShortClassNameIndex.INSTANCE.key }
+    protected val shortNameKey by lazy { FregeShortClassNameIndex.key }
 
     override fun indexStub(stub: StubT, sink: IndexSink) {
         super.indexStub(stub, sink)
@@ -21,7 +21,5 @@ abstract class FregeClassElementTypeAbstract<StubT : FregeClassStub, PsiT : Freg
         sink.occurrence(shortNameKey, shortName.hashCode())
     }
 
-    override fun getExternalId(): String {
-        return super.getExternalId() + ".CLASS"
-    }
+    override fun getExternalId(): String = super.getExternalId() + ".CLASS"
 }

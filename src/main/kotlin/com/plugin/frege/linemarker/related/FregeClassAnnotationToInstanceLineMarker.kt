@@ -21,7 +21,7 @@ class FregeClassAnnotationToInstanceLineMarker : FregeRelatedItemLineMarkerAbstr
         if (FregeResolveUtil.findContainingFregeClass(annotationName) !is FregeClassDecl) {
             return emptyList()
         }
-        return FregeMethodNameIndex.INSTANCE.findByName(
+        return FregeMethodNameIndex.findByName(
             annotationName.text,
             element.project,
             GlobalSearchScope.everythingScope(element.project)

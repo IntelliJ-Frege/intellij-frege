@@ -35,7 +35,7 @@ object FregeResolveUtil {
      */
     @JvmStatic
     fun findClassesByQualifiedName(project: Project, qualifiedName: String): List<FregePsiClass> {
-        return FregeClassNameIndex.INSTANCE.findByName(
+        return FregeClassNameIndex.findByName(
             qualifiedName, project, GlobalSearchScope.everythingScope(project)
         )
     }
@@ -74,7 +74,7 @@ object FregeResolveUtil {
         if (qualifiedName.isNotQualified) {
             return emptyList()
         }
-        return FregeMethodNameIndex.INSTANCE.findByName(qualifiedName.shortName, project, GlobalSearchScope.everythingScope(project))
+        return FregeMethodNameIndex.findByName(qualifiedName.shortName, project, GlobalSearchScope.everythingScope(project))
             .filter { method ->
                 if (qualifiedName.isNotQualified && method.onlyQualifiedSearch()) {
                     return@filter false
@@ -177,7 +177,6 @@ object FregeResolveUtil {
                 return methods // TODO errors if several references in different classes
             }
         }
-
         return emptyList()
     }
 

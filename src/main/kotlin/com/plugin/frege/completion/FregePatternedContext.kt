@@ -7,6 +7,7 @@ import com.plugin.frege.FregeFileType
 
 abstract class FregePatternedContext(idSuffix: String, presentableName: String) :
     FregeAbstractContext(idSuffix, presentableName) {
+
     abstract val pattern: PsiElementPattern.Capture<PsiElement>
 
     override fun isInContext(file: PsiFile, offset: Int): Boolean {

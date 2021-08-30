@@ -5,7 +5,6 @@ import com.intellij.psi.PsiElement
 import com.plugin.frege.psi.FregeNamedElement
 
 class FregeRefactoringSupportProvider : RefactoringSupportProvider() {
-    override fun isMemberInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean {
-        return element is FregeNamedElement
-    }
+    override fun isMemberInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean =
+        element is FregeNamedElement
 }

@@ -15,7 +15,6 @@ import com.plugin.frege.resolve.FregeResolveUtil.resolveBindingByNameElement
 open class FregeAnnotationNameMixin(node: ASTNode) : FregeCompositeElementImpl(node), PsiIdentifier {
     override fun getReference(): PsiReference? {
         return object : FregeReferenceBase(this, TextRange(0, textLength)) {
-            // TODO incomplete code
             override fun resolveInner(incompleteCode: Boolean): List<PsiElement> {
                 return resolveBindingByNameElement(psiElement, incompleteCode)
             }

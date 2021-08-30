@@ -15,22 +15,14 @@ class FregeRenameInputValidator : RenameInputValidator {
                 override fun accepts(o: Any?, context: ProcessingContext?) = false
             })
 
-        override fun accepts(o: Any?): Boolean {
-            return o is FregeNamedElement
-        }
+        override fun accepts(o: Any?): Boolean = o is FregeNamedElement
 
-        override fun accepts(o: Any?, context: ProcessingContext?): Boolean {
-            return accepts(o)
-        }
+        override fun accepts(o: Any?, context: ProcessingContext?): Boolean = accepts(o)
 
-        override fun getCondition(): ElementPatternCondition<PsiElement> {
-            return condition
-        }
+        override fun getCondition(): ElementPatternCondition<PsiElement> = condition
     }
 
-    override fun getPattern(): ElementPattern<out PsiElement> {
-        return pattern
-    }
+    override fun getPattern(): ElementPattern<out PsiElement> = pattern
 
     override fun isInputValid(newName: String, element: PsiElement, context: ProcessingContext): Boolean {
         if (newName.contains(' ')) {

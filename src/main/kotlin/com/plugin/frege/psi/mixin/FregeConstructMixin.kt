@@ -18,27 +18,13 @@ abstract class FregeConstructMixin: FregePsiMethodImpl, FregeConstruct {
 
     constructor(stub: FregeMethodStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun getParamsNumber(): Int {
-        return if (sigmaList.isNotEmpty()) {
-            sigmaList.size
-        } else {
-            labelsList.size
-        }
-    }
+    override fun getParamsNumber(): Int = if (sigmaList.isNotEmpty()) sigmaList.size else labelsList.size
 
-    override fun getNameIdentifier(): PsiIdentifier {
-        return conidUsage
-    }
+    override fun getNameIdentifier(): PsiIdentifier = conidUsage
 
-    override fun getBody(): PsiCodeBlock {
-        return PsiCodeBlockImpl(text)
-    }
+    override fun getBody(): PsiCodeBlock = PsiCodeBlockImpl(text)
 
-    override fun isConstructor(): Boolean {
-        return true
-    }
+    override fun isConstructor(): Boolean = true
 
-    override fun generateDoc(): String {
-        return "" // TODO
-    }
+    override fun generateDoc(): String = "" // TODO
 }

@@ -23,28 +23,18 @@ abstract class FregeLabelMixin : FregePsiMethodImpl, FregeLabel {
 
     constructor(stub: FregeMethodStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun onlyQualifiedSearch(): Boolean {
-        return true
-    }
+    override fun onlyQualifiedSearch(): Boolean = true
 
-    override fun generateDoc(): String {
-        return "" // TODO
-    }
+    override fun generateDoc(): String = "" // TODO
 
     override fun getParamsNumber(): Int {
         return PsiTreeUtil.getNextSiblingOfType(parentOfType<FregeLabels>(), FregeSigma::class.java)
             ?.children?.count { it is FregeSimpleType } ?: 0 // TODO waiting for type system
     }
 
-    override fun getNameIdentifier(): PsiIdentifier? {
-        return labelName
-    }
+    override fun getNameIdentifier(): PsiIdentifier? = labelName
 
-    override fun getBody(): PsiCodeBlock? {
-        return PsiCodeBlockImpl(text)
-    }
+    override fun getBody(): PsiCodeBlock? = PsiCodeBlockImpl(text)
 
-    override fun isConstructor(): Boolean {
-        return false
-    }
+    override fun isConstructor(): Boolean = false
 }

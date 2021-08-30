@@ -10,11 +10,10 @@ import com.plugin.frege.stubs.index.FregeMethodNameIndex
 abstract class FregeMethodElementType(debugName: String) :
     FregeNamedStubElementType<FregeMethodStub, FregePsiMethod>(debugName) {
 
-    override val nameKey by lazy { FregeMethodNameIndex.INSTANCE.key }
+    override val nameKey by lazy { FregeMethodNameIndex.key }
 
-    override fun createStub(psi: FregePsiMethod, parentStub: StubElement<*>?): FregeMethodStub {
-        return FregeMethodStub(parentStub, this, psi.name)
-    }
+    override fun createStub(psi: FregePsiMethod, parentStub: StubElement<*>?): FregeMethodStub =
+        FregeMethodStub(parentStub, this, psi.name)
 
     override fun serialize(stub: FregeMethodStub, dataStream: StubOutputStream) {
         dataStream.writeName(stub.name)
@@ -25,7 +24,5 @@ abstract class FregeMethodElementType(debugName: String) :
         return FregeMethodStub(parentStub, this, name)
     }
 
-    override fun getExternalId(): String {
-        return super.getExternalId() + ".METHOD"
-    }
+    override fun getExternalId(): String = super.getExternalId() + ".METHOD"
 }

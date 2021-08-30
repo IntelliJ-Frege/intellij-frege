@@ -25,7 +25,5 @@ open class FregeFunctionNameMixin(node: ASTNode) : FregeCompositeElementImpl(nod
         }
     }
 
-    override fun getTokenType(): IElementType {
-        return FregeTypes.FUNCTION_NAME
-    }
+    override fun getTokenType(): IElementType = FregeTypes.FUNCTION_NAME
 }

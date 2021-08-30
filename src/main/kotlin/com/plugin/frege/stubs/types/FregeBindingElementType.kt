@@ -10,13 +10,9 @@ import com.plugin.frege.psi.util.FregePsiUtil.isInGlobalScope
 import com.plugin.frege.stubs.FregeMethodStub
 
 class FregeBindingElementType(debugName: String) : FregeMethodElementType(debugName) {
-    override fun createPsi(stub: FregeMethodStub): FregePsiMethod {
-        return FregeBindingImpl(stub, this)
-    }
+    override fun createPsi(stub: FregeMethodStub): FregePsiMethod = FregeBindingImpl(stub, this)
 
-    override fun getExternalId(): String {
-        return super.getExternalId() + ".BINDING"
-    }
+    override fun getExternalId(): String = super.getExternalId() + ".BINDING"
 
     override fun shouldCreateStub(node: ASTNode): Boolean {
         val element = node.psi
