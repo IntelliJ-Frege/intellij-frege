@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
+import com.plugin.frege.FregeLanguage;
 import org.jetbrains.annotations.NotNull;
 
 public class FregeReplRunInConsoleIntention implements IntentionAction {
@@ -22,7 +23,7 @@ public class FregeReplRunInConsoleIntention implements IntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return editor.getSelectionModel().hasSelection();
+        return file.getLanguage().is(FregeLanguage.INSTANCE) && editor.getSelectionModel().hasSelection();
     }
 
     @Override
