@@ -26,6 +26,12 @@
 
     <change-notes><![CDATA[
         <ul>
+            <li><b>1.1.1</b> <em>(2022-01-28)</em>
+                <ul>
+                    <li>Support IntelliJ-IDEA 2021.3</li>
+                    <li>Now 'Run Frege in REPL' is available only in Frege code</li>
+                </ul>
+            </li>
             <li><b>1.1.0</b> <em>(2021-08-18)</em>
                 <ul>
                     <li>Support for resolving word operators (in ``)</li>
@@ -86,7 +92,7 @@
         </ul>
     ]]></change-notes>
 
-    <idea-version since-build="202.6397.46" until-build="212.*"/>
+    <idea-version since-build="202.6397.46" until-build="213.*"/>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
