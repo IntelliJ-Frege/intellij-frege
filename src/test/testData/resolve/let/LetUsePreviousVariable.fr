@@ -1,0 +1,6 @@
+module LetInBraces where
+
+sum = let fir = 10
+          sec = 10
+          thr = f<caret>ir + sec
+      in fir + sec + thr
