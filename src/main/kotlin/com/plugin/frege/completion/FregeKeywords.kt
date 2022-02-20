@@ -15,6 +15,7 @@ object FregeKeywords {
     const val FALSE = "false"
     const val FOREIGN = "foreign"
     const val FORALL = "forall"
+    const val HIDING = "hiding"
     const val IF = "if"
     const val IMPORT = "import"
     const val IN = "in"

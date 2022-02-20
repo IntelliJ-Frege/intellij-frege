@@ -19,6 +19,7 @@ class FregeKeywordCompletionContributor : CompletionContributor() {
             FregePatterns.AccessModifierPatterns.accessModifierPattern(),
             FregeKeywords.PUBLIC_MODIFIER, FregeKeywords.PROTECTED_MODIFIER, FregeKeywords.PRIVATE_MODIFIER
         )
+
         registerStandardCompletion(
             FregePatterns.BooleanLiteralPatterns.booleanLiteralTermPattern(),
             FregeKeywords.FALSE, FregeKeywords.TRUE
@@ -31,31 +32,50 @@ class FregeKeywordCompletionContributor : CompletionContributor() {
             FregePatterns.BooleanLiteralPatterns.booleanLiteralTopDeclarationPattern(),
             FregeKeywords.FALSE, FregeKeywords.TRUE
         )
+
         registerStandardCompletion(FregePatterns.CaseExpressionPatterns.casePattern(), FregeKeywords.CASE)
         registerStandardCompletion(FregePatterns.CaseExpressionPatterns.ofPattern(), FregeKeywords.OF)
+
         registerStandardCompletion(
             FregePatterns.ClassDeclPatterns.classOrInterfacePattern(),
             FregeKeywords.CLASS, FregeKeywords.INTERFACE
         )
+
         registerStandardCompletion(FregePatterns.ConditionPatterns.ifPattern(), FregeKeywords.IF)
         registerStandardCompletion(FregePatterns.ConditionPatterns.thenPattern(), FregeKeywords.THEN)
         registerStandardCompletion(FregePatterns.ConditionPatterns.elsePattern(), FregeKeywords.ELSE)
+
         registerStandardCompletion(FregePatterns.DataDeclConstructorsPatterns.abstractPattern(), FregeKeywords.ABSTRACT)
         registerStandardCompletion(FregePatterns.DataDeclConstructorsPatterns.dataPattern(), FregeKeywords.DATA)
         registerStandardCompletion(FregePatterns.DataDeclNativePatterns.dataPattern(), FregeKeywords.DATA)
         registerStandardCompletion(FregePatterns.DataDeclNativePatterns.nativePattern(), FregeKeywords.NATIVE)
+
         registerStandardCompletion(FregePatterns.DeriveDeclPatterns.derivePattern(), FregeKeywords.DERIVE)
+
         registerStandardCompletion(FregePatterns.DoExpressionPatterns.doExpressionPattern(), FregeKeywords.DO)
+
         registerStandardCompletion(FregePatterns.ImportDeclPatterns.importPattern(), FregeKeywords.IMPORT)
+        registerStandardCompletion(FregePatterns.ImportDeclPatterns.keywordAfterImportPattern(), FregeKeywords.HIDING)
+        registerStandardCompletion(FregePatterns.ImportDeclPatterns.keywordAfterImportPattern(), FregeKeywords.AS)
+        registerStandardCompletion(
+            FregePatterns.ImportDeclPatterns.keywordAfterImportPattern(),
+            FregeKeywords.PUBLIC_MODIFIER
+        )
+
         registerStandardCompletion(
             FregePatterns.InfixRulePatterns.infixRulePattern(),
             FregeKeywords.INFIX, FregeKeywords.INFIXL, FregeKeywords.INFIXR
         )
+
         registerStandardCompletion(FregePatterns.InstanceDeclPatterns.instancePattern(), FregeKeywords.INSTANCE)
+
         registerStandardCompletion(FregePatterns.LetExpressionPatterns.letPattern(), FregeKeywords.LET)
+
         registerStandardCompletion(FregePatterns.LetInExpressionPatterns.inPattern(), FregeKeywords.IN)
+
         registerStandardCompletion(FregePatterns.NativeFunPatterns.purePattern(), FregeKeywords.PURE)
         registerStandardCompletion(FregePatterns.NativeFunPatterns.nativePattern(), FregeKeywords.NATIVE)
+
         registerStandardCompletion(FregePatterns.WhereSectionPatterns.whereSectionPattern(), FregeKeywords.WHERE)
     }
 }
