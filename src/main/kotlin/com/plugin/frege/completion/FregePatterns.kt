@@ -166,7 +166,13 @@ object FregePatterns {
             return psiElement().atStartOf(psiElement(FregeTopDecl::class.java))
         }
 
-        // TODO as and public modifier patterns
+        @JvmStatic
+        fun keywordAfterImportPattern(): PsiElementPattern.Capture<PsiElement> {
+            return psiElement().withSuperParent(
+                2,
+                psiElement(FregeTopDecl::class.java).withFirstChild(psiElement(FregeImportDecl::class.java))
+            )
+        }
     }
 
     object InfixRulePatterns : PlatformPatterns() {
