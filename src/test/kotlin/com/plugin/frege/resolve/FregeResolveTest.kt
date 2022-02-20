@@ -259,6 +259,14 @@ class FregeResolveTest : FregeCodeInsightTest() {
         it is FregeBinding && it.name == "approx"
     }
 
+    fun `test file let LetUsePreviousVariable`() = doTest {
+        it is FregeBinding && it.name == "fir"
+    }
+
+    fun `test file let LetUseNextVariable`() = doTest {
+        it is FregeBinding && it.name == "sec"
+    }
+
     // Testing do
 
     fun `test file do ToLetVirtual`() = doTest {
