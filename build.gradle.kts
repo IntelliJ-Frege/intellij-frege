@@ -1,5 +1,6 @@
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
+import org.jetbrains.intellij.mainSourceSet
 
 plugins {
     kotlin("jvm") version "1.5.10"
@@ -10,46 +11,70 @@ plugins {
     id("org.jetbrains.grammarkit") version "2021.1.2"
 }
 
-group = "com.plugin.frege"
-version = "1.1.1"
+val pluginVersion: String by project
+val pluginGroup: String by project
+
+val kotlinVersion: String by project
+val junitVersion: String by project
+
+val ideaVersion: String by project
+val ideaPlugins: String by project
+val ideaDownloadSources: String by project
+val ideaUpdateSinceUntilBuild: String by project
+
+val genPath: String by project
+
+val flexPath: String by project
+val genLexerPath: String by project
+val genLexerClassName: String by project
+val genLexerPurgeOldFiles: String by project
+
+val bnfPath: String by project
+val genParserClassPath: String by project
+val genPsiPath: String by project
+val genParserPurgeOldFiles: String by project
+
+
+group = pluginGroup
+version = pluginVersion
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.10")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
 intellij {
-    version.set("2021.1")
-    plugins.set(listOf("java", "gradle", "gradle-java"))
-    downloadSources.set(true)
-    updateSinceUntilBuild.set(false)
+    version.set(ideaVersion)
+    plugins.set(ideaPlugins.split(","))
+    downloadSources.set(ideaDownloadSources.toBoolean())
+    updateSinceUntilBuild.set(ideaUpdateSinceUntilBuild.toBoolean())
 }
 
 sourceSets {
-    getByName("main").java.srcDirs("src/gen")
+    mainSourceSet(project).java.srcDir(genPath)
 }
 
 tasks {
     val generateFregeLexer by registering(GenerateLexer::class) {
-        source = "src/main/java/com/plugin/frege/lexer/FregeLexer.flex"
-        targetDir = "src/gen/com/plugin/frege/lexer/"
-        targetClass = "FregeLexer"
-        purgeOldFiles = true
+        source = flexPath
+        targetDir = genLexerPath
+        targetClass = genLexerClassName
+        purgeOldFiles = genLexerPurgeOldFiles.toBoolean()
     }
 
     val generateFregeParser by registering(GenerateParser::class) {
         dependsOn(generateFregeLexer)
 
-        source = "src/main/java/com/plugin/frege/Frege.bnf"
-        targetRoot = "src/gen"
-        pathToParser = "/com/plugin/frege/parser/FregeParser.java"
-        pathToPsiRoot = "/com/plugin/frege/psi"
-        purgeOldFiles = true
+        source = bnfPath
+        targetRoot = genPath
+        pathToParser = genParserClassPath
+        pathToPsiRoot = genPsiPath
+        purgeOldFiles = genParserPurgeOldFiles.toBoolean()
     }
 
     compileKotlin {
