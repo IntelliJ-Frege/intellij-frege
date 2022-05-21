@@ -26,6 +26,12 @@
 
     <change-notes><![CDATA[
         <ul>
+            <li><b>1.1.2</b> <em>(2022-05-21)</em>
+                <ul>
+                    <li>Support IntelliJ-IDEA 2022.1</li>
+                    <li>Fix some completion issues</li>
+                </ul>
+            </li>
             <li><b>1.1.1</b> <em>(2022-01-28)</em>
                 <ul>
                     <li>Support IntelliJ-IDEA 2021.3</li>
@@ -92,7 +98,7 @@
         </ul>
     ]]></change-notes>
 
-    <idea-version since-build="202.6397.46" until-build="213.*"/>
+    <idea-version since-build="202.6397.46" until-build="223.*"/>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
