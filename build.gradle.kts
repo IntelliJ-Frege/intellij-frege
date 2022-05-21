@@ -7,7 +7,7 @@ plugins {
 
     id("java")
     id("idea")
-    id("org.jetbrains.intellij") version "1.4.0"
+    id("org.jetbrains.intellij") version "1.5.3"
     id("org.jetbrains.grammarkit") version "2021.1.2"
 }
 
